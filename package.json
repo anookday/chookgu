@@ -4,8 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "this is a test"
+    "dev:server": "npm --prefix server run start:dev",
+    "dev:client": "npm --prefix client run dev",
+    "dev": "concurrently npm:dev:*"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^6.2.1"
+  }
 }

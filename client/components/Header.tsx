@@ -16,10 +16,10 @@ const Header = () => {
         <a className={styles.header__link}>Contact</a>
       </div>
       <div className={styles.header__right}>
-        <Link href="/login">
+        <Link href="/account/login">
           <a className={styles.header__link}>Sign in</a>
         </Link>
-        <Link href="/register" passHref>
+        <Link href="/account/register" passHref>
           <Button text="Get started" />
         </Link>
       </div>
