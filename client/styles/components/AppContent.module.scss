@@ -1,0 +1,15 @@
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.app {
+  color: $color-secondary;
+  width: 100%;
+  max-width: 90rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

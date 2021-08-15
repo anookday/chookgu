@@ -1,15 +1,23 @@
 import { NextPage } from 'next'
 import Head from 'next/head'
-import Layout from '../components/Layout'
-import Header from '../components/Header'
-import { User, DatabaseUser } from '../util/User'
-import server from '../util/server'
+import { GlobalProps, GlobalContext } from '../utils/GlobalContext'
+import App from '../components/App'
+import Landing from '../components/Landing'
+import { DatabaseUser } from '../utils/User'
+import api from '../utils/api'
 
-type HomeProps = {
-  user?: User
-}
+const Home: NextPage<GlobalProps> = (props) => {
+  const renderMain = () => {
+    if (props.loggedIn) {
+      return (
+        <GlobalContext.Provider value={props}>
+          <App />
+        </GlobalContext.Provider>
+      )
+    }
+    return <Landing />
+  }
 
-const Home: NextPage<HomeProps> = ({ user }) => {
   return (
     <div>
       <Head>
@@ -18,14 +26,7 @@ const Home: NextPage<HomeProps> = ({ user }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
-        <Layout>
-          <Header />
-          <div className="content" style={{ color: '#fff' }}>
-            {user ? `Welcome, ${user.username}` : 'Content'}
-          </div>
-        </Layout>
-      </main>
+      <main>{renderMain()}</main>
 
       <footer></footer>
     </div>
@@ -33,15 +34,23 @@ const Home: NextPage<HomeProps> = ({ user }) => {
 }
 
 Home.getInitialProps = async ({ req }) => {
-  let props: HomeProps = {}
+  let props: GlobalProps = {
+    loggedIn: false,
+    user: {
+      email: '',
+      username: '',
+      balance: 0,
+    },
+  }
   try {
-    const profile = await server.get<DatabaseUser>('auth/profile', {
+    const profile = await api.get<DatabaseUser>('auth/profile', {
       headers: req ? { cookie: req.headers.cookie } : undefined,
     })
     const { _id, __v, ...user } = profile.data
     props.user = user
+    props.loggedIn = true
   } catch (e) {
-    console.log('authentication failed')
+    console.log('no user session found')
   }
   return props
 }

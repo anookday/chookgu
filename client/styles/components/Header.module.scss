@@ -10,21 +10,21 @@
   align-items: center;
   justify-content: space-between;
 
-  &__logo {
+  &_logo {
     height: 5rem;
     width: 5rem;
     fill: $color-secondary;
   }
 
-  &__middle {
+  &_middle {
     display: flex;
   }
 
-  &__right {
+  &_right {
     display: flex;
   }
 
-  &__link {
+  &_link {
     font-size: 1.6rem;
     color: $color-secondary;
     padding: 1rem 0;
@@ -37,6 +37,7 @@
       margin-right: 3rem;
     }
 
+    &__active,
     &:hover {
       color: $color-accent;
     }

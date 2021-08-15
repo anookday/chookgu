@@ -2,14 +2,16 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import axios from 'axios'
 import Form, { FormProps } from '../../components/Form'
 import Logo from '../../public/player.svg'
 import api from '../../utils/api'
 import styles from '../../styles/pages/UserForm.module.scss'
 
-const Login = () => {
+const Register = () => {
   const router = useRouter()
   const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
@@ -17,11 +19,15 @@ const Login = () => {
     e.preventDefault()
     setError('')
     try {
-      await api.post(`/auth/login?email=${email}&password=${password}`)
+      await api.post('/auth/profile', {
+        email,
+        username,
+        password,
+      })
       router.push('/')
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        setError('Invalid email/password.')
+      if (axios.isAxiosError(error) && error.response) {
+        setError(error.response.data.message)
       } else {
         setError('Unknown error occurred. Please try again later.')
       }
@@ -31,38 +37,44 @@ const Login = () => {
   const formProps: FormProps = {
     email,
     setEmail,
+    username,
+    setUsername,
     password,
     setPassword,
-    submitText: 'Login',
+    submitText: 'Create account',
     onSubmit,
   }
 
   return (
     <div>
       <Head>
-        <title>Login to Chookgu</title>
-        <meta name="description" content="Login page for Chookgu" />
+        <title>Register to Chookgu</title>
+        <meta name="description" content="Registration page for Chookgu" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>
         <div className={styles.wrapper}>
           <div className={styles.container}>
+            <div className={styles.content}>
+              <div>Content</div>
+            </div>
             <div className={styles.userForm}>
               <Logo className={styles.userForm_logo} />
               <div className={styles.userForm_formWrapper}>
-                <h1 className={styles.userForm_title}>Login</h1>
+                <h1 className={styles.userForm_title}>Register</h1>
                 <Form {...formProps} />
                 <p className={styles.userForm_error}>{error}</p>
               </div>
               <div className={styles.redirect}>
-                <Link href="/account/register">Sign up</Link>
-                <Link href="/account/recover">Forgot password</Link>
+                <span>
+                  Have an account?{' '}
+                  <Link href="/account/login">
+                    <a>Log in</a>
+                  </Link>
+                </span>
               </div>
               <p className="login__legal">&copy; anookday 2021.</p>
-            </div>
-            <div className={styles.content}>
-              <div>Content</div>
             </div>
           </div>
         </div>
@@ -73,4 +85,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default Register

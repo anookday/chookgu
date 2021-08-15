@@ -16,6 +16,7 @@ import { CreateUserProfileDto } from '../users/dto/create-userProfile.dto'
 import { UpdateUserProfileDto } from '../users/dto/update-userProfile.dto'
 import { User } from '../users/user.decorator'
 import { Response } from 'express'
+import { COOKIE_MAX_AGE } from '../util/constants'
 
 @Controller('auth')
 export class AuthController {
@@ -32,8 +33,15 @@ export class AuthController {
       .cookie('access_token', jwt, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
+        maxAge: COOKIE_MAX_AGE,
       })
       .send('Logged in successfully')
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/logout')
+  logout(@Res() res: Response) {
+    res.clearCookie('access_token').send('Logged out successfully')
   }
 
   /* TODO: add guard/middleware that verifies that user has confirmed account creation over email */

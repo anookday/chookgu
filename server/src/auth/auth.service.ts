@@ -1,10 +1,14 @@
-import { Injectable, BadRequestException } from '@nestjs/common'
+import {
+  Injectable,
+  UnprocessableEntityException,
+  ConflictException,
+} from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import * as argon2 from 'argon2'
 import { UsersService } from '../users/users.service'
-import { User, UserDocument } from '../users/schemas/user.schema'
+import { User } from '../users/schemas/user.schema'
 import { CreateUserProfileDto } from 'src/users/dto/create-userProfile.dto'
-import { userConstants } from './constants'
+import { USER_STARTING_BALANCE } from '../util/constants'
 
 @Injectable()
 export class AuthService {
@@ -48,27 +52,27 @@ export class AuthService {
     // user is already registered AKA duplicate email is found
     const existingUser = await this.usersService.findByEmail(email)
     if (existingUser != null) {
-      console.log('existing user')
-      throw new BadRequestException()
+      throw new ConflictException('That email is taken. Try another one.')
     }
 
     // username must be between 1 and 30 characters
     if (username.length === 0 || username.length > 30) {
-      console.log('invalid username')
-      throw new BadRequestException()
+      throw new UnprocessableEntityException(
+        'Username must be between 1 to 30 characters long.'
+      )
     }
 
     // email must not be empty
     // TODO: ACTUALLY validate emails by sending confirmation links
     if (email.length === 0) {
-      console.log('invalid email')
-      throw new BadRequestException()
+      throw new UnprocessableEntityException('Invalid email.')
     }
 
     // password must have at least 10 characters
     if (password.length < 10) {
-      console.log('invalid password')
-      throw new BadRequestException()
+      throw new UnprocessableEntityException(
+        'Password must be at least 10 chracters long.'
+      )
     }
 
     // hash password with salt
@@ -79,7 +83,7 @@ export class AuthService {
       username,
       email,
       password: hash,
-      balance: userConstants.startingBalance,
+      balance: USER_STARTING_BALANCE,
     })
   }
 }

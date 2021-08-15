@@ -1,16 +1,60 @@
 .form {
   display: flex;
   flex-direction: column;
+  width: inherit;
 
-  & :not(:last-child) {
-    margin-bottom: 1rem;
+  & > :not(:last-child) {
+    margin-bottom: 1.5rem;
   }
 
-  &__label {
-    display: inline-block;
-  }
+  &_field {
+    margin-bottom: 1.4rem;
+    position: relative;
 
-  &__input {
-    display: block;
+    &__title {
+      color: inherit;
+    }
+
+    &__input {
+      font-size: inherit;
+      display: block;
+      width: 100%;
+      background-color: $color-secondary;
+      border: {
+        top: none;
+        left: none;
+        right: none;
+        bottom: 0.3rem solid $color-secondary;
+      }
+      outline: none;
+      padding-left: 0.5rem;
+      transition: all 0.2s;
+
+      &:focus {
+        border-bottom: 0.3rem solid $color-accent;
+      }
+
+      & + p {
+        visibility: hidden;
+      }
+
+      &:focus + p {
+        visibility: visible;
+      }
+    }
+
+    &__icon {
+      position: absolute;
+      right: 0.5rem;
+      bottom: 1.6rem;
+    }
+
+    &__description {
+      height: 1.4rem;
+      color: $color-accent;
+      font-size: 1.4rem;
+      line-height: 1.3;
+      font-weight: 300;
+    }
   }
 }
