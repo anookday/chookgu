@@ -24,6 +24,7 @@ const Register = () => {
         username,
         password,
       })
+      await api.post(`/auth/login?email=${email}&password=${password}`)
       router.push('/')
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -60,7 +61,9 @@ const Register = () => {
               <div>Content</div>
             </div>
             <div className={styles.userForm}>
-              <Logo className={styles.userForm_logo} />
+              <Link href="/">
+                <Logo className={styles.userForm_logo} />
+              </Link>
               <div className={styles.userForm_formWrapper}>
                 <h1 className={styles.userForm_title}>Register</h1>
                 <Form {...formProps} />

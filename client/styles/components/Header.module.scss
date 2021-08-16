@@ -2,6 +2,7 @@
   background-color: $color-primary;
   color: $color-secondary;
   padding: 2rem 3rem;
+  height: $header-height;
 
   font-size: 2.2rem;
   font-weight: 300;
@@ -25,7 +26,6 @@
   }
 
   &_link {
-    font-size: 1.6rem;
     color: $color-secondary;
     padding: 1rem 0;
     text-decoration: none;

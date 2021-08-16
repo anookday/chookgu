@@ -1,8 +1,8 @@
 import React from 'react'
 import styles from '../styles/components/Layout.module.scss'
 
-type LayoutProps = {
-  children: React.ReactNode
+export interface LayoutProps {
+  children?: JSX.Element
 }
 
 const Layout = ({ children }: LayoutProps) => {

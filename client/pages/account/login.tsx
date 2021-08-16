@@ -49,7 +49,9 @@ const Login = () => {
         <div className={styles.wrapper}>
           <div className={styles.container}>
             <div className={styles.userForm}>
-              <Logo className={styles.userForm_logo} />
+              <Link href="/">
+                <Logo className={styles.userForm_logo} />
+              </Link>
               <div className={styles.userForm_formWrapper}>
                 <h1 className={styles.userForm_title}>Login</h1>
                 <Form {...formProps} />

@@ -15,21 +15,20 @@ export interface FormProps {
   onSubmit: (event: React.MouseEvent<HTMLButtonElement>) => void
 }
 
-const Form = (props: FormProps) => {
+const Form = ({
+  email,
+  setEmail,
+  username,
+  setUsername,
+  password,
+  setPassword,
+  submitText,
+  onSubmit,
+}: FormProps) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
 
-  const {
-    email,
-    setEmail,
-    username,
-    setUsername,
-    password,
-    setPassword,
-    submitText,
-    onSubmit,
-  } = props
-
+  // componentDidMount
   useEffect(() => {
     if (formRef.current) {
       const firstLabel = formRef.current.firstElementChild
@@ -40,6 +39,9 @@ const Form = (props: FormProps) => {
     }
   }, [])
 
+  /**
+   * Returns an email field component.
+   */
   const renderEmailField = (): JSX.Element | null => {
     return email === undefined || setEmail === undefined ? null : (
       <label className={styles.form_field}>
@@ -59,6 +61,9 @@ const Form = (props: FormProps) => {
     )
   }
 
+  /**
+   * Returns a username field component.
+   */
   const renderUsernameField = (): JSX.Element | null => {
     return username === undefined || setUsername === undefined ? null : (
       <label className={styles.form_field}>
@@ -78,6 +83,9 @@ const Form = (props: FormProps) => {
     )
   }
 
+  /**
+   * Returns a password field component.
+   */
   const renderPasswordField = (): JSX.Element | null => {
     const visibilityIcon = isPasswordVisible ? (
       <VisibilityOnIcon
@@ -114,6 +122,7 @@ const Form = (props: FormProps) => {
     )
   }
 
+  // render form
   return (
     <form className={styles.form} ref={formRef}>
       {renderEmailField()}
