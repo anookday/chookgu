@@ -1,19 +1,17 @@
-import { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import {
   GlobalProps,
   GlobalContext,
-  getInitialGlobalProps,
-} from '../utils/GlobalContext'
-import Header from '../components/Header'
-import Button from '../components/Button'
-import AccountDropdown from '../components/AccountDropdown'
-import Dashboard from '../components/Dashboard'
-import Landing from '../components/Landing'
-import headerStyles from '../styles/components/Header.module.scss'
+  getGlobalProps,
+} from '@utils/GlobalContext'
+import Header from '@components/Header'
+import Button from '@components/Button'
+import UserMenu from '@components/UserMenu'
+import Dashboard from '@components/Dashboard'
+import Landing from '@components/Landing'
 
-const Home: NextPage<GlobalProps> = (props) => {
+const Home = (props: GlobalProps) => {
   const renderMain = () => {
     // if user is logged in return dashboard
     if (props.loggedIn) {
@@ -23,11 +21,11 @@ const Home: NextPage<GlobalProps> = (props) => {
             navigation={[
               { text: 'Dashboard', link: '/', selected: true },
               { text: 'Trade', link: '/trade' },
-              { text: 'Tournaments' },
-              { text: 'Prizes' },
+              { text: 'Tournaments', link: '/tournaments' },
+              { text: 'Prizes', link: '/prizes' },
             ]}
           >
-            <AccountDropdown />
+            <UserMenu />
           </Header>
           <Dashboard />
         </GlobalContext.Provider>
@@ -44,12 +42,14 @@ const Home: NextPage<GlobalProps> = (props) => {
             { text: 'Contact', link: '#contact' },
           ]}
         >
-          <Link href="/account/login">
-            <a className={headerStyles.header_link}>Sign in</a>
-          </Link>
-          <Link href="/account/register" passHref>
-            <Button text="Get started" />
-          </Link>
+          <>
+            <Link href="/account/login">
+              <a>Sign in</a>
+            </Link>
+            <Link href="/account/register" passHref>
+              <Button text="Get started" />
+            </Link>
+          </>
         </Header>
         <Landing />
       </>
@@ -71,6 +71,6 @@ const Home: NextPage<GlobalProps> = (props) => {
   )
 }
 
-Home.getInitialProps = getInitialGlobalProps
+export const getServerSideProps = getGlobalProps
 
 export default Home

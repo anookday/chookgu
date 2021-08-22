@@ -27,7 +27,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  login(@User('_id') userId: number, @Res() res: Response) {
+  login(@User('_id') userId: string, @Res() res: Response) {
     const jwt = this.authService.login(userId)
     res
       .cookie('access_token', jwt, {
@@ -52,14 +52,14 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/profile')
-  async getProfile(@User('_id') userId: number) {
+  async getProfile(@User('_id') userId: string) {
     return await this.usersService.findById(userId)
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch('/profile')
   async updateProfile(
-    @User('_id') userId: number,
+    @User('_id') userId: string,
     @Body() updateUserProfileDto: UpdateUserProfileDto
   ) {
     return await this.usersService.updateOne(userId, updateUserProfileDto)
@@ -67,7 +67,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('/profile')
-  async deleteProfile(@User('_id') userId: number) {
+  async deleteProfile(@User('_id') userId: string) {
     return await this.usersService.deleteOne(userId)
   }
 }

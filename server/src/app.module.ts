@@ -10,6 +10,7 @@ import { UsersModule } from './users/users.module'
     MongooseModule.forRoot(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      useCreateIndex: true,
     }),
     PlayersModule,
     AuthModule,

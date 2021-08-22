@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
   BadGatewayException,
+  BadRequestException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { User, UserDocument } from './schemas/user.schema'
@@ -14,12 +15,11 @@ export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async findByEmail(email: string) {
-    const user = await this.userModel.findOne({ email }).exec()
-    return user
+    return await this.userModel.findOne({ email }).exec()
   }
 
-  async findById(id: number) {
-    const user = await this.userModel.findById(id).exec()
+  async findById(_id: string) {
+    const user = await this.userModel.findById(_id).exec()
     if (!user) throw new NotFoundException()
     return user
   }
@@ -36,7 +36,15 @@ export class UsersService {
     return user
   }
 
-  async updateOne(_id: number, updateUserProfileDto: UpdateUserProfileDto) {
+  async updateOne(_id: string, updateUserProfileDto: UpdateUserProfileDto) {
+    // check for duplicate email
+    if (updateUserProfileDto.email) {
+      const existingUser = await this.findByEmail(updateUserProfileDto.email)
+      if (existingUser && existingUser.id !== _id) {
+        throw new BadRequestException()
+      }
+    }
+
     const result = await this.userModel
       .updateOne({ _id }, updateUserProfileDto)
       .exec()
@@ -44,7 +52,7 @@ export class UsersService {
     return result
   }
 
-  async deleteOne(_id: number) {
+  async deleteOne(_id: string) {
     const user = await this.userModel.findOneAndDelete({ _id }).exec()
     if (!user) throw new NotFoundException()
     return user

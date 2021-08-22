@@ -2,10 +2,10 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import Form, { FormProps } from '../../components/Form'
-import Logo from '../../public/player.svg'
-import api from '../../utils/api'
-import styles from '../../styles/pages/UserForm.module.scss'
+import Form, { FormProps } from '@components/Form'
+import Logo from '@public/player.svg'
+import api from '@utils/api'
+import styles from '@styles/components/UserForm.module.scss'
 
 const Login = () => {
   const router = useRouter()
@@ -50,7 +50,9 @@ const Login = () => {
           <div className={styles.container}>
             <div className={styles.userForm}>
               <Link href="/">
-                <Logo className={styles.userForm_logo} />
+                <a>
+                  <Logo className={styles.userForm_logo} />
+                </a>
               </Link>
               <div className={styles.userForm_formWrapper}>
                 <h1 className={styles.userForm_title}>Login</h1>
@@ -58,8 +60,12 @@ const Login = () => {
                 <p className={styles.userForm_error}>{error}</p>
               </div>
               <div className={styles.redirect}>
-                <Link href="/account/register">Sign up</Link>
-                <Link href="/account/recover">Forgot password</Link>
+                <Link href="/account/register">
+                  <a className={styles.redirect_link}>Sign up</a>
+                </Link>
+                <Link href="/account/recover">
+                  <a className={styles.redirect_link}>Forgot password</a>
+                </Link>
               </div>
               <p className="login__legal">&copy; anookday 2021.</p>
             </div>

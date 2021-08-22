@@ -39,7 +39,7 @@ export class AuthService {
    * Create a JWT indicating that gives a user authorized access to parts of
    * the app.
    */
-  login(userId: number) {
+  login(userId: string) {
     return this.jwtService.sign({ userId })
   }
 
@@ -83,7 +83,6 @@ export class AuthService {
       username,
       email,
       password: hash,
-      balance: USER_STARTING_BALANCE,
     })
   }
 }

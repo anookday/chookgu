@@ -1,13 +1,23 @@
 export interface DatabaseUser {
-  _id: number
+  _id: string
   username: string
   email: string
-  balance: number
+  portfolio: Portfolio
   __v: number
+}
+
+export interface Portfolio {
+  balance: number
+  players: Player[]
+}
+
+export interface Player {
+  id: string
+  purchsedPrice: number
 }
 
 export interface User {
   username: string
   email: string
-  balance: number
+  portfolio: Portfolio
 }

@@ -17,14 +17,14 @@ function getPlayerInfo(
   playerElement: cheerio.Element,
   team: string
 ): Player {
-  const id = parseInt(
+  const _id = parseInt(
     $(playerElement)
       .find(
         'td:nth-child(2) > table > tbody > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) a:first'
       )
       .attr('id') || ''
   )
-  if (!id) {
+  if (!_id) {
     throw new Error('attribute "id" not found in playerElement')
   }
   const name = $(playerElement)
@@ -62,7 +62,7 @@ function getPlayerInfo(
     },
   ]
   return {
-    _id: id,
+    _id,
     name,
     position,
     nationality,

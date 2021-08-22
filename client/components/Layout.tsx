@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from '../styles/components/Layout.module.scss'
+import styles from '@styles/components/Layout.module.scss'
 
 export interface LayoutProps {
   children?: JSX.Element

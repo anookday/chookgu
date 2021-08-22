@@ -1,7 +1,8 @@
-import { NextPageContext } from 'next'
+import { GetServerSideProps } from 'next'
 import { createContext, useContext } from 'react'
-import { User, DatabaseUser } from './User'
-import api from './api'
+import { ParsedUrlQuery } from 'querystring'
+import { User, DatabaseUser } from '@utils/User'
+import api from '@utils/api'
 
 export interface GlobalProps {
   loggedIn: boolean
@@ -13,21 +14,30 @@ export const GlobalContext = createContext<GlobalProps>({
   user: {
     email: '',
     username: '',
-    balance: 0,
+    portfolio: {
+      balance: 0,
+      players: [],
+    },
   },
 })
 export const useGlobal = () => useContext(GlobalContext)
 
-export const getInitialGlobalProps = async (context: NextPageContext) => {
-  const { req } = context
+export const getGlobalProps: GetServerSideProps<
+  GlobalProps,
+  ParsedUrlQuery
+> = async ({ req }) => {
   let props: GlobalProps = {
     loggedIn: false,
     user: {
       email: '',
       username: '',
-      balance: 0,
+      portfolio: {
+        balance: 0,
+        players: [],
+      },
     },
   }
+
   try {
     const profile = await api.get<DatabaseUser>('auth/profile', {
       headers: req ? { cookie: req.headers.cookie } : undefined,
@@ -36,7 +46,8 @@ export const getInitialGlobalProps = async (context: NextPageContext) => {
     props.user = user
     props.loggedIn = true
   } catch (e) {
-    console.log('no user session found')
+    // no user session found
   }
-  return props
+
+  return { props }
 }

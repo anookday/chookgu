@@ -6,22 +6,22 @@ export type PlayerDocument = Player & Document
 
 @Schema()
 export class Player {
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   _id: number
 
-  @Prop()
+  @Prop({ text: true })
   name: string
 
-  @Prop()
+  @Prop({ index: true })
   position: string
 
-  @Prop([String])
+  @Prop({ type: [String], index: true })
   nationality: string[]
 
-  @Prop()
+  @Prop({ index: true })
   dateOfBirth: Date
 
-  @Prop()
+  @Prop({ index: true })
   team: string
 
   @Prop()

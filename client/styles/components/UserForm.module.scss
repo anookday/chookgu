@@ -54,10 +54,13 @@
   display: flex;
   justify-content: space-between;
 
-  & span,
-  a {
+  &_text {
     font-size: 1.6rem;
-    color: $color-secondary;
+  }
+
+  &_link {
+    @include text-link;
+    font-size: inherit;
   }
 }
 

@@ -1,0 +1,17 @@
+@mixin text-link {
+  color: $color-secondary;
+  padding: 1rem 0;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+
+  &:not(:last-child) {
+    margin-right: 3rem;
+  }
+
+  &__active,
+  &:hover {
+    color: $color-accent;
+  }
+}

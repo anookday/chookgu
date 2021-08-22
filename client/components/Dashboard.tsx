@@ -1,6 +1,6 @@
-import Layout from './Layout'
-import { useGlobal } from '../utils/GlobalContext'
-import styles from '../styles/components/Dashboard.module.scss'
+import Layout from '@components/Layout'
+import { useGlobal } from '@utils/GlobalContext'
+import styles from '@styles/components/Dashboard.module.scss'
 
 const Dashboard = () => {
   const { user } = useGlobal()
@@ -10,7 +10,7 @@ const Dashboard = () => {
         <div className={styles.app}>
           <h1>{user?.username}</h1>
           <h2>{user?.email}</h2>
-          <h2>{user?.balance}</h2>
+          <h2>{user?.portfolio.balance}</h2>
         </div>
       </div>
     </Layout>

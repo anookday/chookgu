@@ -3,10 +3,10 @@ import Link from 'next/link'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import axios from 'axios'
-import Form, { FormProps } from '../../components/Form'
-import Logo from '../../public/player.svg'
-import api from '../../utils/api'
-import styles from '../../styles/pages/UserForm.module.scss'
+import Form, { FormProps } from '@components/Form'
+import Logo from '@public/player.svg'
+import api from '@utils/api'
+import styles from '@styles/components/UserForm.module.scss'
 
 const Register = () => {
   const router = useRouter()
@@ -62,7 +62,9 @@ const Register = () => {
             </div>
             <div className={styles.userForm}>
               <Link href="/">
-                <Logo className={styles.userForm_logo} />
+                <a>
+                  <Logo className={styles.userForm_logo} />
+                </a>
               </Link>
               <div className={styles.userForm_formWrapper}>
                 <h1 className={styles.userForm_title}>Register</h1>
@@ -70,10 +72,10 @@ const Register = () => {
                 <p className={styles.userForm_error}>{error}</p>
               </div>
               <div className={styles.redirect}>
-                <span>
+                <span className={styles.redirect_text}>
                   Have an account?{' '}
                   <Link href="/account/login">
-                    <a>Log in</a>
+                    <a className={styles.redirect_link}>Log in</a>
                   </Link>
                 </span>
               </div>

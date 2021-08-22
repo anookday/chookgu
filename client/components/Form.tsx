@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
-import Button from './Button'
-import VisibilityOnIcon from '../public/visibility.svg'
-import VisiblityOffIcon from '../public/visibility_off.svg'
-import styles from '../styles/components/Form.module.scss'
+import Button from '@components/Button'
+import VisibilityOnIcon from '@public/visibility.svg'
+import VisiblityOffIcon from '@public/visibility_off.svg'
+import styles from '@styles/components/Form.module.scss'
 
 export interface FormProps {
   email?: string

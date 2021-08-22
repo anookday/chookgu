@@ -1,18 +1,19 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose'
+import { UserPortfolio, UserPortfolioSchema } from './userPortfolio.schema'
 
 export type UserDocument = User & Document
 
 @Schema()
 export class User {
-  @Prop()
+  @Prop({ unique: true })
   email: string
 
   @Prop()
   username: string
 
-  @Prop()
-  balance: number
+  @Prop({ type: UserPortfolioSchema, default: () => ({}) })
+  portfolio: UserPortfolio
 
   @Prop({ select: false })
   password: string

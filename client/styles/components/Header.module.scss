@@ -1,5 +1,5 @@
 .header {
-  background-color: $color-primary;
+  background-color: $color-primary-dark;
   color: $color-secondary;
   padding: 2rem 3rem;
   height: $header-height;
@@ -19,27 +19,19 @@
 
   &_middle {
     display: flex;
+    align-items: center;
   }
 
   &_right {
     display: flex;
+    align-items: center;
+
+    & a {
+      @include text-link;
+    }
   }
 
   &_link {
-    color: $color-secondary;
-    padding: 1rem 0;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    background: transparent;
-
-    &:not(:last-child) {
-      margin-right: 3rem;
-    }
-
-    &__active,
-    &:hover {
-      color: $color-accent;
-    }
+    @include text-link;
   }
 }

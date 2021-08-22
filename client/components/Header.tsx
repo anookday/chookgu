@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import Icon from '../public/player.svg'
-import styles from '../styles/components/Header.module.scss'
+import Icon from '@public/player.svg'
+import styles from '@styles/components/Header.module.scss'
 
 export interface HeaderNavigationProps {
   text: string
@@ -15,8 +15,8 @@ export interface HeaderProps {
 
 const Header = ({ navigation, children }: HeaderProps) => {
   const renderNavigationItems = () => {
-    return navigation.map((item) => (
-      <Link href={item.link || '#'}>
+    return navigation.map((item, index) => (
+      <Link key={index} href={item.link || '#'}>
         <a
           className={`${styles.header_link} ${
             item.selected ? styles.header_link__active : ''

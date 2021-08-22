@@ -9,13 +9,13 @@ import Layout from '@components/Layout'
 import Header, { HeaderNavigationProps } from '@components/Header'
 import AccountDropdown from '@components/AccountDropdown'
 
-const Trade = (props: GlobalProps) => {
+const Tournaments = (props: GlobalProps) => {
   const router = useRouter()
 
   const headerNav: HeaderNavigationProps[] = [
     { text: 'Dashboard', link: '/' },
-    { text: 'Trade', link: '/trade', selected: true },
-    { text: 'Tournaments', link: '/tournaments' },
+    { text: 'Trade', link: '/trade' },
+    { text: 'Tournaments', link: '/tournaments', selected: true },
     { text: 'Prizes', link: '/prizes' },
   ]
 
@@ -38,7 +38,7 @@ const Trade = (props: GlobalProps) => {
           </Header>
 
           <Layout>
-            <div>Trade</div>
+            <div>Tournaments</div>
           </Layout>
         </GlobalContext.Provider>
       </main>
@@ -50,4 +50,4 @@ const Trade = (props: GlobalProps) => {
 
 export const getServerSideProps = getGlobalProps
 
-export default Trade
+export default Tournaments
