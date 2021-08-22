@@ -1,48 +1,39 @@
+import { ReactElement } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import {
-  GlobalProps,
-  GlobalContext,
-  getGlobalProps,
-} from '@utils/GlobalContext'
+import MainLayout from '@components/MainLayout'
 import Layout from '@components/Layout'
-import Header, { HeaderNavigationProps } from '@components/Header'
-import AccountDropdown from '@components/AccountDropdown'
+import { GlobalProps, getGlobalProps } from '@utils/GlobalContext'
 
 const Tournaments = (props: GlobalProps) => {
   const router = useRouter()
-
-  const headerNav: HeaderNavigationProps[] = [
-    { text: 'Dashboard', link: '/' },
-    { text: 'Trade', link: '/trade' },
-    { text: 'Tournaments', link: '/tournaments', selected: true },
-    { text: 'Prizes', link: '/prizes' },
-  ]
 
   if (!props.loggedIn) {
     router.push('/')
   }
 
   return (
+    <Layout>
+      <div>Tournaments</div>
+    </Layout>
+  )
+}
+
+Tournaments.getLayout = (page: ReactElement) => {
+  const props: GlobalProps = page.props
+
+  return (
     <div>
       <Head>
-        <title>Chookgu Trade</title>
-        <meta name="description" content="Trade players" />
+        <title>Chookgu</title>
+        <meta name="description" content="Description of chookgu" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <main>
-        <GlobalContext.Provider value={props}>
-          <Header navigation={headerNav}>
-            <AccountDropdown />
-          </Header>
-
-          <Layout>
-            <div>Tournaments</div>
-          </Layout>
-        </GlobalContext.Provider>
+        <MainLayout selected={2} {...props}>
+          {page}
+        </MainLayout>
       </main>
-
       <footer></footer>
     </div>
   )

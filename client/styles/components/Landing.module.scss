@@ -1,0 +1,31 @@
+.container {
+  width: 100%;
+  height: calc(100vh - #{$header-height});
+  color: $color-secondary;
+
+  overflow: auto;
+
+  > div {
+    height: inherit;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &_overview {
+    background-color: $color-primary-dark;
+  }
+
+  &_tournaments {
+    background-color: $color-primary;
+  }
+
+  &_prizes {
+    background-color: $color-primary-light;
+  }
+
+  &_contact {
+    background-color: $color-accent;
+  }
+}

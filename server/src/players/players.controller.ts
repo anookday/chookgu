@@ -1,4 +1,10 @@
-import { Controller, Get, Body, UsePipes, ValidationPipe } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Query,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common'
 import { PlayersService } from './players.service'
 import { PlayerDocument } from './schemas/player.schema'
 import { QueryPlayerDto } from './dto/query-player.dto'
@@ -9,7 +15,7 @@ export class PlayersController {
 
   @Get()
   @UsePipes(new ValidationPipe({ transform: true }))
-  async getPlayers(@Body() query: QueryPlayerDto): Promise<PlayerDocument[]> {
+  async getPlayers(@Query() query: QueryPlayerDto): Promise<PlayerDocument[]> {
     return await this.playersService.find(query)
   }
 
