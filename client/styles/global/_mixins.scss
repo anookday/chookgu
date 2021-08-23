@@ -15,3 +15,22 @@
     color: $color-accent;
   }
 }
+
+@mixin landing-section {
+  width: 100%;
+  //height: calc(100vh - #{$header-height});
+  height: 100vh;
+  color: $color-secondary;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin widget {
+  border-radius: 3rem;
+  margin: 1rem 2rem;
+  padding: 2rem 3rem;
+  overflow: hidden;
+  box-shadow: $shadow-light;
+}

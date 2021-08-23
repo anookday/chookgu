@@ -6,4 +6,5 @@ export class QueryPlayerDto {
   sortBy: string
   @Type(() => Number)
   sortOrder: number
+  search: string
 }

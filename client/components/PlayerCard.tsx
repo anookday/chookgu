@@ -4,16 +4,25 @@ import styles from '@styles/components/PlayerCard.module.scss'
 interface PlayerCardProps {
   player: Player
   key: number
-  onSelected: (player: Player) => void
+  selected: boolean
+  onSelected: (player: Player | null) => void
 }
 
-const PlayerCard = ({ player, onSelected }: PlayerCardProps) => {
+const PlayerCard = ({ player, selected, onSelected }: PlayerCardProps) => {
+  const onClick = () => {
+    if (selected) {
+      onSelected(null)
+    } else {
+      onSelected(player)
+    }
+  }
+
   return (
     <div
-      className={styles.player}
-      onClick={() => {
-        onSelected(player)
-      }}
+      className={`${styles.player}${
+        selected ? ` ${styles.player_selected}` : ''
+      }`}
+      onClick={onClick}
     >
       <div className={styles.player_image}>
         <img src={player.image} alt={`photo of ${player.name}`} />

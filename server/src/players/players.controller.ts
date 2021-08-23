@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Post,
   Query,
   UsePipes,
   ValidationPipe,
@@ -19,9 +20,18 @@ export class PlayersController {
     return await this.playersService.find(query)
   }
 
-  @Get('/scrape')
+  // TODO: make this a cron job
+  @Post('/scrape')
   async gatherPlayers() {
     await this.playersService.scrapePlayersAndSave()
+
+    return 'Success'
+  }
+
+  // TODO: remove this when this is deployed on production
+  @Post('/generate')
+  async generateFakeData() {
+    await this.playersService.generateFakeData()
 
     return 'Success'
   }

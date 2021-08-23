@@ -1,9 +1,8 @@
-import Link from 'next/link'
 import styles from '@styles/components/Landing.module.scss'
 
 const Landing = () => {
   return (
-    <div className={styles.container}>
+    <>
       <div id="overview" className={styles.container_overview}>
         Overview
       </div>
@@ -16,7 +15,7 @@ const Landing = () => {
       <div id="contact" className={styles.container_contact}>
         Contact
       </div>
-    </div>
+    </>
   )
 }
 

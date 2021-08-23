@@ -11,9 +11,10 @@ export interface HeaderNavigationProps {
 export interface HeaderProps {
   navigation: HeaderNavigationProps[]
   children?: JSX.Element
+  className?: string
 }
 
-const Header = ({ navigation, children }: HeaderProps) => {
+const Header = ({ navigation, children, className }: HeaderProps) => {
   const renderNavigationItems = () => {
     return navigation.map((item, index) => (
       <Link key={index} href={item.link || '#'}>
@@ -29,7 +30,7 @@ const Header = ({ navigation, children }: HeaderProps) => {
   }
 
   return (
-    <header className={styles.header}>
+    <header className={`${styles.header}${className ? ` ${className}` : ''}`}>
       <div className={styles.header_left}>
         <Icon className={styles.header_logo} />
       </div>

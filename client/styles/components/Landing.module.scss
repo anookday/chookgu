@@ -1,31 +1,21 @@
 .container {
-  width: 100%;
-  height: calc(100vh - #{$header-height});
-  color: $color-secondary;
-
-  overflow: auto;
-
-  > div {
-    height: inherit;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
   &_overview {
+    @include landing-section;
     background-color: $color-primary-dark;
   }
 
   &_tournaments {
+    @include landing-section;
     background-color: $color-primary;
   }
 
   &_prizes {
+    @include landing-section;
     background-color: $color-primary-light;
   }
 
   &_contact {
+    @include landing-section;
     background-color: $color-accent;
   }
 }

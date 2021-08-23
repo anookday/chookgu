@@ -1,9 +1,11 @@
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Header, { HeaderNavigationProps } from '@components/Header'
 import Button from '@components/Button'
 import UserMenu from '@components/UserMenu'
 import Landing from '@components/Landing'
 import { GlobalContext, GlobalProps } from '@utils/GlobalContext'
+import styles from '@styles/components/MainLayout.module.scss'
 
 interface MainLayoutProps extends GlobalProps {
   selected: number
@@ -11,6 +13,24 @@ interface MainLayoutProps extends GlobalProps {
 }
 
 const MainLayout = (props: MainLayoutProps) => {
+  const [isPageTop, setIsPageTop] = useState(true)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY === 0) {
+        setIsPageTop(true)
+      } else if (isPageTop) {
+        setIsPageTop(false)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
   // if user is logged in return props children
   if (props.loggedIn) {
     const navigation: HeaderNavigationProps[] = [
@@ -35,6 +55,9 @@ const MainLayout = (props: MainLayoutProps) => {
   return (
     <>
       <Header
+        className={`${styles.header_landing}${
+          isPageTop ? '' : ` ${styles.header_landing__scrolledDown}`
+        }`}
         navigation={[
           { text: 'Overview', link: '#overview' },
           { text: 'Tournaments', link: '#tournaments' },

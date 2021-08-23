@@ -1,15 +1,17 @@
 .player {
-  background-color: $color-primary;
-  border-radius: 3rem;
-  margin: 1rem 2rem;
-  padding: 2rem 3rem;
-  overflow: hidden;
+  @include widget;
+  background-color: $color-primary-light;
+  box-shadow: none;
+  cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: all 0.2s;
 
   &_image {
-    height: 5rem;
+    height: 6rem;
+    border-radius: 1rem;
+    overflow: hidden;
 
     img {
       height: inherit;
@@ -34,5 +36,14 @@
     font-size: 3.6rem;
     font-weight: 900;
     color: $color-accent;
+  }
+
+  &_selected {
+    background-color: $color-accent;
+    box-shadow: $shadow-light;
+  }
+
+  &_selected &_value {
+    color: $color-primary;
   }
 }
