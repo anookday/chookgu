@@ -18,10 +18,13 @@ import {
 import api from '@utils/api'
 import styles from '@styles/pages/Trade.module.scss'
 import Search from '@components/Search'
+import Dropdown from '@components/Dropdown'
 
 interface SearchOptions {
   index: number
   term: string
+  sortBy: string
+  sortOrder: number
 }
 
 const Trade = (props: GlobalProps) => {
@@ -34,6 +37,8 @@ const Trade = (props: GlobalProps) => {
   const [searchOptions, setSearchOptions] = useState<SearchOptions>({
     index: 0,
     term: '',
+    sortBy: 'name',
+    sortOrder: 1,
   })
   const [players, setPlayers] = useState<Player[]>([])
   const [selected, setSelected] = useState<Player | null>(null)
@@ -48,9 +53,10 @@ const Trade = (props: GlobalProps) => {
    * Otherwise, add the newly obtained list to the current list.
    */
   const fetchPlayers = async () => {
+    const { index, term, sortBy, sortOrder } = searchOptions
     let fetchUrl = `/players?index=${
-      10 * searchOptions.index
-    }&sortBy=${'name'}&sortOrder=${1}&search=${searchOptions.term || ''}`
+      10 * index
+    }&sortBy=${sortBy}&sortOrder=${sortOrder}&search=${term || ''}`
 
     const result = await api.get<Player[]>(fetchUrl)
 
@@ -73,7 +79,7 @@ const Trade = (props: GlobalProps) => {
    */
   const onSearchTermChange = (search: string) => {
     setSelected(null)
-    setSearchOptions({ index: 0, term: search })
+    setSearchOptions({ ...searchOptions, index: 0, term: search })
   }
 
   /**
@@ -149,7 +155,10 @@ const Trade = (props: GlobalProps) => {
         <div className={`${styles.container_widget}`}>
           <div className={styles.container_widget__title}>Player Market</div>
           <div className={styles.container_widget__search}>
-            <Search onChange={onSearchTermChange} />
+            <Search
+              hint="Search for players, teams, positions and more"
+              onChange={onSearchTermChange}
+            />
           </div>
           <div className={styles.container_widget__list}>
             <Scroll

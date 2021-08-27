@@ -24,11 +24,14 @@ export class PlayersService {
     sortOrder,
     search,
   }: QueryPlayerDto): Promise<PlayerDocument[]> {
-    let searchOptions = search ? { $text: { $search: search } } : {}
+    const findOptions =
+      search.length === 0 ? {} : { $text: { $search: search } }
+    const scoreOptions =
+      search.length === 0 ? {} : { score: { $meta: 'textScore' } }
     const result = await this.playerModel
-      .find(searchOptions)
+      .find(findOptions, scoreOptions)
       .collation({ locale: 'en', strength: 1 })
-      .sort({ [sortBy]: sortOrder })
+      .sort({ ...scoreOptions, [sortBy]: sortOrder })
       .skip(index)
       .limit(10)
 

@@ -2,10 +2,11 @@ import { useState, useEffect, useRef } from 'react'
 import styles from '@styles/components/Search.module.scss'
 
 interface SearchProps {
+  hint: string
   onChange: (searchTerm: string) => void
 }
 
-const Search = ({ onChange }: SearchProps) => {
+const Search = ({ hint, onChange }: SearchProps) => {
   const initialized = useRef(false)
   const [term, setTerm] = useState('')
   const [debouncedTerm, setDebouncedTerm] = useState(term)
@@ -36,7 +37,7 @@ const Search = ({ onChange }: SearchProps) => {
     <div className={styles.wrapper}>
       <input
         type="text"
-        placeholder="Search for players"
+        placeholder={hint}
         className={styles.input}
         value={term}
         onChange={(e) => setTerm(e.target.value)}

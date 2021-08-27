@@ -6,22 +6,22 @@ export type PlayerDocument = Player & Document
 
 @Schema()
 export class Player {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   _id: number
 
-  @Prop({ text: true })
+  @Prop()
   name: string
 
-  @Prop({ index: true })
+  @Prop()
   position: string
 
-  @Prop({ type: [String], index: true })
+  @Prop()
   nationality: string[]
 
-  @Prop({ index: true })
+  @Prop()
   dateOfBirth: Date
 
-  @Prop({ index: true })
+  @Prop()
   team: string
 
   @Prop()
@@ -32,3 +32,8 @@ export class Player {
 }
 
 export const PlayerSchema = SchemaFactory.createForClass(Player)
+
+PlayerSchema.index(
+  { name: 'text', team: 'text', position: 'text' },
+  { name: 'search' }
+)

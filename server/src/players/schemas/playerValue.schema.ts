@@ -5,10 +5,10 @@ export type PlayerValueDocument = PlayerValue & Document
 
 @Schema()
 export class PlayerValue {
-  @Prop({ index: true })
+  @Prop()
   date: Date
 
-  @Prop({ index: true })
+  @Prop()
   amount: number
 
   @Prop()
