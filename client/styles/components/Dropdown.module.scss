@@ -3,8 +3,10 @@
   width: auto;
   height: 100%;
 
-  &_input:focus _list {
-    background-color: orangered !important;
+  &_input {
+    height: 100%;
+    display: flex;
+    align-items: center;
   }
 
   &_list {

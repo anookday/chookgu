@@ -19,6 +19,7 @@ import api from '@utils/api'
 import styles from '@styles/pages/Trade.module.scss'
 import Search from '@components/Search'
 import Dropdown from '@components/Dropdown'
+import SortDropdown from '@components/SortDropdown'
 
 interface SearchOptions {
   index: number
@@ -155,6 +156,7 @@ const Trade = (props: GlobalProps) => {
         <div className={`${styles.container_widget}`}>
           <div className={styles.container_widget__title}>Player Market</div>
           <div className={styles.container_widget__search}>
+            <SortDropdown {...searchOptions} />
             <Search
               hint="Search for players, teams, positions and more"
               onChange={onSearchTermChange}
@@ -190,7 +192,11 @@ Trade.getLayout = (page: ReactElement) => {
     <div>
       <Head>
         <title>Chookgu</title>
-        <meta name="description" content="Description of chookgu" />
+        <meta
+          name="description"
+          content="Description of chookgu"
+          charSet="UTF-8"
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>

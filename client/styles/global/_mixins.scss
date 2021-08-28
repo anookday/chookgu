@@ -34,3 +34,22 @@
   overflow: hidden;
   box-shadow: $shadow-light;
 }
+
+@mixin button {
+  font-size: inherit;
+  border: none;
+  border-radius: 1rem;
+  cursor: pointer;
+  padding: 1rem 3rem;
+  transition: all 0.2s;
+
+  &:hover {
+    transform: translateY(-0.2rem);
+    box-shadow: $shadow-light;
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+}

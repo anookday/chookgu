@@ -1,5 +1,6 @@
 .player {
   @include widget;
+  margin-left: 0;
   background-color: $color-primary-light;
   box-shadow: none;
   cursor: pointer;

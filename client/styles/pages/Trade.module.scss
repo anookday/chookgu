@@ -33,6 +33,18 @@ $search-height: 6rem;
     &__search {
       width: 100%;
       height: $search-height;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem 0;
+
+      > :not(:last-child) {
+        margin-right: 2rem;
+      }
+
+      > :last-child {
+        flex: 1;
+      }
     }
 
     &__list {
