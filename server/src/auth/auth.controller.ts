@@ -8,15 +8,15 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common'
-import { LocalAuthGuard } from './local-auth.guard'
-import { JwtAuthGuard } from './jwt-auth.guard'
-import { AuthService } from './auth.service'
-import { UsersService } from '../users/users.service'
-import { CreateUserProfileDto } from '../users/dto/create-userProfile.dto'
-import { UpdateUserProfileDto } from '../users/dto/update-userProfile.dto'
-import { User } from '../users/user.decorator'
 import { Response } from 'express'
-import { COOKIE_MAX_AGE } from '../util/constants'
+import { LocalAuthGuard } from '@auth/local-auth.guard'
+import { JwtAuthGuard } from '@auth/jwt-auth.guard'
+import { AuthService } from '@auth/auth.service'
+import { UsersService } from '@users/users.service'
+import { CreateUserProfileDto } from '@users/dto/create-userProfile.dto'
+import { UpdateUserProfileDto } from '@users/dto/update-userProfile.dto'
+import { User } from '@users/user.decorator'
+import { COOKIE_MAX_AGE } from '@util/constants'
 
 @Controller('auth')
 export class AuthController {

@@ -1,7 +1,6 @@
 .player {
-  @include widget;
+  @include widget-inner;
   margin-left: 0;
-  background-color: $color-primary-light;
   box-shadow: none;
   cursor: pointer;
   display: flex;

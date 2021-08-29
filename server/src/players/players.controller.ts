@@ -6,9 +6,9 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common'
-import { PlayersService } from './players.service'
-import { PlayerDocument } from './schemas/player.schema'
-import { QueryPlayerDto } from './dto/query-player.dto'
+import { PlayersService } from '@players/players.service'
+import { PlayerDocument } from '@players/schemas/player.schema'
+import { QueryPlayerDto } from '@players/dto/query-player.dto'
 
 @Controller('players')
 export class PlayersController {
@@ -29,9 +29,17 @@ export class PlayersController {
   }
 
   // TODO: remove this when this is deployed on production
-  @Post('/generate')
-  async generateFakeData() {
-    await this.playersService.generateFakeData()
+  @Post('/generate-before')
+  async generateFakeDataBeforeCurrent() {
+    await this.playersService.prependFakeData()
+
+    return 'Success'
+  }
+
+  // TODO: remove this when this is deployed on production
+  @Post('/generate-after')
+  async generateFakeDataAfterCurrent() {
+    await this.playersService.appendFakeData()
 
     return 'Success'
   }

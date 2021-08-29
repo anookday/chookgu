@@ -2,6 +2,7 @@ import { useRouter } from 'next/router'
 import Dropdown from '@components/Dropdown'
 import picture from '@public/profile.jpg'
 import { useGlobal } from '@utils/GlobalContext'
+import { getValueString } from '@utils/Currency'
 import api from '@utils/api'
 import styles from '@styles/components/UserMenu.module.scss'
 
@@ -28,6 +29,9 @@ const UserMenu = () => {
       items={[{ text: 'Settings' }, { text: 'Log Out', onClick: logout }]}
     >
       <div className={styles.user}>
+        <span className={styles.user_balance}>
+          {getValueString(user.portfolio.balance)}
+        </span>
         <span className={styles.user_name}>{user.username}</span>
         <img src={picture.src} className={styles.user_photo} alt="user photo" />
       </div>

@@ -1,49 +1,80 @@
-import { useState } from 'react'
 import Button, { ButtonSize, ButtonColor } from '@components/Button'
 import Dropdown, { DropdownItem } from '@components/Dropdown'
 
-interface SortDropdownItem extends DropdownItem {
-  value: SortDropdownProps
+export enum SortBy {
+  Name = 'name',
+  Value = 'currentValue',
+}
+
+export enum SortOrder {
+  Asc = 1,
+  Desc = -1,
 }
 
 interface SortDropdownProps {
-  sortBy: string
-  sortOrder: number
+  sortBy: SortBy
+  sortOrder: SortOrder
+  onSelected: (sortBy: SortBy, sortOrder: SortOrder) => void
 }
 
-const SortDropdown = ({ sortBy, sortOrder }: SortDropdownProps) => {
-  const getText = ({ sortBy, sortOrder }: SortDropdownProps): string => {
-    let result = ''
-    switch (sortBy) {
-      case 'name':
-        result = 'Name'
-        break
-      case 'value':
-        result = 'Value'
-        break
-      default:
-        return ''
+interface SortDropdownItem {
+  sortBy: SortBy
+  sortOrder: SortOrder
+  selected?: true
+}
+
+const SortDropdown = ({ sortBy, sortOrder, onSelected }: SortDropdownProps) => {
+  /**
+   * Return the text representative of sort options.
+   */
+  const getItemText = (sortBy: SortBy, sortOrder: SortOrder): string => {
+    if (sortBy === SortBy.Name) {
+      if (sortOrder === SortOrder.Asc) {
+        return 'Name (A to Z)'
+      }
+      return 'Name (Z to A)'
     }
-    result += sortOrder === 1 ? ' ↑' : ' ↓'
-    return result
+    if (sortOrder === SortOrder.Asc) {
+      return 'Value (Low to High)'
+    }
+    return 'Value (High to Low)'
   }
 
-  const [buttonText, setButtonText] = useState(
-    `Sort by ${getText({ sortBy, sortOrder })}`
-  )
+  /**
+   * Return the text displayed by the dropdown button.
+   */
+  const getButtonText = () => {
+    return `Sort by ${getItemText(sortBy, sortOrder)}`
+  }
 
-  const dropdownItems: SortDropdownItem[] = [
-    {
-      text: 'Name ↑',
-      value: { sortBy: 'name', sortOrder: 1 },
-    },
+  const items: SortDropdownItem[] = [
+    { sortBy: SortBy.Name, sortOrder: SortOrder.Asc },
+    { sortBy: SortBy.Name, sortOrder: SortOrder.Desc },
+    { sortBy: SortBy.Value, sortOrder: SortOrder.Asc },
+    { sortBy: SortBy.Value, sortOrder: SortOrder.Desc },
   ]
+
+  for (let i = 0; i < items.length; i++) {
+    if (items[i].sortBy === sortBy && items[i].sortOrder === sortOrder) {
+      items[i].selected = true
+      break
+    }
+  }
+
+  const dropdownItems: DropdownItem[] = items.map((item) => {
+    return {
+      text: getItemText(item.sortBy, item.sortOrder),
+      selected: item.selected,
+      onClick: () => onSelected(item.sortBy, item.sortOrder),
+    }
+  })
 
   return (
     <Dropdown items={dropdownItems}>
       <Button
-        text={buttonText}
-        style={{ size: ButtonSize.Small, color: ButtonColor.Light }}
+        text={getButtonText()}
+        size={ButtonSize.Small}
+        color={ButtonColor.Light}
       />
     </Dropdown>
   )

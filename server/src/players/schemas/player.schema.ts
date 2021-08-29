@@ -1,6 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose'
-import { PlayerValueSchema, PlayerValue } from './playerValue.schema'
+import {
+  PlayerValueSchema,
+  PlayerValue,
+} from '@players/schemas/playerValue.schema'
 
 export type PlayerDocument = Player & Document
 
@@ -27,6 +30,9 @@ export class Player {
   @Prop()
   image: string
 
+  @Prop()
+  currentValue: number
+
   @Prop({ type: [PlayerValueSchema], default: [] })
   value: PlayerValue[]
 }
@@ -34,6 +40,6 @@ export class Player {
 export const PlayerSchema = SchemaFactory.createForClass(Player)
 
 PlayerSchema.index(
-  { name: 'text', team: 'text', position: 'text' },
+  { name: 'text', team: 'text', position: 'text', currentValue: 1 },
   { name: 'search' }
 )

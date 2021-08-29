@@ -13,6 +13,10 @@
 
   transition: all 0.5s;
 
+  &_left {
+    flex: 1;
+  }
+
   &_logo {
     height: 5rem;
     width: 5rem;
@@ -22,14 +26,17 @@
   &_middle {
     display: flex;
     align-items: center;
+    justify-content: center;
+    flex: 1;
   }
 
   &_right {
     display: flex;
     align-items: center;
+    flex: 1;
 
-    & a {
-      @include text-link;
+    :first-child {
+      margin-left: auto;
     }
   }
 

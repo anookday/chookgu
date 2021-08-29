@@ -1,7 +1,7 @@
 import Axios from 'axios'
 import cheerio from 'cheerio'
 import { parse } from 'date-fns'
-import { Player } from '../players/schemas/player.schema'
+import { Player } from '@players/schemas/player.schema'
 
 /**
  * Parse playerElement to get relevant player info.
@@ -54,10 +54,11 @@ function getPlayerInfo(
       )
       .attr('data-src') || ''
   const valueStr = $(playerElement).find('td:nth-child(6)').text().trim()
+  const currentValue = parsePlayerValue(valueStr)
   const value = [
     {
       date: new Date(),
-      amount: parsePlayerValue(valueStr),
+      amount: currentValue,
       currency: 'EUR',
     },
   ]
@@ -69,6 +70,7 @@ function getPlayerInfo(
     dateOfBirth,
     team,
     image,
+    currentValue,
     value,
   }
 }

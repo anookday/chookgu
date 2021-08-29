@@ -1,0 +1,47 @@
+.widget {
+  @include widget-outer;
+
+  &_chart {
+    flex: 1;
+    width: 100%;
+  }
+}
+
+.player {
+  width: 100%;
+  height: auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: repeat(4, 1fr);
+
+  &_nationality {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  &_position {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  &_age {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  &_team {
+    grid-column: 1;
+    grid-row: 4;
+  }
+
+  &_value {
+    grid-column: 2;
+    grid-row: 1 / 5;
+    justify-self: center;
+    align-self: center;
+
+    font-size: 6.4rem;
+    font-weight: 600;
+    color: $color-accent;
+  }
+}

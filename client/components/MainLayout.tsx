@@ -67,7 +67,7 @@ const MainLayout = (props: MainLayoutProps) => {
       >
         <>
           <Link href="/account/login">
-            <a>Sign in</a>
+            <a className={styles.link}>Sign in</a>
           </Link>
           <Link href="/account/register" passHref>
             <Button text="Get started" />

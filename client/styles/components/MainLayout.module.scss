@@ -7,3 +7,7 @@
     box-shadow: $shadow-dark;
   }
 }
+
+.link {
+  @include text-link;
+}

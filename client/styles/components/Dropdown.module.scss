@@ -50,6 +50,10 @@
           color: $color-primary;
         }
       }
+
+      &.selected span {
+        color: $color-accent;
+      }
     }
   }
 }

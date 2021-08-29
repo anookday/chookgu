@@ -3,16 +3,13 @@ import { Document } from 'mongoose'
 
 export type PlayerValueDocument = PlayerValue & Document
 
-@Schema()
+@Schema({ _id: false })
 export class PlayerValue {
   @Prop()
   date: Date
 
   @Prop()
   amount: number
-
-  @Prop()
-  currency: string
 }
 
 export const PlayerValueSchema = SchemaFactory.createForClass(PlayerValue)

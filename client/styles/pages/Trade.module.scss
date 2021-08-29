@@ -1,6 +1,3 @@
-$title-height: 6rem;
-$search-height: 6rem;
-
 .accentedText {
   color: $color-accent;
 }
@@ -12,96 +9,29 @@ $search-height: 6rem;
   justify-content: center;
   align-items: center;
   padding: 2rem 3rem;
-
-  &_widget {
-    @include widget;
-    width: 50%;
-    flex: 1;
-    height: 100%;
-    background-color: $color-primary;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-
-    &__title {
-      height: $title-height;
-      font-size: 3.6rem;
-    }
-
-    &__search {
-      width: 100%;
-      height: $search-height;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 1rem 0;
-
-      > :not(:last-child) {
-        margin-right: 2rem;
-      }
-
-      > :last-child {
-        flex: 1;
-      }
-    }
-
-    &__list {
-      height: calc(100% - #{$title-height} - #{$search-height});
-      width: 100%;
-    }
-
-    &__chart {
-      flex: 1;
-      width: 100%;
-    }
-
-    &__bottom {
-      width: 100%;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      margin-top: 2rem;
-    }
-  }
 }
+.widget {
+  @include widget-outer;
 
-.playerDetail {
-  width: 100%;
-  height: auto;
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  grid-template-rows: repeat(4, 1fr);
+  &_search {
+    width: 100%;
+    height: $widget-input-height;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 0;
 
-  &_nationality {
-    grid-column: 1;
-    grid-row: 1;
+    > :not(:last-child) {
+      margin-right: 2rem;
+    }
+
+    > :first-child {
+      flex: 1;
+    }
   }
 
-  &_position {
-    grid-column: 1;
-    grid-row: 2;
-  }
-
-  &_age {
-    grid-column: 1;
-    grid-row: 3;
-  }
-
-  &_team {
-    grid-column: 1;
-    grid-row: 4;
-  }
-
-  &_value {
-    grid-column: 2;
-    grid-row: 1 / 5;
-    justify-self: center;
-    align-self: center;
-
-    font-size: 6.4rem;
-    font-weight: 600;
-    color: $color-accent;
+  &_list {
+    height: calc(100% - #{$widget-header-height} - #{$widget-input-height});
+    width: 100%;
   }
 }

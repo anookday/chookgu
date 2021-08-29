@@ -41,7 +41,7 @@ const Dropdown = ({ children, items }: DropdownProps) => {
       <div
         key={text}
         className={`${styles.dropdown_list__item}${
-          selected ? ` ${styles.visible}` : ''
+          selected ? ` ${styles.selected}` : ''
         }`}
         onClick={() => onItemClick(onClick)}
       >

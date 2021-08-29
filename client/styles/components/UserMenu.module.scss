@@ -3,6 +3,11 @@
   align-items: center;
   cursor: pointer;
 
+  &_balance {
+    margin-right: 1rem;
+    color: $color-accent;
+  }
+
   &_name {
     @include text-link;
 

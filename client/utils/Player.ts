@@ -1,6 +1,7 @@
-import { format, parseISO, differenceInYears } from 'date-fns'
+import { parseISO, differenceInYears } from 'date-fns'
 import { ChartData, ChartOptions } from 'chart.js'
 import 'chartjs-adapter-date-fns'
+import { getValueString } from '@utils/Currency'
 import colors from '@styles/global/colors.module.scss'
 
 export interface PlayerValue {
@@ -17,25 +18,12 @@ export interface Player {
   team: string
   image: string
   dateOfBirth: string
+  currentValue: number
   value: PlayerValue[]
 }
 
 export function getPlayerAge(dateOfBirth: string): number {
   return differenceInYears(new Date(), parseISO(dateOfBirth))
-}
-
-export function getValueString(value: number): string {
-  return Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'EUR',
-    notation: 'compact',
-  }).format(value)
-}
-
-export function getPlayerCurrentValue(values: PlayerValue[]): string {
-  if (values.length === 0) return ''
-
-  return getValueString(values[values.length - 1].amount)
 }
 
 export function getPlayerValueChartData(values: PlayerValue[]): ChartData {
@@ -78,7 +66,7 @@ export function getPlayerValueChartOptions(): ChartOptions<'line'> {
           color: colors.primaryLight,
           callback: (value, _, __) => {
             if (typeof value === 'number') {
-              return getValueString(value)
+              return getValueString(value, true)
             }
             return value
           },

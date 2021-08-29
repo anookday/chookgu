@@ -1,17 +1,19 @@
-import { Player, getPlayerAge, getPlayerCurrentValue } from '@utils/Player'
+import { Player, getPlayerAge } from '@utils/Player'
+import { getValueString } from '@utils/Currency'
 import styles from '@styles/components/PlayerCard.module.scss'
 
 interface PlayerCardProps {
   player: Player
   key: number
   selected: boolean
-  onSelected: (player: Player | null) => void
+  onSelected: (player?: Player) => void
 }
 
 const PlayerCard = ({ player, selected, onSelected }: PlayerCardProps) => {
   const onClick = () => {
+    console.log(player._id)
     if (selected) {
-      onSelected(null)
+      onSelected()
     } else {
       onSelected(player)
     }
@@ -39,7 +41,7 @@ const PlayerCard = ({ player, selected, onSelected }: PlayerCardProps) => {
         <div className={styles.player_info__team}>{player.team}</div>
       </div>
       <div className={styles.player_value}>
-        {getPlayerCurrentValue(player.value)}
+        {getValueString(player.currentValue, true)}
       </div>
     </div>
   )

@@ -35,6 +35,35 @@
   box-shadow: $shadow-light;
 }
 
+@mixin widget-outer {
+  @include widget;
+  flex: 1;
+  height: 100%;
+  background-color: $color-primary;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+
+  &_header {
+    height: $widget-header-height;
+    font-size: 3.6rem;
+  }
+
+  &_footer {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 2rem;
+  }
+}
+
+@mixin widget-inner {
+  @include widget;
+  background-color: $color-primary-light;
+}
+
 @mixin button {
   font-size: inherit;
   border: none;

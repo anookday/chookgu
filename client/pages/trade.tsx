@@ -4,28 +4,21 @@ import { useRouter } from 'next/router'
 import MainLayout from '@components/MainLayout'
 import Layout from '@components/Layout'
 import Scroll from '@components/Scroll'
-import Button from '@components/Button'
 import PlayerCard from '@components/PlayerCard'
-import Chart from '@components/Chart'
+import PlayerDetails from '@components/PlayerDetails'
 import { GlobalProps, getGlobalProps } from '@utils/GlobalContext'
-import {
-  Player,
-  getPlayerAge,
-  getPlayerCurrentValue,
-  getPlayerValueChartData,
-  getPlayerValueChartOptions,
-} from '@utils/Player'
+import { Player } from '@utils/Player'
 import api from '@utils/api'
 import styles from '@styles/pages/Trade.module.scss'
 import Search from '@components/Search'
-import Dropdown from '@components/Dropdown'
-import SortDropdown from '@components/SortDropdown'
+import SortDropdown, { SortBy, SortOrder } from '@components/SortDropdown'
+import PlayerCheckout from '@components/PlayerCheckout'
 
 interface SearchOptions {
   index: number
   term: string
-  sortBy: string
-  sortOrder: number
+  sortBy: SortBy
+  sortOrder: SortOrder
 }
 
 const Trade = (props: GlobalProps) => {
@@ -38,12 +31,14 @@ const Trade = (props: GlobalProps) => {
   const [searchOptions, setSearchOptions] = useState<SearchOptions>({
     index: 0,
     term: '',
-    sortBy: 'name',
-    sortOrder: 1,
+    sortBy: SortBy.Name,
+    sortOrder: SortOrder.Asc,
   })
   const [players, setPlayers] = useState<Player[]>([])
-  const [selected, setSelected] = useState<Player | null>(null)
+  const [selected, setSelected] = useState<Player | undefined>(undefined)
+  const [checkout, setCheckout] = useState(false)
 
+  // fetch players every time search options change
   useEffect(() => {
     fetchPlayers()
   }, [searchOptions])
@@ -71,16 +66,24 @@ const Trade = (props: GlobalProps) => {
   /**
    * Player select event handler
    */
-  const onPlayerSelected = (player: Player | null) => {
+  const onPlayerSelected = (player?: Player) => {
     setSelected(player)
   }
 
   /**
    * Search term change event handler
    */
-  const onSearchTermChange = (search: string) => {
-    setSelected(null)
-    setSearchOptions({ ...searchOptions, index: 0, term: search })
+  const onSearchTermChange = (term: string) => {
+    setSelected(undefined)
+    setSearchOptions({ ...searchOptions, index: 0, term })
+  }
+
+  /**
+   * Sort options change event handler
+   */
+  const onSortOptionsChange = (sortBy: SortBy, sortOrder: SortOrder) => {
+    setSelected(undefined)
+    setSearchOptions({ ...searchOptions, index: 0, sortBy, sortOrder })
   }
 
   /**
@@ -89,7 +92,7 @@ const Trade = (props: GlobalProps) => {
   const renderPlayers = () => {
     return players.map((player) => (
       <PlayerCard
-        selected={selected !== null && selected._id === player._id}
+        selected={selected !== undefined && selected._id === player._id}
         onSelected={onPlayerSelected}
         key={player._id}
         player={player}
@@ -97,53 +100,17 @@ const Trade = (props: GlobalProps) => {
     ))
   }
 
-  /**
-   * Render the player detail widget.
-   */
   const renderDetails = () => {
-    if (selected) {
+    if (selected && checkout) {
       return (
-        <>
-          <div className={styles.container_widget__title}>{selected.name}</div>
-          <div className={styles.container_widget__chart}>
-            <Chart
-              data={getPlayerValueChartData(selected.value)}
-              options={getPlayerValueChartOptions()}
-            />
-          </div>
-          <div className={styles.playerDetail}>
-            <div className={styles.playerDetail_nationality}>
-              <span className={styles.accentedText}>Nationality: </span>
-              {selected.nationality.join(', ')}
-            </div>
-            <div className={styles.playerDetail_position}>
-              <span className={styles.accentedText}>Position: </span>
-              {selected.position}
-            </div>
-            <div className={styles.playerDetail_age}>
-              <span className={styles.accentedText}>Age: </span>
-              {getPlayerAge(selected.dateOfBirth)}
-            </div>
-            <div className={styles.playerDetail_team}>
-              <span className={styles.accentedText}>Team: </span>
-              {selected.team}
-            </div>
-            <div className={styles.playerDetail_value}>
-              {getPlayerCurrentValue(selected.value)}
-            </div>
-          </div>
-          <div className={styles.container_widget__bottom}>
-            <Button text="Compare" />
-            <Button text="Buy Now" />
-          </div>
-        </>
+        <PlayerCheckout
+          player={selected}
+          onBackButtonClick={() => setCheckout(false)}
+        />
       )
     }
-
     return (
-      <div className={styles.container_widget__title}>
-        Select a player to see details.
-      </div>
+      <PlayerDetails player={selected} onBuyClick={() => setCheckout(true)} />
     )
   }
 
@@ -153,16 +120,20 @@ const Trade = (props: GlobalProps) => {
   return (
     <Layout>
       <div className={styles.container}>
-        <div className={`${styles.container_widget}`}>
-          <div className={styles.container_widget__title}>Player Market</div>
-          <div className={styles.container_widget__search}>
-            <SortDropdown {...searchOptions} />
+        <div className={`${styles.widget}`}>
+          <div className={styles.widget_header}>Player Market</div>
+          <div className={styles.widget_search}>
             <Search
               hint="Search for players, teams, positions and more"
               onChange={onSearchTermChange}
             />
+            <SortDropdown
+              sortBy={searchOptions.sortBy}
+              sortOrder={searchOptions.sortOrder}
+              onSelected={onSortOptionsChange}
+            />
           </div>
-          <div className={styles.container_widget__list}>
+          <div className={styles.widget_list}>
             <Scroll
               index={searchOptions.index}
               next={() => {
@@ -176,7 +147,7 @@ const Trade = (props: GlobalProps) => {
             </Scroll>
           </div>
         </div>
-        <div className={`${styles.container_widget}`}>{renderDetails()}</div>
+        {renderDetails()}
       </div>
     </Layout>
   )

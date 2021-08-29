@@ -1,12 +1,12 @@
 import { Model } from 'mongoose'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { subWeeks } from 'date-fns'
-import { Player, PlayerDocument } from './schemas/player.schema'
-import { PlayerValue } from './schemas/playerValue.schema'
-import { scrape } from '../util/scrape'
-import { QueryPlayerDto } from './dto/query-player.dto'
-import { generatePrice } from '../util/generate'
+import { addWeeks, subWeeks } from 'date-fns'
+import { Player, PlayerDocument } from '@players/schemas/player.schema'
+import { PlayerValue } from '@players/schemas/playerValue.schema'
+import { QueryPlayerDto } from '@players/dto/query-player.dto'
+import { scrape } from '@util/scrape'
+import { generatePrice } from '@util/generate'
 
 @Injectable()
 export class PlayersService {
@@ -16,6 +16,10 @@ export class PlayersService {
 
   async findAll(): Promise<PlayerDocument[]> {
     return await this.playerModel.find().exec()
+  }
+
+  async findById(playerId: number) {
+    return await this.playerModel.findById(playerId)
   }
 
   async find({
@@ -53,12 +57,21 @@ export class PlayersService {
         dateOfBirth,
         team,
         image,
+        currentValue,
         value,
       }) => ({
         updateOne: {
           filter: { _id },
           update: {
-            $set: { name, position, nationality, dateOfBirth, team, image },
+            $set: {
+              name,
+              position,
+              nationality,
+              dateOfBirth,
+              team,
+              image,
+              currentValue,
+            },
             $push: { value: { $each: value } },
           },
           upsert: true,
@@ -70,16 +83,15 @@ export class PlayersService {
   }
 
   /**
-   * Add fake values to each player in the database.
+   * Add fake values before each player's current value in the database.
    */
-  async generateFakeData() {
+  async prependFakeData() {
     const players = await this.playerModel.find().select('_id value')
 
     const updatePlayerOptions = players.map((player) => {
       const fakeValue: PlayerValue = {
         date: subWeeks(player.value[0].date, 1),
         amount: generatePrice(player.value[0].amount),
-        currency: 'EUR',
       }
 
       return {
@@ -88,6 +100,36 @@ export class PlayersService {
           update: {
             $set: {
               value: [fakeValue, ...player.value],
+            },
+          },
+        },
+      }
+    })
+
+    await this.playerModel.bulkWrite(updatePlayerOptions)
+  }
+
+  /**
+   * Add fake values after each player's current value in the database.
+   */
+  async appendFakeData() {
+    const players = await this.playerModel
+      .find()
+      .select('_id currentValue value')
+
+    const updatePlayerOptions = players.map((player) => {
+      const fakeValue: PlayerValue = {
+        date: addWeeks(player.value[0].date, 1),
+        amount: generatePrice(player.value[0].amount),
+      }
+
+      return {
+        updateOne: {
+          filter: { _id: player._id },
+          update: {
+            $set: {
+              currentValue: fakeValue.amount,
+              value: [...player.value, fakeValue],
             },
           },
         },

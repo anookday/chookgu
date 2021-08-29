@@ -1,6 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose'
-import { UserPortfolio, UserPortfolioSchema } from './userPortfolio.schema'
+import {
+  UserPortfolio,
+  UserPortfolioSchema,
+} from '@users/schemas/userPortfolio.schema'
 
 export type UserDocument = User & Document
 

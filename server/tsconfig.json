@@ -11,6 +11,14 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": ["src/*"],
+      "@auth/*": ["src/auth/*"],
+      "@players/*": ["src/players/*"],
+      "@transactions/*": ["src/transactions/*"],
+      "@users/*": ["src/users/*"],
+      "@util/*": ["src/util/*"]
+    }
   }
 }
