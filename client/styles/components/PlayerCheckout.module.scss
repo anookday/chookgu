@@ -1,3 +1,37 @@
 .widget {
   @include widget-outer;
+
+  &_text {
+    font-size: 2.6rem;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 5rem;
+  }
+}
+
+.amount {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &_label {
+    font-size: 2.6rem;
+  }
+
+  &_input {
+    height: 7rem;
+    width: 10rem;
+    position: relative;
+
+    input {
+      @include input;
+      height: inherit;
+      width: inherit;
+      text-align: center;
+      margin-left: 3rem;
+    }
+  }
 }

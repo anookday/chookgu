@@ -4,10 +4,10 @@ import Header, { HeaderNavigationProps } from '@components/Header'
 import Button from '@components/Button'
 import UserMenu from '@components/UserMenu'
 import Landing from '@components/Landing'
-import { GlobalContext, GlobalProps } from '@utils/GlobalContext'
+import { UserProps, UserContextProvider } from '@context/UserContext'
 import styles from '@styles/components/MainLayout.module.scss'
 
-interface MainLayoutProps extends GlobalProps {
+interface MainLayoutProps extends UserProps {
   selected: number
   children?: JSX.Element
 }
@@ -43,12 +43,12 @@ const MainLayout = (props: MainLayoutProps) => {
     navigation[props.selected].selected = true
 
     return (
-      <GlobalContext.Provider value={props}>
+      <UserContextProvider value={props.user}>
         <Header navigation={navigation}>
           <UserMenu />
         </Header>
         {props.children}
-      </GlobalContext.Provider>
+      </UserContextProvider>
     )
   }
   // if user is not logged in return landing page

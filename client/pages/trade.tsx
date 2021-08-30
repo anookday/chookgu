@@ -6,7 +6,7 @@ import Layout from '@components/Layout'
 import Scroll from '@components/Scroll'
 import PlayerCard from '@components/PlayerCard'
 import PlayerDetails from '@components/PlayerDetails'
-import { GlobalProps, getGlobalProps } from '@utils/GlobalContext'
+import { UserProps, getUserProps } from '@context/UserContext'
 import { Player } from '@utils/Player'
 import api from '@utils/api'
 import styles from '@styles/pages/Trade.module.scss'
@@ -21,7 +21,7 @@ interface SearchOptions {
   sortOrder: SortOrder
 }
 
-const Trade = (props: GlobalProps) => {
+const Trade = (props: UserProps) => {
   // redirect if user is not authenticated
   const router = useRouter()
   if (!props.loggedIn) {
@@ -67,6 +67,7 @@ const Trade = (props: GlobalProps) => {
    * Player select event handler
    */
   const onPlayerSelected = (player?: Player) => {
+    setCheckout(false)
     setSelected(player)
   }
 
@@ -74,7 +75,7 @@ const Trade = (props: GlobalProps) => {
    * Search term change event handler
    */
   const onSearchTermChange = (term: string) => {
-    setSelected(undefined)
+    //setSelected(undefined)
     setSearchOptions({ ...searchOptions, index: 0, term })
   }
 
@@ -82,7 +83,7 @@ const Trade = (props: GlobalProps) => {
    * Sort options change event handler
    */
   const onSortOptionsChange = (sortBy: SortBy, sortOrder: SortOrder) => {
-    setSelected(undefined)
+    //setSelected(undefined)
     setSearchOptions({ ...searchOptions, index: 0, sortBy, sortOrder })
   }
 
@@ -105,7 +106,8 @@ const Trade = (props: GlobalProps) => {
       return (
         <PlayerCheckout
           player={selected}
-          onBackButtonClick={() => setCheckout(false)}
+          onBack={() => setCheckout(false)}
+          onComplete={() => setCheckout(false)}
         />
       )
     }
@@ -157,7 +159,7 @@ const Trade = (props: GlobalProps) => {
  * Page template
  */
 Trade.getLayout = (page: ReactElement) => {
-  const props: GlobalProps = page.props
+  const props: UserProps = page.props
 
   return (
     <div>
@@ -180,6 +182,6 @@ Trade.getLayout = (page: ReactElement) => {
   )
 }
 
-export const getServerSideProps = getGlobalProps
+export const getServerSideProps = getUserProps
 
 export default Trade

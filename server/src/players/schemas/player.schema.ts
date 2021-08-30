@@ -39,7 +39,19 @@ export class Player {
 
 export const PlayerSchema = SchemaFactory.createForClass(Player)
 
+/**
+ * index
+ */
 PlayerSchema.index(
   { name: 'text', team: 'text', position: 'text', currentValue: 1 },
   { name: 'search' }
 )
+
+/**
+ * utilities
+ */
+export function isPlayerDocument(
+  player: number | PlayerDocument
+): player is PlayerDocument {
+  return (player as PlayerDocument).schema !== undefined
+}

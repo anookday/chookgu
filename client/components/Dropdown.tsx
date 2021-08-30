@@ -26,7 +26,6 @@ const Dropdown = ({ children, items }: DropdownProps) => {
   const onOutsideClick = (event: MouseEvent) => {
     const el = event.target
     if (ref.current && !(el instanceof Node && ref.current.contains(el))) {
-      console.log('clicked outside')
       setVisible(false)
     }
   }

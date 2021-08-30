@@ -1,25 +1,23 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document, Schema as MongooseSchema } from 'mongoose'
+import { Document } from 'mongoose'
 import { USER_STARTING_BALANCE } from '@util/constants'
+import { PlayerDocument } from '@/players/schemas/player.schema'
 
 /**
  * Purchsed player schema
  */
 @Schema({ _id: false })
 export class PurchasedPlayer {
-  @Prop({ required: true, ref: 'Player' })
-  player: number
+  @Prop({ type: Number, required: true, ref: 'Player' })
+  player: number | PlayerDocument
 
   @Prop({ required: true })
-  purchasedPrice: number
+  amount: number
 
-  @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    ref: 'Transaction',
-    required: true,
-  })
-  transaction: MongooseSchema.Types.ObjectId
+  @Prop({ required: true })
+  averageValue: number
 }
+
 export type PurchasedPlayerDocument = PurchasedPlayer & Document
 export const PurchasedPlayerSchema =
   SchemaFactory.createForClass(PurchasedPlayer)
@@ -35,5 +33,6 @@ export class UserPortfolio {
   @Prop({ type: [PurchasedPlayerSchema], default: [] })
   players: PurchasedPlayer[]
 }
+
 export type UserPortfolioDocument = UserPortfolio & Document
 export const UserPortfolioSchema = SchemaFactory.createForClass(UserPortfolio)

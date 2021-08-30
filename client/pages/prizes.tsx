@@ -3,9 +3,9 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import MainLayout from '@components/MainLayout'
 import Layout from '@components/Layout'
-import { GlobalProps, getGlobalProps } from '@utils/GlobalContext'
+import { UserProps, getUserProps } from '@context/UserContext'
 
-const Prizes = (props: GlobalProps) => {
+const Prizes = (props: UserProps) => {
   const router = useRouter()
 
   if (!props.loggedIn) {
@@ -20,7 +20,7 @@ const Prizes = (props: GlobalProps) => {
 }
 
 Prizes.getLayout = (page: ReactElement) => {
-  const props: GlobalProps = page.props
+  const props: UserProps = page.props
 
   return (
     <div>
@@ -39,6 +39,6 @@ Prizes.getLayout = (page: ReactElement) => {
   )
 }
 
-export const getServerSideProps = getGlobalProps
+export const getServerSideProps = getUserProps
 
 export default Prizes

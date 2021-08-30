@@ -3,5 +3,7 @@ export function getValueString(value: number, compact?: true): string {
     style: 'currency',
     currency: 'EUR',
     notation: compact ? 'compact' : 'standard',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   }).format(value)
 }

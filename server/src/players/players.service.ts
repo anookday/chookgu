@@ -35,7 +35,7 @@ export class PlayersService {
     const result = await this.playerModel
       .find(findOptions, scoreOptions)
       .collation({ locale: 'en', strength: 1 })
-      .sort({ ...scoreOptions, [sortBy]: sortOrder })
+      .sort({ ...scoreOptions, [sortBy]: sortOrder, _id: 1 })
       .skip(index)
       .limit(10)
 

@@ -1,5 +1,5 @@
 import { ChartData, ChartOptions } from 'chart.js'
-import { Line } from 'react-chartjs-2'
+import { Line } from 'test-react-chartjs-2'
 import styles from '@styles/components/Chart.module.scss'
 
 interface ChartProps {
@@ -10,7 +10,7 @@ interface ChartProps {
 const Chart = ({ data, options }: ChartProps) => {
   return (
     <div className={styles.wrapper}>
-      <Line data={data} options={options} />
+      <Line type="line" data={data} options={options} />
     </div>
   )
 }

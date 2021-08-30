@@ -82,3 +82,33 @@
     box-shadow: none;
   }
 }
+
+@mixin input {
+  font-size: inherit;
+  border: none;
+  border-radius: 1rem;
+  padding: 1rem 1.5rem;
+  vertical-align: middle;
+  color: $color-primary-dark;
+
+  &[type='number'] {
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+    appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+    }
+  }
+
+  &::placeholder {
+    color: $color-primary-light;
+    opacity: 0.5;
+  }
+
+  &:focus {
+    outline: 0.3rem solid $color-accent;
+    box-shadow: $shadow-light;
+  }
+}

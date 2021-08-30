@@ -2,14 +2,14 @@ import type { ReactElement } from 'react'
 import Head from 'next/head'
 import MainLayout from '@components/MainLayout'
 import Dashboard from '@components/Dashboard'
-import { GlobalProps, getGlobalProps } from '@utils/GlobalContext'
+import { UserProps, getUserProps } from 'context/UserContext'
 
 const Home = () => {
   return <Dashboard />
 }
 
 Home.getLayout = (page: ReactElement) => {
-  const props: GlobalProps = page.props
+  const props: UserProps = page.props
 
   return (
     <div>
@@ -28,6 +28,6 @@ Home.getLayout = (page: ReactElement) => {
   )
 }
 
-export const getServerSideProps = getGlobalProps
+export const getServerSideProps = getUserProps
 
 export default Home

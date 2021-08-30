@@ -1,9 +1,9 @@
 import Layout from '@components/Layout'
-import { useGlobal } from '@utils/GlobalContext'
+import { useUser } from '@context/UserContext'
 import styles from '@styles/components/Dashboard.module.scss'
 
 const Dashboard = () => {
-  const { user } = useGlobal()
+  const { user } = useUser()
   return (
     <Layout>
       <div className={styles.container}>

@@ -1,13 +1,13 @@
 import { useRouter } from 'next/router'
 import Dropdown from '@components/Dropdown'
 import picture from '@public/profile.jpg'
-import { useGlobal } from '@utils/GlobalContext'
+import { useUser } from '@context/UserContext'
 import { getValueString } from '@utils/Currency'
 import api from '@utils/api'
 import styles from '@styles/components/UserMenu.module.scss'
 
 const UserMenu = () => {
-  const { user } = useGlobal()
+  const { user } = useUser()
   const router = useRouter()
 
   const logout = async () => {
