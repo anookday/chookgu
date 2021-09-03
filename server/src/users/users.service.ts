@@ -15,17 +15,17 @@ export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async findByEmail(email: string) {
-    return await this.userModel.findOne({ email }).exec()
+    return await this.userModel.findOne({ email })
   }
 
   async findById(_id: string) {
-    const user = await this.userModel.findById(_id).exec()
+    const user = await this.userModel.findById(_id)
     if (!user) throw new NotFoundException()
     return user
   }
 
   async findOneForAuth(email: string) {
-    const user = await this.userModel.findOne({ email }, '+password').exec()
+    const user = await this.userModel.findOne({ email }, '+password')
     if (!user) throw new NotFoundException()
     return user
   }
@@ -45,15 +45,16 @@ export class UsersService {
       }
     }
 
-    const result = await this.userModel
-      .updateOne({ _id }, updateUserProfileDto)
-      .exec()
+    const result = await this.userModel.findOneAndUpdate(
+      { _id },
+      updateUserProfileDto
+    )
     if (!result) throw new BadGatewayException()
     return result
   }
 
   async deleteOne(_id: string) {
-    const user = await this.userModel.findOneAndDelete({ _id }).exec()
+    const user = await this.userModel.findOneAndDelete({ _id })
     if (!user) throw new NotFoundException()
     return user
   }

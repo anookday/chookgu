@@ -16,6 +16,7 @@
       "@/*": ["src/*"],
       "@auth/*": ["src/auth/*"],
       "@players/*": ["src/players/*"],
+      "@test/*": ["src/test/*"],
       "@transactions/*": ["src/transactions/*"],
       "@users/*": ["src/users/*"],
       "@util/*": ["src/util/*"]
