@@ -22,6 +22,7 @@ describe('UsersService', () => {
           useNewUrlParser: true,
           useUnifiedTopology: true,
           useCreateIndex: true,
+          useFindAndModify: false,
         }),
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
       ],
@@ -86,6 +87,16 @@ describe('UsersService', () => {
     expect(newUser).toBeDefined()
     expect(newUser.username).toEqual('Bruce Wayne')
     await expect(service.findById(newUser.id)).resolves.toBeDefined()
+  })
+
+  it('prevents creating new user if email is duplicate', async () => {
+    await expect(
+      service.create({
+        email: 'sheesh@sheesh.com',
+        username: 'Better Sheesh',
+        password: 'asdfasdfasdf',
+      })
+    ).rejects.toThrowError(BadRequestException)
   })
 
   it('updates existing user', async () => {

@@ -79,7 +79,7 @@
     ],
     "rootDir": "src",
     "moduleNameMapper": {
-      "^@auth/(.*)$": "<rootDir>/auth/($1)",
+      "^@auth/(.*)$": "<rootDir>/auth/$1",
       "^@players/(.*)$": "<rootDir>/players/$1",
       "^@test/(.*)$": "<rootDir>/test/$1",
       "^@transactions/(.*)$": "<rootDir>/transactions/$1",

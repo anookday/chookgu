@@ -2,7 +2,6 @@ import { Model } from 'mongoose'
 import {
   Injectable,
   NotFoundException,
-  BadGatewayException,
   BadRequestException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
@@ -25,15 +24,14 @@ export class UsersService {
   }
 
   async findOneForAuth(email: string) {
-    const user = await this.userModel.findOne({ email }, '+password')
-    if (!user) throw new NotFoundException()
-    return user
+    return await this.userModel.findOne({ email }, '+password')
   }
 
   async create(createUserProfileDto: CreateUserProfileDto) {
-    const user = await this.userModel.create(createUserProfileDto)
-    if (!user) throw new BadGatewayException()
-    return user
+    const existingUser = await this.findByEmail(createUserProfileDto.email)
+    if (existingUser) throw new BadRequestException()
+
+    return await this.userModel.create(createUserProfileDto)
   }
 
   async updateOne(_id: string, updateUserProfileDto: UpdateUserProfileDto) {
@@ -45,12 +43,7 @@ export class UsersService {
       }
     }
 
-    const result = await this.userModel.findOneAndUpdate(
-      { _id },
-      updateUserProfileDto
-    )
-    if (!result) throw new BadGatewayException()
-    return result
+    return await this.userModel.findOneAndUpdate({ _id }, updateUserProfileDto)
   }
 
   async deleteOne(_id: string) {

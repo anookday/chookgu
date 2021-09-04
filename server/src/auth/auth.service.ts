@@ -1,12 +1,11 @@
 import {
   Injectable,
-  UnprocessableEntityException,
-  ConflictException,
+  UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import * as argon2 from 'argon2'
 import { UsersService } from '@users/users.service'
-import { User } from '@users/schemas/user.schema'
 import { CreateUserProfileDto } from '@users/dto/create-userProfile.dto'
 
 @Injectable()
@@ -23,15 +22,20 @@ export class AuthService {
    * @param password unhashed password to compare to user's password on the server
    * @returns User object if valid, else null
    */
-  async validateUser(email: string, password: string): Promise<User | null> {
+  async validateUser(email: string, password: string) {
     const user = await this.usersService.findOneForAuth(email)
 
-    if (user) {
-      const verifyResult = await argon2.verify(user.password, password)
-      if (verifyResult) return user
+    // invalid email
+    if (!user) {
+      throw new UnauthorizedException('Invalid email/password')
     }
 
-    return null
+    // invalid password
+    const verifyResult = await argon2.verify(user.password, password)
+    if (!verifyResult) {
+      throw new UnauthorizedException('Invalid email/password')
+    }
+    return user
   }
 
   /**
@@ -45,18 +49,16 @@ export class AuthService {
   /**
    * Validate new user info. If valid, create new user in database.
    */
-  async register(createUserProfileDto: CreateUserProfileDto) {
-    const { username, email, password } = createUserProfileDto
-
+  async register({ username, email, password }: CreateUserProfileDto) {
     // user is already registered AKA duplicate email is found
     const existingUser = await this.usersService.findByEmail(email)
     if (existingUser != null) {
-      throw new ConflictException('That email is taken. Try another one.')
+      throw new BadRequestException('That email is taken. Try another one.')
     }
 
     // username must be between 1 and 30 characters
     if (username.length === 0 || username.length > 30) {
-      throw new UnprocessableEntityException(
+      throw new BadRequestException(
         'Username must be between 1 to 30 characters long.'
       )
     }
@@ -64,12 +66,12 @@ export class AuthService {
     // email must not be empty
     // TODO: ACTUALLY validate emails by sending confirmation links
     if (email.length === 0) {
-      throw new UnprocessableEntityException('Invalid email.')
+      throw new BadRequestException('Invalid email.')
     }
 
     // password must have at least 10 characters
     if (password.length < 10) {
-      throw new UnprocessableEntityException(
+      throw new BadRequestException(
         'Password must be at least 10 chracters long.'
       )
     }

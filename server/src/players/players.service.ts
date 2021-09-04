@@ -4,7 +4,11 @@ import { InjectModel } from '@nestjs/mongoose'
 import { addWeeks, subWeeks } from 'date-fns'
 import { Player, PlayerDocument } from '@players/schemas/player.schema'
 import { PlayerValue } from '@players/schemas/playerValue.schema'
-import { QueryPlayerDto } from '@players/dto/query-player.dto'
+import {
+  QueryPlayerDto,
+  SortBy,
+  SortOrder,
+} from '@players/dto/query-player.dto'
 import { scrape } from '@util/scrape'
 import { generatePrice } from '@util/generate'
 
@@ -13,10 +17,6 @@ export class PlayersService {
   constructor(
     @InjectModel(Player.name) private playerModel: Model<PlayerDocument>
   ) {}
-
-  async findAll(): Promise<PlayerDocument[]> {
-    return await this.playerModel.find().exec()
-  }
 
   async findById(playerId: number) {
     return await this.playerModel.findById(playerId)
@@ -32,10 +32,18 @@ export class PlayersService {
       search.length === 0 ? {} : { $text: { $search: search } }
     const scoreOptions =
       search.length === 0 ? {} : { score: { $meta: 'textScore' } }
+    const sortOptions =
+      sortBy === SortBy.Name
+        ? { [sortBy]: sortOrder, _id: SortOrder.Asc }
+        : {
+            [sortBy]: sortOrder,
+            [SortBy.Name]: SortOrder.Asc,
+            _id: SortOrder.Asc,
+          }
     const result = await this.playerModel
       .find(findOptions, scoreOptions)
       .collation({ locale: 'en', strength: 1 })
-      .sort({ ...scoreOptions, [sortBy]: sortOrder, _id: 1 })
+      .sort({ ...scoreOptions, ...sortOptions })
       .skip(index)
       .limit(10)
 

@@ -12,6 +12,7 @@ import { TransactionsModule } from '@transactions/transactions.module'
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
+      useFindAndModify: false,
     }),
     PlayersModule,
     AuthModule,

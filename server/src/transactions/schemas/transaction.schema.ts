@@ -25,7 +25,7 @@ export class Transaction {
   price: number
 
   @Prop()
-  shares: number
+  amount: number
 
   @Prop({ type: Date, default: Date.now })
   date: Date
