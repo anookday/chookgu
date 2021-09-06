@@ -2,7 +2,6 @@ import { Model, Types } from 'mongoose'
 import {
   Injectable,
   BadRequestException,
-  NotFoundException,
   InternalServerErrorException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
@@ -24,12 +23,20 @@ export class TransactionsService {
     private playersService: PlayersService
   ) {}
 
+  async getUserTransactions(userId: string, index: number) {
+    return this.transactionModel
+      .find({ user: userId })
+      .sort({ user: 1, date: -1 })
+      .skip(index)
+      .limit(10)
+  }
+
   async buyPlayer(userId: string, playerId: number, amount: number) {
     let user = await this.usersService.findById(userId)
     const player = await this.playersService.findById(playerId)
 
     if (!user || !player) {
-      throw new NotFoundException('Resource not found')
+      throw new BadRequestException('Invalid id')
     }
 
     if (amount < 1) {
@@ -84,7 +91,7 @@ export class TransactionsService {
     const player = await this.playersService.findById(playerId)
 
     if (!user || !player) {
-      throw new NotFoundException('Resource not found')
+      throw new BadRequestException('Invalid id')
     }
 
     const playerIndex = user.portfolio.players.findIndex(

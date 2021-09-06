@@ -32,6 +32,7 @@ export class Transaction {
 }
 
 export const TransactionSchema = SchemaFactory.createForClass(Transaction)
+TransactionSchema.index({ user: 1, date: -1 })
 
 /**
  * Return true if referenced transaction is a TransactionDocument.

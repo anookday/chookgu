@@ -40,14 +40,12 @@ export class PlayersService {
             [SortBy.Name]: SortOrder.Asc,
             _id: SortOrder.Asc,
           }
-    const result = await this.playerModel
+    return await this.playerModel
       .find(findOptions, scoreOptions)
       .collation({ locale: 'en', strength: 1 })
       .sort({ ...scoreOptions, ...sortOptions })
       .skip(index)
       .limit(10)
-
-    return result
   }
 
   /**
