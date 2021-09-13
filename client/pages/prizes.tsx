@@ -29,12 +29,9 @@ Prizes.getLayout = (page: ReactElement) => {
         <meta name="description" content="Description of chookgu" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
-        <MainLayout selected={3} {...props}>
-          {page}
-        </MainLayout>
-      </main>
-      <footer></footer>
+      <MainLayout selected={4} {...props}>
+        {page}
+      </MainLayout>
     </div>
   )
 }

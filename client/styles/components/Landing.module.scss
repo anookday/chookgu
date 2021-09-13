@@ -1,21 +1,19 @@
-.container {
-  &_overview {
-    @include landing-section;
-    background-color: $color-primary-dark;
-  }
+.section {
+  @include landing-section;
+}
 
-  &_tournaments {
-    @include landing-section;
-    background-color: $color-primary;
-  }
+.overview {
+  background-color: $color-primary-dark;
+}
 
-  &_prizes {
-    @include landing-section;
-    background-color: $color-primary-light;
-  }
+.tournaments {
+  background-color: $color-primary;
+}
 
-  &_contact {
-    @include landing-section;
-    background-color: $color-accent;
-  }
+.prizes {
+  background-color: $color-primary-light;
+}
+
+.contact {
+  background-color: $color-accent;
 }

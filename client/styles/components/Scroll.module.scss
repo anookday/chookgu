@@ -10,4 +10,9 @@
   width: inherit;
   display: flex;
   flex-direction: column;
+  margin-right: 2rem;
+
+  & > :not(:last-child) {
+    margin-bottom: $widget-margin-small;
+  }
 }

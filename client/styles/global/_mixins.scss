@@ -18,7 +18,6 @@
 
 @mixin landing-section {
   width: 100%;
-  //height: calc(100vh - #{$header-height});
   height: 100vh;
   color: $color-secondary;
 
@@ -27,30 +26,79 @@
   align-items: center;
 }
 
+@mixin layout {
+  width: 100%;
+  height: calc(100vh - #{$header-height});
+  background-color: $color-primary-dark;
+  color: $color-secondary;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin container {
+  width: 100%;
+  height: 100%;
+  padding: 2.5rem 3rem;
+}
+
 @mixin widget {
   border-radius: 3rem;
-  margin: 1rem 2rem;
   padding: 2rem 3rem;
   overflow: hidden;
+  width: 100%;
+  height: 100%;
   box-shadow: $shadow-light;
 }
 
 @mixin widget-outer {
   @include widget;
-  flex: 1;
-  height: 100%;
   background-color: $color-primary;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
 
-  &_header {
+  &__header {
+    width: 100%;
     height: $widget-header-height;
     font-size: 3.6rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &__title {
+      margin-right: auto;
+    }
+
+    &__buttons {
+      font-size: 2.4rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      & > :not(:last-child) {
+        margin-right: 1rem;
+      }
+    }
   }
 
-  &_footer {
+  &__list {
+    flex: 1;
+    width: 100%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    & > :not(:last-child) {
+      margin-bottom: $widget-margin-small;
+    }
+  }
+
+  &__footer {
     width: 100%;
     display: flex;
     justify-content: space-around;

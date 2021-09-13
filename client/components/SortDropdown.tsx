@@ -1,4 +1,4 @@
-import Button, { ButtonSize, ButtonColor } from '@components/Button'
+import Button from '@components/Button'
 import Dropdown, { DropdownItem } from '@components/Dropdown'
 
 export enum SortBy {
@@ -71,11 +71,7 @@ const SortDropdown = ({ sortBy, sortOrder, onSelected }: SortDropdownProps) => {
 
   return (
     <Dropdown items={dropdownItems}>
-      <Button
-        text={getButtonText()}
-        size={ButtonSize.Small}
-        color={ButtonColor.Light}
-      />
+      <Button text={getButtonText()} size="small" color="light" />
     </Dropdown>
   )
 }

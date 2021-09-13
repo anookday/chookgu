@@ -1,0 +1,11 @@
+.container {
+  @include container;
+  display: grid;
+  grid: {
+    template: {
+      columns: 1fr 1fr;
+      rows: 1fr 1fr;
+    }
+    gap: 3rem;
+  }
+}

@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose'
 import { USER_STARTING_BALANCE } from '@util/constants'
-import { PlayerDocument } from '@/players/schemas/player.schema'
+import { PlayerDocument } from '@players/schemas/player.schema'
 
 /**
  * Purchsed player schema

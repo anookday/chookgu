@@ -1,14 +1,14 @@
 .player {
   @include widget-inner;
-  margin-left: 0;
   box-shadow: none;
   cursor: pointer;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   transition: all 0.2s;
+  max-height: 10rem;
 
-  &_image {
+  &__image {
     height: 6rem;
     border-radius: 1rem;
     overflow: hidden;
@@ -18,13 +18,13 @@
     }
   }
 
-  &_name {
+  &__name {
     font-size: 2.8rem;
     padding-left: 3rem;
     margin-right: auto;
   }
 
-  &_info {
+  &__info {
     display: flex;
     flex-direction: column;
     margin-right: 3rem;
@@ -32,18 +32,40 @@
     display: none;
   }
 
-  &_value {
+  &__value {
     font-size: 3.6rem;
     font-weight: 900;
+    text-align: right;
     color: $color-accent;
+
+    &--negative {
+      color: $color-complement;
+    }
   }
 
-  &_selected {
+  $this: &;
+
+  &--selected {
     background-color: $color-accent;
     box-shadow: $shadow-light;
+
+    #{$this}__value {
+      color: $color-primary;
+    }
   }
 
-  &_selected &_value {
-    color: $color-primary;
+  &--small {
+    padding: 1.2rem 2rem;
+    max-height: 8.4rem;
+
+    #{$this}__name {
+      font-size: 2.4rem;
+      padding-left: 2rem;
+    }
+
+    #{$this}__value {
+      font-size: 2.8rem;
+      font-weight: 700;
+    }
   }
 }

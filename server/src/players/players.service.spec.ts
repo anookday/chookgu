@@ -4,7 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { MongooseModule } from '@nestjs/mongoose'
 
 import { PlayersService } from '@players/players.service'
-import { SortBy, SortOrder } from '@players/dto/query-player.dto'
+import { SortBy } from '@players/dto/query-player.dto'
+import { SortOrder } from '@util/constants'
 import {
   Player,
   PlayerSchema,

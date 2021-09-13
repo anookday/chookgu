@@ -22,7 +22,6 @@ export class TransactionsController {
     @User('_id') userId: string,
     @Body() { playerId, amount }: TransactionDto
   ) {
-    console.log(amount, typeof amount)
     return await this.transactionsService.buyPlayer(userId, playerId, amount)
   }
 

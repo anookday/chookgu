@@ -1,11 +1,96 @@
-import type { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
+import Layout from '@components/Layout'
 import MainLayout from '@components/MainLayout'
-import Dashboard from '@components/Dashboard'
-import { UserProps, getUserProps } from 'context/UserContext'
+import PlayerCard from '@components/PlayerCard'
+import GridContainer from '@components/GridContainer'
+import { UserProps, getUserProps } from '@context/UserContext'
+import styles from '@styles/pages/Home.module.scss'
+import api from '@utils/api'
+import { Player, PlayerAsset } from '@utils/Player'
+import { UserPortfolio } from '@utils/User'
+import { getMarginString, getPercent, getValueString } from '@utils/numbers'
 
-const Home = () => {
-  return <Dashboard />
+const Home = (props: UserProps) => {
+  // redirect if user is not authenticated
+  const router = useRouter()
+  if (!props.loggedIn) {
+    router.push('/')
+  }
+
+  const [playerAssets, setPlayerAssets] = useState<PlayerAsset[]>([])
+  const [topMargins, setTopMargins] = useState<Player[]>([])
+  const [bottomMargins, setBottomMargins] = useState<Player[]>([])
+
+  const getPortfolio = async () => {
+    const response = await api.get<UserPortfolio>('/user/portfolio')
+    setPlayerAssets(response.data.players || [])
+  }
+
+  const getDashboardStatistics = async () => {
+    const getTopMargins = await api.get<Player[]>('/players/top-margins')
+    setTopMargins(getTopMargins.data)
+    const getBottomMargins = await api.get<Player[]>('/players/bottom-margins')
+    setBottomMargins(getBottomMargins.data)
+  }
+
+  useEffect(() => {
+    getPortfolio()
+    getDashboardStatistics()
+  }, [])
+
+  const renderPlayers = (players: Player[]) => {
+    return players.map((player, index) => (
+      <div key={index} className={styles.numberedItem}>
+        <div className={styles.numberedItem__number}>{`#${index + 1}`}</div>
+        <PlayerCard player={player} format="margin" size="small" />
+      </div>
+    ))
+  }
+
+  const renderPlayerAssets = () => {
+    return playerAssets.map((asset, index) => (
+      <PlayerCard
+        key={index}
+        player={asset.player}
+        size="small"
+        format="custom"
+        customFormatOptions={{
+          value: getMarginString(
+            asset.averageValue,
+            asset.player.currentValue,
+            asset.amount
+          ),
+          style:
+            asset.averageValue < asset.player.currentValue
+              ? 'positive'
+              : 'negative',
+        }}
+      />
+    ))
+  }
+
+  return (
+    <Layout>
+      <GridContainer>
+        <div className={`${styles.widget} ${styles.portfolio}`}>
+          <div className={styles.widget__header}>My Players</div>
+          <div className={styles.widget__list}>{renderPlayerAssets()}</div>
+        </div>
+        <div className={`${styles.widget} ${styles.topMargins}`}>
+          <div className={styles.widget__header}>Top Gains</div>
+          <div className={styles.widget__list}>{renderPlayers(topMargins)}</div>
+        </div>
+        <div className={`${styles.widget} ${styles.bottomMargins}`}>
+          <div className={styles.widget__header}>Top Losses</div>
+          <div className={styles.widget__list}>
+            {renderPlayers(bottomMargins)}
+          </div>
+        </div>
+      </GridContainer>
+    </Layout>
+  )
 }
 
 Home.getLayout = (page: ReactElement) => {
@@ -18,12 +103,9 @@ Home.getLayout = (page: ReactElement) => {
         <meta name="description" content="Description of chookgu" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
-        <MainLayout selected={0} {...props}>
-          {page}
-        </MainLayout>
-      </main>
-      <footer></footer>
+      <MainLayout selected={0} {...props}>
+        {page}
+      </MainLayout>
     </div>
   )
 }

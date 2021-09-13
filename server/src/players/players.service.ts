@@ -2,13 +2,14 @@ import { Model } from 'mongoose'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { addWeeks, subWeeks } from 'date-fns'
-import { Player, PlayerDocument } from '@players/schemas/player.schema'
-import { PlayerValue } from '@players/schemas/playerValue.schema'
 import {
-  QueryPlayerDto,
-  SortBy,
-  SortOrder,
-} from '@players/dto/query-player.dto'
+  Player,
+  PlayerDocument,
+  AggregatedPlayer,
+} from '@players/schemas/player.schema'
+import { PlayerValue } from '@players/schemas/playerValue.schema'
+import { QueryPlayerDto, SortBy } from '@players/dto/query-player.dto'
+import { SortOrder } from '@util/constants'
 import { scrape } from '@util/scrape'
 import { generatePrice } from '@util/generate'
 
@@ -46,6 +47,31 @@ export class PlayersService {
       .sort({ ...scoreOptions, ...sortOptions })
       .skip(index)
       .limit(10)
+  }
+
+  async getRecentValueMargins(amount: number, sortOrder: SortOrder) {
+    return await this.playerModel
+      .aggregate<AggregatedPlayer>([
+        {
+          $addFields: {
+            margin: {
+              $subtract: [
+                { $arrayElemAt: ['$value.amount', -1] },
+                { $arrayElemAt: ['$value.amount', -2] },
+              ],
+            },
+          },
+        },
+        {
+          $addFields: {
+            marginRatio: {
+              $divide: ['$margin', { $arrayElemAt: ['$value.amount', -2] }],
+            },
+          },
+        },
+      ])
+      .sort({ margin: sortOrder })
+      .limit(amount)
   }
 
   /**
@@ -124,9 +150,10 @@ export class PlayersService {
       .select('_id currentValue value')
 
     const updatePlayerOptions = players.map((player) => {
+      const lastIndex = player.value.length - 1
       const fakeValue: PlayerValue = {
-        date: addWeeks(player.value[0].date, 1),
-        amount: generatePrice(player.value[0].amount),
+        date: addWeeks(player.value[lastIndex].date, 1),
+        amount: generatePrice(player.value[lastIndex].amount),
       }
 
       return {

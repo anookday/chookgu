@@ -1,14 +1,10 @@
 import { Type } from 'class-transformer'
 import { IsEnum } from 'class-validator'
+import { SortOrder } from '@util/constants'
 
 export enum SortBy {
   Name = 'name',
   Value = 'currentValue',
-}
-
-export enum SortOrder {
-  Asc = 1,
-  Desc = -1,
 }
 
 export class QueryPlayerDto {

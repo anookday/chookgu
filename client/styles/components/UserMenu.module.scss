@@ -3,12 +3,12 @@
   align-items: center;
   cursor: pointer;
 
-  &_balance {
+  &__balance {
     margin-right: 1rem;
     color: $color-accent;
   }
 
-  &_name {
+  &__name {
     @include text-link;
 
     &:not(:last-child) {
@@ -16,7 +16,7 @@
     }
   }
 
-  &_photo {
+  &__photo {
     width: 5rem;
     height: 5rem;
     border: 0.3rem solid $color-accent;

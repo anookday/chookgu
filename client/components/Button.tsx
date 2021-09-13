@@ -1,16 +1,9 @@
 import React from 'react'
 import styles from '@styles/components/Button.module.scss'
 
-export enum ButtonSize {
-  Default,
-  Small,
-}
+type ButtonSize = 'default' | 'small'
 
-export enum ButtonColor {
-  Default,
-  Light,
-  Dark,
-}
+type ButtonColor = 'default' | 'light' | 'dark' | 'warning'
 
 interface ButtonProps {
   text: string
@@ -22,28 +15,29 @@ interface ButtonProps {
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ text, size, color, children, ...actions }, ref) => {
-    let sizeStyle, colorStyle
+    let style = styles.button
     switch (size) {
-      case ButtonSize.Small:
-        sizeStyle = styles.sizeSmall
+      case 'small':
+        style += ' ' + styles['button--small']
         break
       default:
-        sizeStyle = styles.sizeDefault
     }
 
     switch (color) {
-      case ButtonColor.Light:
-        colorStyle = styles.colorLight
+      case 'light':
+        style += ' ' + styles['button--light']
         break
-      case ButtonColor.Dark:
-        colorStyle = styles.colorDark
+      case 'dark':
+        style += ' ' + styles['button--dark']
+        break
+      case 'warning':
+        style += ' ' + styles['button--warning']
         break
       default:
-        colorStyle = styles.colorDefault
     }
 
     return (
-      <button ref={ref} {...actions} className={`${sizeStyle} ${colorStyle}`}>
+      <button ref={ref} {...actions} className={style}>
         {text}
       </button>
     )

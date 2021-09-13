@@ -11,6 +11,7 @@ interface ScrollProps {
 const Scroll = ({ index, children, next }: ScrollProps) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const initialized = useRef(false)
+  const id = Date.now().toString()
 
   useEffect(() => {
     if (scrollRef.current && index === 0) {
@@ -26,14 +27,18 @@ const Scroll = ({ index, children, next }: ScrollProps) => {
   }
 
   return (
-    <div id="playerContainer" className={styles.container} ref={scrollRef}>
+    <div
+      id={`scrollContainer${id}`}
+      className={styles.container}
+      ref={scrollRef}
+    >
       <InfiniteScroll
         className={styles.scroll}
         dataLength={children.length}
         next={next}
         hasMore={true}
         loader={renderLoader()}
-        scrollableTarget="playerContainer"
+        scrollableTarget={`scrollContainer${id}`}
       >
         {children}
       </InfiniteScroll>

@@ -2,6 +2,7 @@ import { ReactElement, useState, useEffect } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import MainLayout from '@components/MainLayout'
+import GridContainer from '@components/GridContainer'
 import Layout from '@components/Layout'
 import Scroll from '@components/Scroll'
 import PlayerCard from '@components/PlayerCard'
@@ -93,10 +94,12 @@ const Trade = (props: UserProps) => {
   const renderPlayers = () => {
     return players.map((player) => (
       <PlayerCard
-        selected={selected !== undefined && selected._id === player._id}
+        selected={(selected && selected._id === player._id) || undefined}
         onSelected={onPlayerSelected}
         key={player._id}
         player={player}
+        size="small"
+        format="default"
       />
     ))
   }
@@ -105,14 +108,19 @@ const Trade = (props: UserProps) => {
     if (selected && checkout) {
       return (
         <PlayerCheckout
+          className={styles.details}
           player={selected}
           onBack={() => setCheckout(false)}
-          onComplete={() => setCheckout(false)}
         />
       )
     }
     return (
-      <PlayerDetails player={selected} onBuyClick={() => setCheckout(true)} />
+      <PlayerDetails
+        className={styles.details}
+        player={selected}
+        onTransactionClick={() => setCheckout(true)}
+        onCloseClick={() => setSelected(undefined)}
+      />
     )
   }
 
@@ -121,10 +129,10 @@ const Trade = (props: UserProps) => {
    */
   return (
     <Layout>
-      <div className={styles.container}>
-        <div className={`${styles.widget}`}>
-          <div className={styles.widget_header}>Player Market</div>
-          <div className={styles.widget_search}>
+      <GridContainer>
+        <div className={`${styles.widget} ${styles.players}`}>
+          <div className={styles.widget__header}>Player Market</div>
+          <div className={styles.widget__search}>
             <Search
               hint="Search for players, teams, positions and more"
               onChange={onSearchTermChange}
@@ -135,7 +143,7 @@ const Trade = (props: UserProps) => {
               onSelected={onSortOptionsChange}
             />
           </div>
-          <div className={styles.widget_list}>
+          <div className={styles.widget__list}>
             <Scroll
               index={searchOptions.index}
               next={() => {
@@ -150,7 +158,7 @@ const Trade = (props: UserProps) => {
           </div>
         </div>
         {renderDetails()}
-      </div>
+      </GridContainer>
     </Layout>
   )
 }
@@ -165,19 +173,12 @@ Trade.getLayout = (page: ReactElement) => {
     <div>
       <Head>
         <title>Chookgu</title>
-        <meta
-          name="description"
-          content="Description of chookgu"
-          charSet="UTF-8"
-        />
+        <meta name="description" content="Description of chookgu" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
-        <MainLayout selected={1} {...props}>
-          {page}
-        </MainLayout>
-      </main>
-      <footer></footer>
+      <MainLayout selected={2} {...props}>
+        {page}
+      </MainLayout>
     </div>
   )
 }

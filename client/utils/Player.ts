@@ -1,7 +1,7 @@
 import { parseISO, differenceInYears } from 'date-fns'
 import { ChartData, ChartOptions } from 'chart.js'
 import 'chartjs-adapter-date-fns'
-import { getValueString } from '@utils/Currency'
+import { getValueString } from '@utils/numbers'
 import colors from '@styles/global/colors.module.scss'
 
 export interface PlayerValue {
@@ -20,18 +20,30 @@ export interface Player {
   dateOfBirth: string
   currentValue: number
   value: PlayerValue[]
+  margin?: number
+  marginRatio?: number
+}
+
+export interface PlayerAsset {
+  player: Player
+  amount: number
+  averageValue: number
+}
+
+export function isPlayerAsset(object: any): object is PlayerAsset {
+  return 'player' in object && 'amount' in object && 'averageValue' in object
 }
 
 export function getPlayerAge(dateOfBirth: string): number {
   return differenceInYears(new Date(), parseISO(dateOfBirth))
 }
 
-export function getPlayerValueChartData(values: PlayerValue[]): ChartData {
-  const labels = values.map((value) => value.date)
-  const data = values.map((value) => Math.floor(value.amount))
-
-  return {
-    labels,
+export function getPlayerValueChartData(
+  values: PlayerValue[],
+  threshold?: number
+): ChartData {
+  let result: ChartData = {
+    labels: values.map((value) => value.date),
     datasets: [
       {
         label: 'Value',
@@ -42,10 +54,23 @@ export function getPlayerValueChartData(values: PlayerValue[]): ChartData {
         pointHoverBackgroundColor: colors.accent,
         pointHoverBorderWidth: 5,
         pointHitRadius: 20,
-        data,
+        data: values.map((value) => Math.floor(value.amount)),
       },
     ],
   }
+
+  if (threshold) {
+    result.datasets.unshift({
+      label: 'Threshold',
+      fill: false,
+      pointRadius: 0,
+      borderColor: colors.complement,
+      borderDash: [10, 5],
+      data: values.map(() => threshold),
+    })
+  }
+
+  return result
 }
 
 export function getPlayerValueChartOptions(): ChartOptions<'line'> {

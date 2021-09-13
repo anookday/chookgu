@@ -19,8 +19,8 @@ const Header = ({ navigation, children, className }: HeaderProps) => {
     return navigation.map((item, index) => (
       <Link key={index} href={item.link || '#'}>
         <a
-          className={`${styles.header_link} ${
-            item.selected ? styles.header_link__active : ''
+          className={`${styles.header__link} ${
+            item.selected ? styles.header__link__active : ''
           }`}
         >
           {item.text}
@@ -31,11 +31,11 @@ const Header = ({ navigation, children, className }: HeaderProps) => {
 
   return (
     <header className={`${styles.header}${className ? ` ${className}` : ''}`}>
-      <div className={styles.header_left}>
-        <Icon className={styles.header_logo} />
+      <div className={styles.header__left}>
+        <Icon className={styles.header__logo} />
       </div>
-      <div className={styles.header_middle}>{renderNavigationItems()}</div>
-      <div className={styles.header_right}>{children}</div>
+      <nav className={styles.header__middle}>{renderNavigationItems()}</nav>
+      <div className={styles.header__right}>{children}</div>
     </header>
   )
 }

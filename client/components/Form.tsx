@@ -44,17 +44,17 @@ const Form = ({
    */
   const renderEmailField = (): JSX.Element | null => {
     return email === undefined || setEmail === undefined ? null : (
-      <label className={styles.form_field}>
-        <span className={styles.form_field__title}>Email</span>
+      <label className={styles.form__field}>
+        <span className={styles.form__field__title}>Email</span>
         <input
-          className={styles.form_field__input}
+          className={styles.form__field__input}
           type="email"
           value={email}
           onChange={(e) => {
             setEmail(e.currentTarget.value)
           }}
         />
-        <p className={styles.form_field__description}>
+        <p className={styles.form__field__description}>
           Must be a valid, unique email
         </p>
       </label>
@@ -66,17 +66,17 @@ const Form = ({
    */
   const renderUsernameField = (): JSX.Element | null => {
     return username === undefined || setUsername === undefined ? null : (
-      <label className={styles.form_field}>
-        <span className={styles.form_field__title}>Display name</span>
+      <label className={styles.form__field}>
+        <span className={styles.form__field__title}>Display name</span>
         <input
-          className={styles.form_field__input}
+          className={styles.form__field__input}
           type="text"
           value={username}
           onChange={(e) => {
             setUsername(e.currentTarget.value)
           }}
         />
-        <p className={styles.form_field__description}>
+        <p className={styles.form__field__description}>
           Must be between 1 and 30 characters
         </p>
       </label>
@@ -89,14 +89,14 @@ const Form = ({
   const renderPasswordField = (): JSX.Element | null => {
     const visibilityIcon = isPasswordVisible ? (
       <VisibilityOnIcon
-        className={styles.form_field__icon}
+        className={styles.form__field__icon}
         onClick={() => {
           setIsPasswordVisible(false)
         }}
       />
     ) : (
       <VisiblityOffIcon
-        className={styles.form_field__icon}
+        className={styles.form__field__icon}
         onClick={() => {
           setIsPasswordVisible(true)
         }}
@@ -104,17 +104,17 @@ const Form = ({
     )
 
     return password === undefined || setPassword === undefined ? null : (
-      <label className={styles.form_field}>
-        <span className={styles.form_field__title}>Password</span>
+      <label className={styles.form__field}>
+        <span className={styles.form__field__title}>Password</span>
         <input
-          className={styles.form_field__input}
+          className={styles.form__field__input}
           type={isPasswordVisible ? 'text' : 'password'}
           value={password}
           onChange={(e) => {
             setPassword(e.currentTarget.value)
           }}
         />
-        <p className={styles.form_field__description}>
+        <p className={styles.form__field__description}>
           Must be at least 10 characters long
         </p>
         {visibilityIcon}

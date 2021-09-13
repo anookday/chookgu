@@ -37,6 +37,12 @@ export class Player {
   value: PlayerValue[]
 }
 
+export class AggregatedPlayer extends Player {
+  gain?: number
+  loss?: number
+  margin?: number
+}
+
 export const PlayerSchema = SchemaFactory.createForClass(Player)
 
 /**

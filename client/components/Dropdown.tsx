@@ -39,9 +39,8 @@ const Dropdown = ({ children, items }: DropdownProps) => {
     return items.map(({ text, selected, onClick }) => (
       <div
         key={text}
-        className={`${styles.dropdown_list__item}${
-          selected ? ` ${styles.selected}` : ''
-        }`}
+        className={`${styles.dropdown__list__item}\
+          ${selected ? ` ${styles['dropdown__list__item--selected']}` : ''}`}
         onClick={() => onItemClick(onClick)}
       >
         <span>{text}</span>
@@ -52,15 +51,14 @@ const Dropdown = ({ children, items }: DropdownProps) => {
   return (
     <div className={styles.dropdown} ref={ref}>
       <div
-        className={styles.dropdown_input}
+        className={styles.dropdown__input}
         onClick={() => setVisible(!visible)}
       >
         {children}
       </div>
       <div
-        className={`${styles.dropdown_list}${
-          visible ? ` ${styles.visible}` : ''
-        }`}
+        className={`${styles.dropdown__list}\
+          ${visible ? ` ${styles['dropdown__list--visible']}` : ''}`}
       >
         {renderItems()}
       </div>

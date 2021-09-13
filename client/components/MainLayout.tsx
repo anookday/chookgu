@@ -34,7 +34,8 @@ const MainLayout = (props: MainLayoutProps) => {
   // if user is logged in return props children
   if (props.loggedIn) {
     const navigation: HeaderNavigationProps[] = [
-      { text: 'Dashboard', link: '/' },
+      { text: 'Home', link: '/' },
+      { text: 'Portfolio', link: '/portfolio' },
       { text: 'Trade', link: '/trade' },
       { text: 'Tournaments', link: '/tournaments' },
       { text: 'Prizes', link: '/prizes' },
@@ -47,7 +48,7 @@ const MainLayout = (props: MainLayoutProps) => {
         <Header navigation={navigation}>
           <UserMenu />
         </Header>
-        {props.children}
+        <main>{props.children}</main>
       </UserContextProvider>
     )
   }
@@ -55,9 +56,8 @@ const MainLayout = (props: MainLayoutProps) => {
   return (
     <>
       <Header
-        className={`${styles.header_landing}${
-          isPageTop ? '' : ` ${styles.header_landing__scrolledDown}`
-        }`}
+        className={`${styles.landingHeader}\
+          ${isPageTop ? '' : ` ${styles['landingHeader--scrolledDown']}`}`}
         navigation={[
           { text: 'Overview', link: '#overview' },
           { text: 'Tournaments', link: '#tournaments' },
@@ -74,7 +74,9 @@ const MainLayout = (props: MainLayoutProps) => {
           </Link>
         </>
       </Header>
-      <Landing />
+      <main>
+        <Landing />
+      </main>
     </>
   )
 }

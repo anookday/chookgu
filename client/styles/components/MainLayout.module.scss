@@ -1,9 +1,9 @@
-.header_landing {
+.landingHeader {
   position: fixed;
   top: 0;
   width: 100%;
 
-  &__scrolledDown {
+  &--scrolledDown {
     box-shadow: $shadow-dark;
   }
 }

@@ -1,0 +1,36 @@
+.widget {
+  @include widget-outer;
+}
+
+.numberedItem {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &__number {
+    min-width: 4rem;
+    font-size: 3.2rem;
+    margin-right: 2rem;
+  }
+}
+
+.portfolio {
+  grid: {
+    column: 1;
+    row: 1 / -1;
+  }
+}
+
+.topMargins {
+  grid: {
+    column: 2;
+    row: 1;
+  }
+}
+
+.bottomMargins {
+  grid: {
+    column: 2;
+    row: 2;
+  }
+}

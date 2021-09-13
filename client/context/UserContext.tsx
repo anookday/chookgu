@@ -1,7 +1,7 @@
 import { GetServerSideProps } from 'next'
 import { createContext, useContext, useState, ReactNode } from 'react'
 import { ParsedUrlQuery } from 'querystring'
-import { User, DatabaseUser } from '@utils/User'
+import { User } from '@utils/User'
 import api from '@utils/api'
 
 export interface UserProps {
@@ -52,11 +52,10 @@ export const getUserProps: GetServerSideProps<
   }
 
   try {
-    const profile = await api.get<DatabaseUser>('auth/profile', {
+    const profile = await api.get<User>('auth/profile', {
       headers: req ? { cookie: req.headers.cookie } : undefined,
     })
-    const { _id, __v, ...user } = profile.data
-    props.user = user
+    props.user = profile.data
     props.loggedIn = true
   } catch (e) {
     // no user session found

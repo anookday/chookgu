@@ -81,7 +81,8 @@ function getPlayerInfo(
  * @return Numerical representation of value string (eg. 3500000)
  */
 function parsePlayerValue(value: string): number {
-  let result = 0
+  // default value is 50k
+  let result = 50000
 
   const match = value.match(/€([\d.]*)(.*)/)
   if (match) {

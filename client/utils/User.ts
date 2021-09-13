@@ -1,23 +1,12 @@
-export interface DatabaseUser {
-  _id: string
-  username: string
-  email: string
-  portfolio: Portfolio
-  __v: number
-}
+import { PlayerAsset } from '@utils/Player'
 
-export interface Portfolio {
+export interface UserPortfolio {
   balance: number
-  players: Player[]
-}
-
-export interface Player {
-  id: string
-  purchsedPrice: number
+  players?: PlayerAsset[]
 }
 
 export interface User {
   username: string
   email: string
-  portfolio: Portfolio
+  portfolio: UserPortfolio
 }

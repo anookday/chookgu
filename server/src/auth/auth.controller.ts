@@ -53,7 +53,10 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('/profile')
   async getProfile(@User('_id') userId: string) {
-    return await this.usersService.findById(userId)
+    const { username, email, portfolio } = await this.usersService.findById(
+      userId
+    )
+    return { username, email, portfolio }
   }
 
   @UseGuards(JwtAuthGuard)

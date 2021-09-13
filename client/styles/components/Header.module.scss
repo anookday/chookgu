@@ -13,24 +13,24 @@
 
   transition: all 0.5s;
 
-  &_left {
+  &__left {
     flex: 1;
   }
 
-  &_logo {
+  &__logo {
     height: 5rem;
     width: 5rem;
     fill: $color-secondary;
   }
 
-  &_middle {
+  &__middle {
     display: flex;
     align-items: center;
     justify-content: center;
     flex: 1;
   }
 
-  &_right {
+  &__right {
     display: flex;
     align-items: center;
     flex: 1;
@@ -40,7 +40,7 @@
     }
   }
 
-  &_link {
+  &__link {
     @include text-link;
   }
 }

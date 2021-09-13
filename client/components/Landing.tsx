@@ -3,18 +3,21 @@ import styles from '@styles/components/Landing.module.scss'
 const Landing = () => {
   return (
     <>
-      <div id="overview" className={styles.container_overview}>
+      <section id="overview" className={`${styles.section} ${styles.overview}`}>
         Overview
-      </div>
-      <div id="tournaments" className={styles.container_tournaments}>
+      </section>
+      <section
+        id="tournaments"
+        className={`${styles.section} ${styles.tournaments}`}
+      >
         Tournaments
-      </div>
-      <div id="prizes" className={styles.container_prizes}>
+      </section>
+      <section id="prizes" className={`${styles.section} ${styles.prizes}`}>
         Prizes
-      </div>
-      <div id="contact" className={styles.container_contact}>
+      </section>
+      <section id="contact" className={`${styles.section} ${styles.contact}`}>
         Contact
-      </div>
+      </section>
     </>
   )
 }

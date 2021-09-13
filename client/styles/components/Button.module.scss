@@ -1,24 +1,25 @@
-.sizeDefault {
+.button {
   @include button;
-}
-
-.sizeSmall {
-  @include button;
-  padding: 0 1rem;
-  height: 100%;
-}
-
-.colorDefault {
   color: $color-secondary;
   background-color: $color-accent;
-}
 
-.colorLight {
-  color: $color-secondary;
-  background-color: $color-primary-light;
-}
+  &--small {
+    padding: 0 1rem;
+    height: 100%;
+  }
 
-.colorDark {
-  color: $color-secondary;
-  background-color: $color-primary-dark;
+  &--light {
+    color: $color-secondary;
+    background-color: $color-primary-light;
+  }
+
+  &--dark {
+    color: $color-secondary;
+    background-color: $color-primary-dark;
+  }
+
+  &--warning {
+    color: $color-secondary;
+    background-color: $color-complement;
+  }
 }

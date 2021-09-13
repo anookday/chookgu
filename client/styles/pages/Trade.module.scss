@@ -1,25 +1,14 @@
-.accentedText {
-  color: $color-accent;
-}
-
-.container {
-  width: inherit;
-  height: inherit;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem 3rem;
-}
 .widget {
   @include widget-outer;
 
-  &_search {
+  &__search {
     width: 100%;
     height: $widget-input-height;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 1rem 0;
+    margin-bottom: 1rem;
 
     > :not(:last-child) {
       margin-right: 2rem;
@@ -30,8 +19,22 @@
     }
   }
 
-  &_list {
+  &__list {
     height: calc(100% - #{$widget-header-height} - #{$widget-input-height});
     width: 100%;
+  }
+}
+
+.players {
+  grid: {
+    column: 1;
+    row: 1 / -1;
+  }
+}
+
+.details {
+  grid: {
+    column: 2;
+    row: 1 / -1;
   }
 }

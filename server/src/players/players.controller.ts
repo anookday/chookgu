@@ -9,6 +9,7 @@ import {
 import { PlayersService } from '@players/players.service'
 import { PlayerDocument } from '@players/schemas/player.schema'
 import { QueryPlayerDto } from '@players/dto/query-player.dto'
+import { SortOrder } from '@util/constants'
 
 @Controller('players')
 export class PlayersController {
@@ -18,6 +19,16 @@ export class PlayersController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async getPlayers(@Query() query: QueryPlayerDto): Promise<PlayerDocument[]> {
     return await this.playersService.find(query)
+  }
+
+  @Get('/top-margins')
+  async getTopMargins() {
+    return await this.playersService.getRecentValueMargins(3, SortOrder.Desc)
+  }
+
+  @Get('/bottom-margins')
+  async getBottomMargins() {
+    return await this.playersService.getRecentValueMargins(3, SortOrder.Asc)
   }
 
   // TODO: make this a cron job
