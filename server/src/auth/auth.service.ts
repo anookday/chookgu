@@ -1,18 +1,32 @@
+import { verify, hash } from 'argon2'
+import { randomBytes } from 'crypto'
+import { Model } from 'mongoose'
 import {
   Injectable,
   UnauthorizedException,
   BadRequestException,
+  NotFoundException,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import * as argon2 from 'argon2'
+import { InjectModel } from '@nestjs/mongoose'
+import {
+  Verification,
+  VerificationDocument,
+} from '@auth/schemas/verification.schema'
+import { MailService } from '@mail/mail.service'
+import { UserDocument, isUserDocument } from '@users/schemas/user.schema'
 import { UsersService } from '@users/users.service'
 import { CreateUserProfileDto } from '@users/dto/create-userProfile.dto'
+import { USER_STARTING_BALANCE } from '@util/constants'
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService
+    private mailService: MailService,
+    private jwtService: JwtService,
+    @InjectModel(Verification.name)
+    private verificationModel: Model<VerificationDocument>
   ) {}
 
   /**
@@ -31,7 +45,7 @@ export class AuthService {
     }
 
     // invalid password
-    const verifyResult = await argon2.verify(user.password, password)
+    const verifyResult = await verify(user.password, password)
     if (!verifyResult) {
       throw new UnauthorizedException('Invalid email/password')
     }
@@ -52,7 +66,7 @@ export class AuthService {
   async register({ username, email, password }: CreateUserProfileDto) {
     // user is already registered AKA duplicate email is found
     const existingUser = await this.usersService.findByEmail(email)
-    if (existingUser != null) {
+    if (existingUser && existingUser.verified) {
       throw new BadRequestException('That email is taken. Try another one.')
     }
 
@@ -64,7 +78,6 @@ export class AuthService {
     }
 
     // email must not be empty
-    // TODO: ACTUALLY validate emails by sending confirmation links
     if (email.length === 0) {
       throw new BadRequestException('Invalid email.')
     }
@@ -77,13 +90,75 @@ export class AuthService {
     }
 
     // hash password with salt
-    const hash = await argon2.hash(password)
+    const hashedPw = await hash(password)
 
     // create new user in database
-    return await this.usersService.create({
+    const newUser = await this.usersService.create({
       username,
       email,
-      password: hash,
+      password: hashedPw,
     })
+
+    // send confirmation email to newly created account
+    await this.sendVerificationEmail(newUser)
+
+    return newUser
+  }
+
+  /**
+   * Send an account confirmation email to the user's registered email.
+   */
+  async sendVerificationEmail(user: string | UserDocument) {
+    // get user document
+    let recipient: UserDocument
+    if (typeof user === 'string') {
+      recipient = await this.usersService.findById(user)
+    } else {
+      recipient = user
+    }
+
+    // generate verification token
+    const token = randomBytes(64).toString('hex')
+    await this.verificationModel.create({
+      _id: token,
+      user: recipient._id,
+    })
+
+    // send user email with verification token attached
+    await this.mailService.sendConfirmation(recipient.email, token)
+  }
+
+  /**
+   * Verify user with the confirmation token given to the user (sent by email).
+   */
+  async verify(token: string) {
+    // find verification token on database
+    let verification = await this.verificationModel
+      .findById(token)
+      .populate('user')
+    // token does not exist or has expired
+    if (!verification) {
+      throw new NotFoundException(
+        'Confirmation token does not exist or has expired'
+      )
+    }
+    // user associated with token does not exist
+    if (!isUserDocument(verification.user)) {
+      throw new NotFoundException('User not found')
+    }
+    // user is already verified
+    if (verification.user.verified) {
+      throw new BadRequestException('User is already verified')
+    }
+    // verify user
+    verification.user.verified = true
+    // give user starting credits
+    verification.user.portfolio.find(
+      ({ mode }) => mode === 'standard'
+    ).balance = USER_STARTING_BALANCE
+    // update user document
+    await verification.user.save()
+    // delete verification token
+    await verification.delete()
   }
 }

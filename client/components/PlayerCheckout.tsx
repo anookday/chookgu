@@ -11,12 +11,13 @@ enum TransactionStatus {
   Ready,
   Processing,
   Success,
-  Error,
+  Failed,
 }
 
 interface PlayerCheckoutProps {
   className?: string
   player: Player | PlayerAsset
+  season: string
   // function to call whenever user navigates away from checkout component
   onBack?: () => void
   // function to call as soon as transaction succeeds
@@ -26,6 +27,7 @@ interface PlayerCheckoutProps {
 const PlayerCheckout = ({
   className,
   player,
+  season,
   onBack,
   onComplete,
 }: PlayerCheckoutProps) => {
@@ -34,7 +36,10 @@ const PlayerCheckout = ({
   const [status, setStatus] = useState<TransactionStatus>(
     TransactionStatus.Ready
   )
+
+  const portfolio = user.portfolio.find(({ mode }) => mode === season)
   const minAmount = 1
+  const style = className ? `${styles.widget} ${className}` : styles.widget
 
   let maxAmount: number
   let currentValue: number
@@ -44,28 +49,9 @@ const PlayerCheckout = ({
   let inputLabel: string
   let newBalance: number
 
-  if (isPlayerAsset(player)) {
-    currentValue = player.player.currentValue
-    maxAmount = player.amount
-    playerId = player.player._id
-    playerName = player.player.name
-    apiEndpoint = '/transaction/sell'
-    inputLabel = 'Amount to sell:'
-    newBalance = user.portfolio.balance + currentValue * amount
-  } else {
-    currentValue = player.currentValue
-    maxAmount = Math.floor(user.portfolio.balance / currentValue)
-    playerId = player._id
-    playerName = player.name
-    apiEndpoint = '/transaction/buy'
-    inputLabel = 'Amount to buy:'
-    newBalance = user.portfolio.balance - currentValue * amount
-  }
-
   const onAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.value) {
       setAmount(minAmount)
-      return
     }
 
     let newAmount = parseInt(event.target.value)
@@ -83,6 +69,7 @@ const PlayerCheckout = ({
     setStatus(TransactionStatus.Processing)
     try {
       const result = await api.post<User>(apiEndpoint, {
+        season,
         playerId: playerId,
         amount,
       })
@@ -90,11 +77,36 @@ const PlayerCheckout = ({
       setUser(result.data)
       onComplete && (await onComplete())
     } catch (e) {
-      setStatus(TransactionStatus.Error)
+      setStatus(TransactionStatus.Failed)
     }
   }
 
   const renderContent = () => {
+    // render if invalid season is given
+    if (!portfolio) {
+      return (
+        <div className={style}>
+          <div>An unexpected error has occurred. Try refreshing the page.</div>
+          <div className={styles.widget__footer}>
+            <Button text="Go Back" onClick={() => onBack && onBack()} />
+          </div>
+        </div>
+      )
+    }
+
+    // render if user cannot afford the minimum
+    if (!isPlayerAsset(player) && portfolio.balance < player.currentValue) {
+      return (
+        <>
+          <div>Insufficient funds.</div>
+          <div className={styles.widget__footer}>
+            <Button text="Go Back" onClick={() => onBack && onBack()} />
+          </div>
+        </>
+      )
+    }
+
+    // render based on transaction state
     switch (status) {
       case TransactionStatus.Processing:
         return (
@@ -112,7 +124,7 @@ const PlayerCheckout = ({
             </div>
           </>
         )
-      case TransactionStatus.Error:
+      case TransactionStatus.Failed:
         return (
           <>
             <div>Transaction failed. Try again later.</div>
@@ -121,21 +133,8 @@ const PlayerCheckout = ({
             </div>
           </>
         )
+
       default:
-        // user cannot purchase the minimum amount of players
-        if (
-          !isPlayerAsset(player) &&
-          user.portfolio.balance < player.currentValue
-        ) {
-          return (
-            <>
-              <div>Insufficient funds.</div>
-              <div className={styles.widget__footer}>
-                <Button text="Go Back" onClick={() => onBack && onBack()} />
-              </div>
-            </>
-          )
-        }
         return (
           <>
             <div className={styles.amount}>
@@ -153,7 +152,7 @@ const PlayerCheckout = ({
             </div>
             <div className={styles.widget__text}>
               <span>Current balance:</span>
-              <span>{getValueString(user.portfolio.balance)}</span>
+              <span>{getValueString(portfolio.balance)}</span>
             </div>
             <div className={styles.widget__text}>
               <span>Price:</span>
@@ -176,7 +175,27 @@ const PlayerCheckout = ({
     }
   }
 
-  const style = className ? `${styles.widget} ${className}` : styles.widget
+  if (!portfolio) {
+    return renderContent()
+  }
+
+  if (isPlayerAsset(player)) {
+    currentValue = player.player.currentValue
+    maxAmount = player.amount
+    playerId = player.player._id
+    playerName = player.player.name
+    apiEndpoint = '/transaction/sell'
+    inputLabel = 'Amount to sell:'
+    newBalance = portfolio.balance + currentValue * amount
+  } else {
+    currentValue = player.currentValue
+    maxAmount = Math.floor(portfolio.balance / currentValue)
+    playerId = player._id
+    playerName = player.name
+    apiEndpoint = '/transaction/buy'
+    inputLabel = 'Amount to buy:'
+    newBalance = portfolio.balance - currentValue * amount
+  }
 
   return (
     <div className={style}>

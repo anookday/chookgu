@@ -9,6 +9,8 @@ import styles from '@styles/components/UserMenu.module.scss'
 const UserMenu = () => {
   const { user } = useUser()
   const router = useRouter()
+  // TODO: get rid of hard coded value for season
+  const season = 'standard'
 
   const logout = async () => {
     try {
@@ -24,14 +26,14 @@ const UserMenu = () => {
     }
   }
 
+  let balance = user.portfolio.find(({ mode }) => mode === season)?.balance || 0
+
   return (
     <Dropdown
       items={[{ text: 'Settings' }, { text: 'Log Out', onClick: logout }]}
     >
       <div className={styles.user}>
-        <span className={styles.user__balance}>
-          {getValueString(user.portfolio.balance)}
-        </span>
+        <span className={styles.user__balance}>{getValueString(balance)}</span>
         <span className={styles.user__name}>{user.username}</span>
         <img
           src={picture.src}

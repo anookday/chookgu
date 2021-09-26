@@ -1,3 +1,7 @@
 .layout {
   @include layout;
+
+  &--headless {
+    height: 100vh;
+  }
 }

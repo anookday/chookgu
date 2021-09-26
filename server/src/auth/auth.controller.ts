@@ -1,6 +1,7 @@
 import {
   Controller,
   Body,
+  Query,
   Res,
   Get,
   Post,
@@ -53,10 +54,9 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('/profile')
   async getProfile(@User('_id') userId: string) {
-    const { username, email, portfolio } = await this.usersService.findById(
-      userId
-    )
-    return { username, email, portfolio }
+    const { username, email, portfolio, verified } =
+      await this.usersService.findById(userId)
+    return { username, email, portfolio, verified }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -72,5 +72,17 @@ export class AuthController {
   @Delete('/profile')
   async deleteProfile(@User('_id') userId: string) {
     return await this.usersService.deleteOne(userId)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/send-confirmation')
+  async sendConfirmation(@User('_id') userId: string) {
+    return await this.authService.sendVerificationEmail(userId)
+  }
+
+  @Post('/verify')
+  async verify(@Query('token') token: string, @Res() res: Response) {
+    await this.authService.verify(token)
+    res.sendStatus(200)
   }
 }

@@ -1,10 +1,16 @@
 import { Module } from '@nestjs/common'
+import { MongooseModule } from '@nestjs/mongoose'
 import { PassportModule } from '@nestjs/passport'
 import { JwtModule } from '@nestjs/jwt'
 import { AuthService } from '@auth/auth.service'
 import { LocalStrategy } from '@auth/local.strategy'
 import { JwtStrategy } from '@auth/jwt.strategy'
+import {
+  Verification,
+  VerificationSchema,
+} from '@auth/schemas/verification.schema'
 import { AuthController } from '@auth/auth.controller'
+import { MailService } from '@mail/mail.service'
 import { UsersModule } from '@users/users.module'
 import { COOKIE_MAX_AGE } from '@util/constants'
 
@@ -12,12 +18,15 @@ import { COOKIE_MAX_AGE } from '@util/constants'
   imports: [
     UsersModule,
     PassportModule,
+    MongooseModule.forFeature([
+      { name: Verification.name, schema: VerificationSchema },
+    ]),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: COOKIE_MAX_AGE + 'ms' },
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, MailService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}

@@ -12,10 +12,8 @@ export interface UserProps {
 const defaultUser: User = {
   username: '',
   email: '',
-  portfolio: {
-    balance: 0,
-    players: [],
-  },
+  verified: false,
+  portfolio: [],
 }
 
 export const UserContext = createContext({

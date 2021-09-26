@@ -31,7 +31,12 @@ export class TransactionsService {
       .limit(10)
   }
 
-  async buyPlayer(userId: string, playerId: number, amount: number) {
+  async buyPlayer(
+    season: string,
+    userId: string,
+    playerId: number,
+    amount: number
+  ) {
     let user = await this.usersService.findById(userId)
     const player = await this.playersService.findById(playerId)
 
@@ -43,9 +48,15 @@ export class TransactionsService {
       throw new BadRequestException('Invalid amount')
     }
 
+    let portfolio = user.portfolio.find(({ mode }) => mode === season)
+
+    if (!portfolio) {
+      throw new BadRequestException('Invalid season')
+    }
+
     const totalPrice = player.currentValue * amount
 
-    if (totalPrice > user.portfolio.balance) {
+    if (totalPrice > portfolio.balance) {
       throw new BadRequestException('Insufficient funds')
     }
 
@@ -53,6 +64,7 @@ export class TransactionsService {
     const transaction = await this.transactionModel.create({
       user: Types.ObjectId(userId),
       player: playerId,
+      mode: season,
       type: TransactionType.Buy,
       price: player.currentValue,
       amount,
@@ -63,20 +75,20 @@ export class TransactionsService {
     }
 
     // update user portfolio
-    user.portfolio.balance -= totalPrice
+    portfolio.balance -= totalPrice
 
-    const playerIndex = user.portfolio.players.findIndex(
+    const playerIndex = portfolio.players.findIndex(
       (p) => !isPlayerDocument(p.player) && p.player == playerId
     )
 
     if (playerIndex > -1) {
-      let p = user.portfolio.players[playerIndex]
+      let p = portfolio.players[playerIndex]
       // calculate new average value
       p.averageValue =
         (p.averageValue * p.amount + totalPrice) / (p.amount + amount)
       p.amount += amount
     } else {
-      user.portfolio.players.push({
+      portfolio.players.push({
         player: playerId,
         amount,
         averageValue: player.currentValue,
@@ -86,7 +98,12 @@ export class TransactionsService {
     return await user.save()
   }
 
-  async sellPlayer(userId: string, playerId: number, amount: number) {
+  async sellPlayer(
+    season: string,
+    userId: string,
+    playerId: number,
+    amount: number
+  ) {
     let user = await this.usersService.findById(userId)
     const player = await this.playersService.findById(playerId)
 
@@ -94,7 +111,13 @@ export class TransactionsService {
       throw new BadRequestException('Invalid id')
     }
 
-    const playerIndex = user.portfolio.players.findIndex(
+    let portfolio = user.portfolio.find(({ mode }) => mode === season)
+
+    if (!portfolio) {
+      throw new BadRequestException('Invalid season')
+    }
+
+    const playerIndex = portfolio.players.findIndex(
       (p) => !isPlayerDocument(p.player) && p.player == playerId
     )
 
@@ -102,7 +125,7 @@ export class TransactionsService {
       throw new BadRequestException('User does not own this player')
     }
 
-    const newAmount = user.portfolio.players[playerIndex].amount - amount
+    const newAmount = portfolio.players[playerIndex].amount - amount
 
     if (amount < 1 || newAmount < 0) {
       throw new BadRequestException('Invalid amount')
@@ -111,6 +134,7 @@ export class TransactionsService {
     const transaction = await this.transactionModel.create({
       user: Types.ObjectId(userId),
       player: player._id,
+      mode: season,
       type: TransactionType.Sell,
       price: player.currentValue,
       amount,
@@ -120,12 +144,12 @@ export class TransactionsService {
       throw new InternalServerErrorException('Transaction failed')
     }
 
-    user.portfolio.balance += player.currentValue * amount
+    portfolio.balance += player.currentValue * amount
 
     if (newAmount === 0) {
-      user.portfolio.players.splice(playerIndex, 1)
+      portfolio.players.splice(playerIndex, 1)
     } else {
-      user.portfolio.players[playerIndex].amount = newAmount
+      portfolio.players[playerIndex].amount = newAmount
     }
 
     return await user.save()

@@ -16,7 +16,10 @@ export class Transaction {
   user: Types.ObjectId | UserDocument
 
   @Prop({ type: Number, ref: 'Player' })
-  player: Types.ObjectId | PlayerDocument
+  player: number | PlayerDocument
+
+  @Prop()
+  mode: string
 
   @Prop({ type: String, enum: TransactionType })
   type: string
@@ -38,8 +41,7 @@ TransactionSchema.index({ user: 1, date: -1 })
  * Return true if referenced transaction is a TransactionDocument.
  */
 export function isTransactionDocument(
-  transaction: Types.ObjectId | TransactionDocument
-): transaction is TransactionDocument {
-  console.log((transaction as TransactionDocument).schema)
-  return (transaction as TransactionDocument).schema !== undefined
+  obj: Types.ObjectId | TransactionDocument
+): obj is TransactionDocument {
+  return !(obj instanceof Types.ObjectId)
 }

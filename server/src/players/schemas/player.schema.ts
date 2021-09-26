@@ -57,7 +57,7 @@ PlayerSchema.index(
  * utilities
  */
 export function isPlayerDocument(
-  player: number | PlayerDocument
-): player is PlayerDocument {
-  return (player as PlayerDocument).schema !== undefined
+  obj: number | PlayerDocument
+): obj is PlayerDocument {
+  return typeof obj !== 'number'
 }

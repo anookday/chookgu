@@ -20,9 +20,14 @@ export class TransactionsController {
   @Post('/buy')
   async buy(
     @User('_id') userId: string,
-    @Body() { playerId, amount }: TransactionDto
+    @Body() { season, playerId, amount }: TransactionDto
   ) {
-    return await this.transactionsService.buyPlayer(userId, playerId, amount)
+    return await this.transactionsService.buyPlayer(
+      season,
+      userId,
+      playerId,
+      amount
+    )
   }
 
   @UseGuards(JwtAuthGuard)
@@ -30,8 +35,13 @@ export class TransactionsController {
   @Post('/sell')
   async sell(
     @User('_id') userId: string,
-    @Body() { playerId, amount }: TransactionDto
+    @Body() { season, playerId, amount }: TransactionDto
   ) {
-    return await this.transactionsService.sellPlayer(userId, playerId, amount)
+    return await this.transactionsService.sellPlayer(
+      season,
+      userId,
+      playerId,
+      amount
+    )
   }
 }

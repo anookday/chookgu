@@ -38,6 +38,7 @@ const Trade = (props: UserProps) => {
   const [players, setPlayers] = useState<Player[]>([])
   const [selected, setSelected] = useState<Player | undefined>(undefined)
   const [checkout, setCheckout] = useState(false)
+  const [season, setSeason] = useState('standard')
 
   // fetch players every time search options change
   useEffect(() => {
@@ -110,6 +111,7 @@ const Trade = (props: UserProps) => {
         <PlayerCheckout
           className={styles.details}
           player={selected}
+          season={season}
           onBack={() => setCheckout(false)}
         />
       )
@@ -145,6 +147,7 @@ const Trade = (props: UserProps) => {
           </div>
           <div className={styles.widget__list}>
             <Scroll
+              id="buyPlayers"
               index={searchOptions.index}
               next={() => {
                 setSearchOptions({

@@ -24,10 +24,13 @@ const Portfolio = (props: UserProps) => {
   const [playerAssets, setPlayerAssets] = useState<PlayerAsset[]>([])
   const [selected, setSelected] = useState<PlayerAsset | undefined>(undefined)
   const [checkout, setCheckout] = useState(false)
+  const [season, setSeason] = useState('standard')
 
   const getPortfolio = async () => {
-    const response = await api.get<UserPortfolio>('/user/portfolio')
-    setPlayerAssets(response.data.players || [])
+    const response = await api.get<UserPortfolio[]>('/user/portfolio')
+
+    const players = response.data.find(({ mode }) => mode === season)?.players
+    setPlayerAssets(players || [])
   }
 
   useEffect(() => {
@@ -45,11 +48,10 @@ const Portfolio = (props: UserProps) => {
 
   const onCheckoutBack = () => {
     setCheckout(false)
-    if (
-      selected &&
-      !playerAssets.find((asset) => asset.player._id === selected.player._id)
-    ) {
-      setSelected(undefined)
+    if (selected) {
+      setSelected(
+        playerAssets.find((asset) => asset.player._id === selected.player._id)
+      )
     }
   }
 
@@ -91,6 +93,7 @@ const Portfolio = (props: UserProps) => {
         <PlayerCheckout
           className={styles.details}
           player={selected}
+          season={season}
           onBack={onCheckoutBack}
           onComplete={onCheckoutComplete}
         />

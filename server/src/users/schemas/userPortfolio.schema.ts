@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose'
-import { USER_STARTING_BALANCE } from '@util/constants'
 import { PlayerDocument } from '@players/schemas/player.schema'
 
 /**
@@ -27,7 +26,10 @@ export const PurchasedPlayerSchema =
  */
 @Schema({ _id: false })
 export class UserPortfolio {
-  @Prop({ default: USER_STARTING_BALANCE })
+  @Prop({ type: String, required: true })
+  mode: string
+
+  @Prop({ type: Number, default: 0 })
   balance: number
 
   @Prop({ type: [PurchasedPlayerSchema], default: [] })

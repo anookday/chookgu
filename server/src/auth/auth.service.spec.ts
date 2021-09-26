@@ -7,6 +7,11 @@ import { UnauthorizedException, BadRequestException } from '@nestjs/common'
 import { JwtModule } from '@nestjs/jwt'
 
 import { AuthService } from '@auth/auth.service'
+import {
+  Verification,
+  VerificationSchema,
+} from '@auth/schemas/verification.schema'
+import { MailService } from '@mail/mail.service'
 import { UsersModule } from '@users/users.module'
 import { User, UserSchema, UserDocument } from '@users/schemas/user.schema'
 import { CreateUserProfileDto } from '@users/dto/create-userProfile.dto'
@@ -42,8 +47,11 @@ describe('AuthService', () => {
           useFindAndModify: false,
         }),
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+        MongooseModule.forFeature([
+          { name: Verification.name, schema: VerificationSchema },
+        ]),
       ],
-      providers: [AuthService],
+      providers: [AuthService, MailService],
     }).compile()
 
     // initialize service

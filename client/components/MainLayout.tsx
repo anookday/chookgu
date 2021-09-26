@@ -4,6 +4,7 @@ import Header, { HeaderNavigationProps } from '@components/Header'
 import Button from '@components/Button'
 import UserMenu from '@components/UserMenu'
 import Landing from '@components/Landing'
+import Confirmation from '@components/Confirmation'
 import { UserProps, UserContextProvider } from '@context/UserContext'
 import styles from '@styles/components/MainLayout.module.scss'
 
@@ -31,8 +32,23 @@ const MainLayout = (props: MainLayoutProps) => {
     }
   }, [])
 
-  // if user is logged in return props children
+  // user is logged in
   if (props.loggedIn) {
+    // if user is not verified render email confimration page
+    if (!props.user.verified) {
+      return (
+        <UserContextProvider value={props.user}>
+          <Header navigation={[]}>
+            <UserMenu />
+          </Header>
+          <main>
+            <Confirmation />
+          </main>
+        </UserContextProvider>
+      )
+    }
+
+    // if user is verified render navigation and content
     const navigation: HeaderNavigationProps[] = [
       { text: 'Home', link: '/' },
       { text: 'Portfolio', link: '/portfolio' },
@@ -52,7 +68,8 @@ const MainLayout = (props: MainLayoutProps) => {
       </UserContextProvider>
     )
   }
-  // if user is not logged in return landing page
+
+  // if user is not logged in render landing page
   return (
     <>
       <Header

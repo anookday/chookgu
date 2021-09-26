@@ -49,34 +49,13 @@ const Home = (props: UserProps) => {
     ))
   }
 
-  const renderPlayerAssets = () => {
-    return playerAssets.map((asset, index) => (
-      <PlayerCard
-        key={index}
-        player={asset.player}
-        size="small"
-        format="custom"
-        customFormatOptions={{
-          value: getMarginString(
-            asset.averageValue,
-            asset.player.currentValue,
-            asset.amount
-          ),
-          style:
-            asset.averageValue < asset.player.currentValue
-              ? 'positive'
-              : 'negative',
-        }}
-      />
-    ))
-  }
-
   return (
     <Layout>
       <GridContainer>
         <div className={`${styles.widget} ${styles.portfolio}`}>
-          <div className={styles.widget__header}>My Players</div>
-          <div className={styles.widget__list}>{renderPlayerAssets()}</div>
+          <div className={styles.widget__header}>
+            More cool statistics coming soon
+          </div>
         </div>
         <div className={`${styles.widget} ${styles.topMargins}`}>
           <div className={styles.widget__header}>Top Gains</div>

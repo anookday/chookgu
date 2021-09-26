@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common'
+import { Controller, Get, UseGuards, Query } from '@nestjs/common'
 import { JwtAuthGuard } from '@auth/jwt-auth.guard'
 import { UsersService } from '@users/users.service'
 import { User } from '@users/user.decorator'
@@ -9,7 +9,10 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/portfolio')
-  async getPortfolio(@User('_id') userId: string) {
-    return await this.usersService.getPortfolio(userId)
+  async getPortfolio(
+    @User('_id') userId: string,
+    @Query('season') season: string
+  ) {
+    return await this.usersService.getPortfolio(userId, season)
   }
 }

@@ -3,15 +3,15 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import styles from '@styles/components/Scroll.module.scss'
 
 interface ScrollProps {
+  id: string
   index: number
   next: () => void
   children: JSX.Element[]
 }
 
-const Scroll = ({ index, children, next }: ScrollProps) => {
+const Scroll = ({ id, index, children, next }: ScrollProps) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const initialized = useRef(false)
-  const id = Date.now().toString()
 
   useEffect(() => {
     if (scrollRef.current && index === 0) {
@@ -28,7 +28,7 @@ const Scroll = ({ index, children, next }: ScrollProps) => {
 
   return (
     <div
-      id={`scrollContainer${id}`}
+      id={`scrollContainer_${id}`}
       className={styles.container}
       ref={scrollRef}
     >
@@ -38,7 +38,7 @@ const Scroll = ({ index, children, next }: ScrollProps) => {
         next={next}
         hasMore={true}
         loader={renderLoader()}
-        scrollableTarget={`scrollContainer${id}`}
+        scrollableTarget={`scrollContainer_${id}`}
       >
         {children}
       </InfiniteScroll>

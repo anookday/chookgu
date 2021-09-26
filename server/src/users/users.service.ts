@@ -52,10 +52,11 @@ export class UsersService {
     return user
   }
 
-  async getPortfolio(_id: string) {
+  async getPortfolio(_id: string, season: string) {
     const result = await this.userModel
-      .findById({ _id }, 'portfolio')
+      .findById(_id, 'portfolio')
       .populate('portfolio.players.player')
+
     return result.portfolio
   }
 }
