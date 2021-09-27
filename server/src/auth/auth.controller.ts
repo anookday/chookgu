@@ -45,7 +45,6 @@ export class AuthController {
     res.clearCookie('access_token').send('Logged out successfully')
   }
 
-  /* TODO: add guard/middleware that verifies that user has confirmed account creation over email */
   @Post('/profile')
   async createProfile(@Body() createUserProfileDto: CreateUserProfileDto) {
     return await this.authService.register(createUserProfileDto)
@@ -54,9 +53,9 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('/profile')
   async getProfile(@User('_id') userId: string) {
-    const { username, email, portfolio, verified } =
+    const { username, email, portfolio, verified, auth } =
       await this.usersService.findById(userId)
-    return { username, email, portfolio, verified }
+    return { username, email, portfolio, verified, auth }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -65,13 +64,15 @@ export class AuthController {
     @User('_id') userId: string,
     @Body() updateUserProfileDto: UpdateUserProfileDto
   ) {
-    return await this.usersService.updateOne(userId, updateUserProfileDto)
+    // exclude fields that the user is not authorized to change
+    const { auth, ...profile } = updateUserProfileDto
+    return await this.usersService.updateProfile(userId, profile)
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('/profile')
   async deleteProfile(@User('_id') userId: string) {
-    return await this.usersService.deleteOne(userId)
+    return await this.usersService.deleteUser(userId)
   }
 
   @UseGuards(JwtAuthGuard)

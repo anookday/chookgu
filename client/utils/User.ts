@@ -6,9 +6,12 @@ export interface UserPortfolio {
   players?: PlayerAsset[]
 }
 
+export type UserAuth = 'user' | 'admin'
+
 export interface User {
   username: string
   email: string
   portfolio: UserPortfolio[]
   verified: boolean
+  auth: UserAuth
 }

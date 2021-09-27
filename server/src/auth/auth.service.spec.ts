@@ -1,5 +1,5 @@
 import { Model } from 'mongoose'
-import * as argon2 from 'argon2'
+import { hash } from 'argon2'
 
 import { Test, TestingModule } from '@nestjs/testing'
 import { MongooseModule } from '@nestjs/mongoose'
@@ -7,10 +7,7 @@ import { UnauthorizedException, BadRequestException } from '@nestjs/common'
 import { JwtModule } from '@nestjs/jwt'
 
 import { AuthService } from '@auth/auth.service'
-import {
-  Verification,
-  VerificationSchema,
-} from '@auth/schemas/verification.schema'
+import { Token, TokenSchema } from '@auth/schemas/token.schema'
 import { MailService } from '@mail/mail.service'
 import { UsersModule } from '@users/users.module'
 import { User, UserSchema, UserDocument } from '@users/schemas/user.schema'
@@ -21,10 +18,13 @@ import { closeInMongodConnection, rootMongooseTestModule } from '@test/database'
 describe('AuthService', () => {
   let module: TestingModule
   let service: AuthService
+  // hash maps to make testing easier
   let ids: any = {}
   let emails: any = {}
   let pws: any = {}
+  // uninitialized list of users with hashed passwords
   let hashedUsers: CreateUserProfileDto[] = []
+  // variable used to test creating a valid profile
   const validRegisterFields: CreateUserProfileDto = {
     email: 'hello@gmail.com',
     username: 'hello world',
@@ -47,9 +47,7 @@ describe('AuthService', () => {
           useFindAndModify: false,
         }),
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-        MongooseModule.forFeature([
-          { name: Verification.name, schema: VerificationSchema },
-        ]),
+        MongooseModule.forFeature([{ name: Token.name, schema: TokenSchema }]),
       ],
       providers: [AuthService, MailService],
     }).compile()
@@ -61,7 +59,7 @@ describe('AuthService', () => {
     for (let user of users) {
       pws[user.username.split(' ')[0].toLowerCase()] = user.password
       emails[user.username.split(' ')[0].toLowerCase()] = user.email
-      const password = await argon2.hash(user.password)
+      const password = await hash(user.password)
       hashedUsers.push({
         ...user,
         password,
@@ -75,9 +73,16 @@ describe('AuthService', () => {
     await myModel.deleteMany({})
     const initialUsers = await myModel.create(hashedUsers)
 
-    // save document ids
     for (let user of initialUsers) {
+      // save document ids to hash map
       ids[user.username.split(' ')[0].toLowerCase()] = user.id
+
+      // verify Mary and make her an admin
+      if (user.username === 'Mary Sue') {
+        user.verified = true
+        user.auth = 'admin'
+        await user.save()
+      }
     }
   })
 

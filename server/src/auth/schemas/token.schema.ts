@@ -3,18 +3,21 @@ import { Document, Types, Schema as MongooseSchema } from 'mongoose'
 import { UserDocument } from '@users/schemas/user.schema'
 import { VERIFICATION_MAX_AGE } from '@util/constants'
 
-export type VerificationDocument = Verification & Document
+export type TokenDocument = Token & Document
 
 @Schema()
-export class Verification {
+export class Token {
   @Prop({ type: String, required: true })
   _id: string
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   user: Types.ObjectId | UserDocument
+
+  @Prop({ type: String, required: true })
+  type: 'confirm' | 'pw-reset'
 
   @Prop({ type: Date, default: Date.now, expires: VERIFICATION_MAX_AGE })
   expires: Date
 }
 
-export const VerificationSchema = SchemaFactory.createForClass(Verification)
+export const TokenSchema = SchemaFactory.createForClass(Token)

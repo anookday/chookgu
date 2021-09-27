@@ -27,11 +27,14 @@ const UserMenu = () => {
   }
 
   let balance = user.portfolio.find(({ mode }) => mode === season)?.balance || 0
+  let options = [{ text: 'Settings' }, { text: 'Log Out', onClick: logout }]
+
+  if (user.auth === 'admin') {
+    options.splice(1, 0, { text: 'Admin' })
+  }
 
   return (
-    <Dropdown
-      items={[{ text: 'Settings' }, { text: 'Log Out', onClick: logout }]}
-    >
+    <Dropdown items={options}>
       <div className={styles.user}>
         <span className={styles.user__balance}>{getValueString(balance)}</span>
         <span className={styles.user__name}>{user.username}</span>

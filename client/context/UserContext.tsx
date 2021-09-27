@@ -14,6 +14,7 @@ const defaultUser: User = {
   email: '',
   verified: false,
   portfolio: [],
+  auth: 'user',
 }
 
 export const UserContext = createContext({

@@ -1,18 +1,14 @@
-import { verify, hash } from 'argon2'
+import { verify } from 'argon2'
 import { randomBytes } from 'crypto'
 import { Model } from 'mongoose'
 import {
   Injectable,
   UnauthorizedException,
-  BadRequestException,
   NotFoundException,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { InjectModel } from '@nestjs/mongoose'
-import {
-  Verification,
-  VerificationDocument,
-} from '@auth/schemas/verification.schema'
+import { Token, TokenDocument } from '@auth/schemas/token.schema'
 import { MailService } from '@mail/mail.service'
 import { UserDocument, isUserDocument } from '@users/schemas/user.schema'
 import { UsersService } from '@users/users.service'
@@ -25,8 +21,8 @@ export class AuthService {
     private usersService: UsersService,
     private mailService: MailService,
     private jwtService: JwtService,
-    @InjectModel(Verification.name)
-    private verificationModel: Model<VerificationDocument>
+    @InjectModel(Token.name)
+    private tokenModel: Model<TokenDocument>
   ) {}
 
   /**
@@ -37,17 +33,17 @@ export class AuthService {
    * @returns User object if valid, else null
    */
   async validateUser(email: string, password: string) {
-    const user = await this.usersService.findOneForAuth(email)
+    const user = await this.usersService.findForAuth(email)
 
     // invalid email
     if (!user) {
-      throw new UnauthorizedException('Invalid email/password')
+      throw new UnauthorizedException('Invalid email')
     }
 
     // invalid password
     const verifyResult = await verify(user.password, password)
     if (!verifyResult) {
-      throw new UnauthorizedException('Invalid email/password')
+      throw new UnauthorizedException('Invalid password')
     }
     return user
   }
@@ -61,46 +57,17 @@ export class AuthService {
   }
 
   /**
-   * Validate new user info. If valid, create new user in database.
+   * Validate and create new user. If successful, send a confirmation email to
+   * the user's given email address.
    */
-  async register({ username, email, password }: CreateUserProfileDto) {
-    // user is already registered AKA duplicate email is found
-    const existingUser = await this.usersService.findByEmail(email)
-    if (existingUser && existingUser.verified) {
-      throw new BadRequestException('That email is taken. Try another one.')
-    }
-
-    // username must be between 1 and 30 characters
-    if (username.length === 0 || username.length > 30) {
-      throw new BadRequestException(
-        'Username must be between 1 to 30 characters long.'
-      )
-    }
-
-    // email must not be empty
-    if (email.length === 0) {
-      throw new BadRequestException('Invalid email.')
-    }
-
-    // password must have at least 10 characters
-    if (password.length < 10) {
-      throw new BadRequestException(
-        'Password must be at least 10 chracters long.'
-      )
-    }
-
-    // hash password with salt
-    const hashedPw = await hash(password)
-
+  async register({ email, username, password }: CreateUserProfileDto) {
     // create new user in database
-    const newUser = await this.usersService.create({
-      username,
-      email,
-      password: hashedPw,
-    })
+    const newUser = await this.usersService.create(email, username, password)
 
     // send confirmation email to newly created account
-    await this.sendVerificationEmail(newUser)
+    if (newUser) {
+      await this.sendVerificationEmail(newUser)
+    }
 
     return newUser
   }
@@ -119,9 +86,10 @@ export class AuthService {
 
     // generate verification token
     const token = randomBytes(64).toString('hex')
-    await this.verificationModel.create({
+    await this.tokenModel.create({
       _id: token,
       user: recipient._id,
+      type: 'confirm',
     })
 
     // send user email with verification token attached
@@ -133,11 +101,9 @@ export class AuthService {
    */
   async verify(token: string) {
     // find verification token on database
-    let verification = await this.verificationModel
-      .findById(token)
-      .populate('user')
+    let verification = await this.tokenModel.findById(token).populate('user')
     // token does not exist or has expired
-    if (!verification) {
+    if (!verification || verification.type !== 'confirm') {
       throw new NotFoundException(
         'Confirmation token does not exist or has expired'
       )
@@ -146,16 +112,17 @@ export class AuthService {
     if (!isUserDocument(verification.user)) {
       throw new NotFoundException('User not found')
     }
-    // user is already verified
-    if (verification.user.verified) {
-      throw new BadRequestException('User is already verified')
-    }
+
+    // if user is already verified then there is no need to update database
+    if (verification.user.verified) return
     // verify user
     verification.user.verified = true
     // give user starting credits
     verification.user.portfolio.find(
       ({ mode }) => mode === 'standard'
     ).balance = USER_STARTING_BALANCE
+    // indicate that user profile has been updated
+    verification.user.modified = new Date()
     // update user document
     await verification.user.save()
     // delete verification token

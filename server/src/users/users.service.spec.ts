@@ -1,3 +1,4 @@
+import { verify } from 'argon2'
 import { Model } from 'mongoose'
 
 import { Test, TestingModule } from '@nestjs/testing'
@@ -41,6 +42,13 @@ describe('UsersService', () => {
 
     for (let user of initialUsers) {
       ids[user.username.split(' ')[0].toLowerCase()] = user.id
+
+      // verify Mary and make her an admin
+      if (user.username === 'Mary Sue') {
+        user.verified = true
+        user.auth = 'admin'
+        await user.save()
+      }
     }
   })
 
@@ -72,62 +80,46 @@ describe('UsersService', () => {
 
   it('finds user with password', async () => {
     const user = await service.findByEmail('johndoe@gmail.com')
-    const userWithPassword = await service.findOneForAuth('johndoe@gmail.com')
+    const userWithPassword = await service.findForAuth('johndoe@gmail.com')
     expect(user.password).toBeUndefined()
     expect(userWithPassword.password).toBeDefined()
   })
 
   it('creates new user', async () => {
-    const newUser = await service.create({
-      email: 'newuser@email.com',
-      username: 'Bruce Wayne',
-      password: 'ImNotBatman',
-    })
+    const newUser = await service.create(
+      'newuser@email.com',
+      'Bruce Wayne',
+      'ImNotBatman'
+    )
 
     expect(newUser).toBeDefined()
     expect(newUser.username).toEqual('Bruce Wayne')
     await expect(service.findById(newUser.id)).resolves.toBeDefined()
   })
 
-  it('prevents creating new user if email is duplicate', async () => {
+  it('prevents creating new user if email is duplicate of verified email', async () => {
     await expect(
-      service.create({
-        email: 'sheesh@sheesh.com',
-        username: 'Better Sheesh',
-        password: 'asdfasdfasdf',
-      })
+      service.create('marysue@outlook.com', 'Not Mary', 'asdfasdfasdf')
     ).rejects.toThrowError(BadRequestException)
   })
 
   it('updates existing user', async () => {
-    const mary = await service.updateOne(ids.mary, {
-      email: 'maryjane@outlook.com',
+    const mary = await service.updateProfile(ids.mary, {
       username: 'Mary Jane',
       password: 'peterparker',
     })
     expect(mary).toBeDefined()
-    expect(mary.email).toEqual('marysue@outlook.com')
     expect(mary.username).toEqual('Mary Sue')
 
-    const updatedMary = await service.findById(ids.mary)
-    expect(updatedMary.email).toEqual('maryjane@outlook.com')
+    const updatedMary = await service.findForAuth('marysue@outlook.com')
     expect(updatedMary.username).toEqual('Mary Jane')
-
-    const maryWithPassword = await service.findOneForAuth(
-      'maryjane@outlook.com'
-    )
-    expect(maryWithPassword.password).toEqual('peterparker')
-  })
-
-  it('prevents update if email is duplicate', async () => {
-    await expect(
-      service.updateOne(ids.john, { email: 'marysue@outlook.com' })
-    ).rejects.toThrowError(BadRequestException)
+    const passwordMatches = await verify(updatedMary.password, 'peterparker')
+    expect(passwordMatches).toEqual(true)
   })
 
   it('deletes existing user', async () => {
     await expect(service.findById(ids.sheesh)).resolves.toBeDefined()
-    await expect(service.deleteOne(ids.sheesh)).resolves.toBeDefined()
+    await expect(service.deleteUser(ids.sheesh)).resolves.toBeDefined()
     await expect(service.findById(ids.sheesh)).rejects.toThrowError(
       NotFoundException
     )

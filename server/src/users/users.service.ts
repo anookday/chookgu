@@ -1,3 +1,4 @@
+import { hash } from 'argon2'
 import { Model } from 'mongoose'
 import {
   Injectable,
@@ -6,8 +7,8 @@ import {
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { User, UserDocument } from '@users/schemas/user.schema'
-import { CreateUserProfileDto } from '@users/dto/create-userProfile.dto'
 import { UpdateUserProfileDto } from '@users/dto/update-userProfile.dto'
+import { isValidUsername, isValidEmail, isValidPassword } from '@util/validate'
 
 @Injectable()
 export class UsersService {
@@ -23,30 +24,67 @@ export class UsersService {
     return user
   }
 
-  async findOneForAuth(email: string) {
+  async findForAuth(email: string) {
     return await this.userModel.findOne({ email }, '+password')
   }
 
-  async create(createUserProfileDto: CreateUserProfileDto) {
-    const existingUser = await this.findByEmail(createUserProfileDto.email)
-    if (existingUser) throw new BadRequestException()
-
-    return await this.userModel.create(createUserProfileDto)
-  }
-
-  async updateOne(_id: string, updateUserProfileDto: UpdateUserProfileDto) {
-    // check for duplicate email
-    if (updateUserProfileDto.email) {
-      const existingUser = await this.findByEmail(updateUserProfileDto.email)
-      if (existingUser && existingUser.id !== _id) {
-        throw new BadRequestException()
-      }
+  /**
+   * Validate user fields. If all are valid, then create new user in database.
+   */
+  async create(email: string, username: string, password: string) {
+    // duplicate email is found
+    const existingUser = await this.findByEmail(email)
+    if (existingUser && existingUser.verified) {
+      throw new BadRequestException('That email is taken. Try another one.')
     }
 
-    return await this.userModel.findOneAndUpdate({ _id }, updateUserProfileDto)
+    // validate username
+    if (!isValidUsername(username)) {
+      throw new BadRequestException(
+        'Username must be between 1 to 30 characters long.'
+      )
+    }
+
+    // validate email
+    if (!isValidEmail(email)) {
+      throw new BadRequestException('Invalid email.')
+    }
+
+    // validate password
+    if (!isValidPassword(password)) {
+      throw new BadRequestException(
+        'Password must be at least 10 chracters long.'
+      )
+    }
+
+    // hash password with salt
+    const hashedPw = await hash(password)
+
+    return await this.userModel.create({ username, email, password: hashedPw })
   }
 
-  async deleteOne(_id: string) {
+  async updateProfile(
+    _id: string,
+    { username, password, auth }: UpdateUserProfileDto
+  ) {
+    if (username && !isValidUsername(username)) {
+      throw new BadRequestException('Invalid username')
+    }
+
+    if (password && !isValidPassword(password)) {
+      throw new BadRequestException('Invalid password')
+    }
+
+    // hash password with salt
+    const hashedPw = await hash(password)
+
+    return await this.userModel.findOneAndUpdate(
+      { _id },
+      { username, password: hashedPw, auth, modified: new Date() }
+    )
+  }
+
+  async deleteUser(_id: string) {
     const user = await this.userModel.findOneAndDelete({ _id })
     if (!user) throw new NotFoundException()
     return user
