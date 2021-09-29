@@ -29,7 +29,7 @@ Tournaments.getLayout = (page: ReactElement) => {
         <meta name="description" content="Description of chookgu" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <MainLayout selected={3} {...props}>
+      <MainLayout selected="Tournaments" {...props}>
         {page}
       </MainLayout>
     </div>

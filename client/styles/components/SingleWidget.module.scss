@@ -1,0 +1,13 @@
+.container {
+  max-width: 60rem;
+  width: 100%;
+  min-height: 40rem;
+}
+
+.widget {
+  @include widget-outer;
+
+  &--centered {
+    justify-content: center;
+  }
+}

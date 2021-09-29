@@ -9,7 +9,7 @@ import { UserProps, UserContextProvider } from '@context/UserContext'
 import styles from '@styles/components/MainLayout.module.scss'
 
 interface MainLayoutProps extends UserProps {
-  selected: number
+  selected?: string
   children?: JSX.Element
 }
 
@@ -57,7 +57,12 @@ const MainLayout = (props: MainLayoutProps) => {
       { text: 'Prizes', link: '/prizes' },
     ]
 
-    navigation[props.selected].selected = true
+    if (props.selected !== undefined) {
+      let selectedNav = navigation.find((nav) => nav.text === props.selected)
+      if (selectedNav) {
+        selectedNav.selected = true
+      }
+    }
 
     return (
       <UserContextProvider value={props.user}>

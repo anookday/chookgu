@@ -60,26 +60,26 @@ const Register = () => {
             <div className={styles.content}>
               <div>Content</div>
             </div>
-            <div className={styles.userForm}>
+            <div className={styles.form}>
               <Link href="/">
                 <a>
-                  <Logo className={styles.userForm_logo} />
+                  <Logo className={styles.form__logo} />
                 </a>
               </Link>
-              <div className={styles.userForm_formWrapper}>
-                <h1 className={styles.userForm_title}>Register</h1>
+              <div className={styles.form__wrapper}>
+                <h1 className={styles.form__title}>Register</h1>
                 <Form {...formProps} />
-                <p className={styles.userForm_error}>{error}</p>
+                <p className={styles.form__error}>{error}</p>
               </div>
               <div className={styles.redirect}>
-                <span className={styles.redirect_text}>
+                <span>
                   Have an account?{' '}
                   <Link href="/account/login">
-                    <a className={styles.redirect_link}>Log in</a>
+                    <a className={styles.redirect__link}>Log in</a>
                   </Link>
                 </span>
               </div>
-              <p className="login__legal">&copy; anookday 2021.</p>
+              <p>&copy; anookday 2021.</p>
             </div>
           </div>
         </div>

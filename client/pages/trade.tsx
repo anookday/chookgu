@@ -179,7 +179,7 @@ Trade.getLayout = (page: ReactElement) => {
         <meta name="description" content="Description of chookgu" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <MainLayout selected={2} {...props}>
+      <MainLayout selected="Trade" {...props}>
         {page}
       </MainLayout>
     </div>

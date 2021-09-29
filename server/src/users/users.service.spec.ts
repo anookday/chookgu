@@ -109,11 +109,8 @@ describe('UsersService', () => {
       password: 'peterparker',
     })
     expect(mary).toBeDefined()
-    expect(mary.username).toEqual('Mary Sue')
-
-    const updatedMary = await service.findForAuth('marysue@outlook.com')
-    expect(updatedMary.username).toEqual('Mary Jane')
-    const passwordMatches = await verify(updatedMary.password, 'peterparker')
+    expect(mary.username).toEqual('Mary Jane')
+    const passwordMatches = await verify(mary.password, 'peterparker')
     expect(passwordMatches).toEqual(true)
   })
 

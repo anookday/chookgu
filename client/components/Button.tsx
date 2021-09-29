@@ -9,6 +9,7 @@ interface ButtonProps {
   text: string
   size?: ButtonSize
   color?: ButtonColor
+  disabled?: boolean
   href?: string
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
 }

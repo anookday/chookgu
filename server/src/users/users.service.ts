@@ -65,7 +65,7 @@ export class UsersService {
 
   async updateProfile(
     _id: string,
-    { username, password, auth }: UpdateUserProfileDto
+    { username, password }: UpdateUserProfileDto
   ) {
     if (username && !isValidUsername(username)) {
       throw new BadRequestException('Invalid username')
@@ -75,13 +75,23 @@ export class UsersService {
       throw new BadRequestException('Invalid password')
     }
 
-    // hash password with salt
-    const hashedPw = await hash(password)
+    let user = await this.userModel.findById(_id)
 
-    return await this.userModel.findOneAndUpdate(
-      { _id },
-      { username, password: hashedPw, auth, modified: new Date() }
-    )
+    if (!user) {
+      throw new NotFoundException('User not found')
+    }
+
+    if (username) {
+      user.username = username
+    }
+
+    if (password) {
+      user.password = await hash(password)
+    }
+
+    user.modified = new Date()
+
+    return await user.save()
   }
 
   async deleteUser(_id: string) {

@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import Dropdown from '@components/Dropdown'
+import Dropdown, { DropdownItem } from '@components/Dropdown'
 import picture from '@public/profile.jpg'
 import { useUser } from '@context/UserContext'
 import { getValueString } from '@utils/numbers'
@@ -27,10 +27,15 @@ const UserMenu = () => {
   }
 
   let balance = user.portfolio.find(({ mode }) => mode === season)?.balance || 0
-  let options = [{ text: 'Settings' }, { text: 'Log Out', onClick: logout }]
+  let options: DropdownItem[] = [
+    { text: 'Settings', onClick: () => router.push('/account') },
+    { text: 'Log Out', onClick: () => logout() },
+  ]
 
   if (user.auth === 'admin') {
-    options.splice(1, 0, { text: 'Admin' })
+    options.splice(1, 0, {
+      text: 'Admin',
+    })
   }
 
   return (

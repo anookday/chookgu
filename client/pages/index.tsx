@@ -8,9 +8,7 @@ import GridContainer from '@components/GridContainer'
 import { UserProps, getUserProps } from '@context/UserContext'
 import styles from '@styles/pages/Home.module.scss'
 import api from '@utils/api'
-import { Player, PlayerAsset } from '@utils/Player'
-import { UserPortfolio } from '@utils/User'
-import { getMarginString, getPercent, getValueString } from '@utils/numbers'
+import { Player } from '@utils/Player'
 
 const Home = (props: UserProps) => {
   // redirect if user is not authenticated
@@ -19,14 +17,8 @@ const Home = (props: UserProps) => {
     router.push('/')
   }
 
-  const [playerAssets, setPlayerAssets] = useState<PlayerAsset[]>([])
   const [topMargins, setTopMargins] = useState<Player[]>([])
   const [bottomMargins, setBottomMargins] = useState<Player[]>([])
-
-  const getPortfolio = async () => {
-    const response = await api.get<UserPortfolio>('/user/portfolio')
-    setPlayerAssets(response.data.players || [])
-  }
 
   const getDashboardStatistics = async () => {
     const getTopMargins = await api.get<Player[]>('/players/top-margins')
@@ -36,7 +28,6 @@ const Home = (props: UserProps) => {
   }
 
   useEffect(() => {
-    getPortfolio()
     getDashboardStatistics()
   }, [])
 
@@ -82,7 +73,7 @@ Home.getLayout = (page: ReactElement) => {
         <meta name="description" content="Description of chookgu" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <MainLayout selected={0} {...props}>
+      <MainLayout selected="Home" {...props}>
         {page}
       </MainLayout>
     </div>

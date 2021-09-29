@@ -64,9 +64,9 @@ export class AuthController {
     @User('_id') userId: string,
     @Body() updateUserProfileDto: UpdateUserProfileDto
   ) {
-    // exclude fields that the user is not authorized to change
-    const { auth, ...profile } = updateUserProfileDto
-    return await this.usersService.updateProfile(userId, profile)
+    const { username, email, portfolio, verified, auth } =
+      await this.usersService.updateProfile(userId, updateUserProfileDto)
+    return { username, email, portfolio, verified, auth }
   }
 
   @UseGuards(JwtAuthGuard)

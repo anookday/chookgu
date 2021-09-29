@@ -5,7 +5,7 @@ import Button from '@components/Button'
 import Layout from '@components/Layout'
 import CheckMark from '@public/checkmark.svg'
 import api from '@utils/api'
-import styles from '@styles/components/Confirmation.module.scss'
+import styles from '@styles/components/SingleWidget.module.scss'
 
 const Verify = () => {
   const router = useRouter()
@@ -21,9 +21,11 @@ const Verify = () => {
       <main>
         <Layout headless>
           <div className={styles.container}>
-            <div className={styles.widget}>
-              <CheckMark className={styles.icon} />
-              <div>You have been verified. Welcome to Chookgu!</div>
+            <div className={`${styles.widget} ${styles['widget--centered']}`}>
+              <CheckMark className={styles.widget__icon} />
+              <div className={styles.widget__text}>
+                You have been <span>verified</span>. Welcome to Chookgu!
+              </div>
               <div className={styles.widget__footer}>
                 <Button
                   text="Go To Home Page"

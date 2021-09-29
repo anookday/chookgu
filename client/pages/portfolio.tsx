@@ -132,7 +132,7 @@ Portfolio.getLayout = (page: ReactElement) => {
         <meta name="description" content="Description of chookgu" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <MainLayout selected={1} {...props}>
+      <MainLayout selected="Portfolio" {...props}>
         {page}
       </MainLayout>
     </div>

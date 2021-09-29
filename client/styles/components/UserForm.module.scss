@@ -17,7 +17,7 @@
   display: flex;
 }
 
-.userForm {
+.form {
   flex: 1;
 
   display: flex;
@@ -26,25 +26,25 @@
   align-items: center;
   width: 30rem;
 
-  &_logo {
+  &__logo {
     width: 10rem;
     height: 10rem;
     fill: $color-accent;
     cursor: pointer;
   }
 
-  &_formWrapper {
+  &__wrapper {
     width: inherit;
   }
 
-  &_title {
+  &__title {
     font-weight: 900;
   }
 
-  &_error {
+  &__error {
     font-size: 1.4rem;
     height: 0;
-    color: $color-warning;
+    color: $color-complement;
     word-break: break-word;
   }
 }
@@ -54,12 +54,9 @@
   display: flex;
   justify-content: space-between;
 
-  &_text {
-    font-size: 1.6rem;
-  }
-
-  &_link {
+  &__link {
     @include text-link;
+    text-decoration: underline;
     font-size: inherit;
   }
 }

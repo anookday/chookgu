@@ -6,56 +6,82 @@
   & > :not(:last-child) {
     margin-bottom: 1.5rem;
   }
+}
 
-  &__field {
-    margin-bottom: 1.4rem;
-    position: relative;
+.field {
+  margin-bottom: 1.4rem;
+  position: relative;
 
-    &__title {
-      color: inherit;
+  &__row {
+    display: flex;
+
+    & :not(:last-child) {
+      margin-right: 1rem;
+    }
+  }
+
+  &__content {
+    flex: 1;
+  }
+
+  &__title {
+    color: inherit;
+  }
+
+  &__input {
+    font-size: inherit;
+    display: block;
+    width: 100%;
+    background-color: $color-secondary;
+    border: {
+      top: none;
+      left: none;
+      right: none;
+      bottom: 0.3rem solid $color-secondary;
+      radius: 0.5rem;
+    }
+    outline: none;
+    padding-left: 0.5rem;
+    transition: all 0.2s;
+
+    &:focus {
+      border-bottom: 0.3rem solid $color-accent;
     }
 
-    &__input {
-      font-size: inherit;
-      display: block;
-      width: 100%;
-      background-color: $color-secondary;
-      border: {
-        top: none;
-        left: none;
-        right: none;
-        bottom: 0.3rem solid $color-secondary;
-        radius: 0.5rem;
-      }
-      outline: none;
-      padding-left: 0.5rem;
-      transition: all 0.2s;
-
-      &:focus {
-        border-bottom: 0.3rem solid $color-accent;
-      }
-
-      & + p {
-        visibility: hidden;
-      }
-
-      &:focus + p {
-        visibility: visible;
-      }
+    & + p {
+      visibility: hidden;
     }
 
-    &__icon {
-      position: absolute;
-      right: 0.5rem;
-      bottom: 1.6rem;
+    &:focus + p {
+      visibility: visible;
     }
 
-    &__description {
-      height: 1.4rem;
-      color: $color-accent;
-      font-size: 1.4rem;
-      line-height: 1.3;
-      font-weight: 300;
+    &:disabled {
+      background-color: $color-primary-light;
+      border-color: $color-primary-light;
+      color: $color-primary-dark;
+    }
+  }
+
+  &__icon {
+    position: absolute;
+    right: 0.5rem;
+    bottom: 1.6rem;
+  }
+
+  &__description {
+    height: 1.4rem;
+    color: $color-accent;
+    font-size: 1.4rem;
+    line-height: 1.3;
+    font-weight: 300;
+
+    &--warning {
+      color: $color-complement;
+    }
+
+    &--show {
+      visibility: visible !important;
     }
   }
 }

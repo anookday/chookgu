@@ -4,7 +4,7 @@
   background-color: $color-accent;
 
   &--small {
-    padding: 0 1rem;
+    padding: 0.2rem 1rem;
     height: 100%;
   }
 
@@ -21,5 +21,10 @@
   &--warning {
     color: $color-secondary;
     background-color: $color-complement;
+  }
+
+  &:disabled {
+    color: $color-primary-dark;
+    background-color: $color-primary-light;
   }
 }
