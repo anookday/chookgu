@@ -1,7 +1,7 @@
 import { parseISO, differenceInYears } from 'date-fns'
 import { ChartData, ChartOptions } from 'chart.js'
 import 'chartjs-adapter-date-fns'
-import { getValueString } from '@utils/numbers'
+import { getValueString } from '@util/numbers'
 import colors from '@styles/global/colors.module.scss'
 
 export interface PlayerValue {

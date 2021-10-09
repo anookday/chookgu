@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 import axios from 'axios'
 import Form, { FormProps } from '@components/Form'
 import Logo from '@public/player.svg'
-import api from '@utils/api'
+import api from '@util/api'
 import styles from '@styles/components/UserForm.module.scss'
 
 const Register = () => {

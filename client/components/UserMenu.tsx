@@ -2,8 +2,8 @@ import { useRouter } from 'next/router'
 import Dropdown, { DropdownItem } from '@components/Dropdown'
 import picture from '@public/profile.jpg'
 import { useUser } from '@context/UserContext'
-import { getValueString } from '@utils/numbers'
-import api from '@utils/api'
+import { getValueString } from '@util/numbers'
+import api from '@util/api'
 import styles from '@styles/components/UserMenu.module.scss'
 
 const UserMenu = () => {

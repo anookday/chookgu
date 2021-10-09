@@ -1,5 +1,5 @@
-import { Player, getPlayerAge } from '@utils/Player'
-import { getValueString, getPercent } from '@utils/numbers'
+import { Player, getPlayerAge } from '@util/Player'
+import { getValueString, getPercent } from '@util/numbers'
 import styles from '@styles/components/PlayerCard.module.scss'
 
 type CardSize = 'default' | 'small'

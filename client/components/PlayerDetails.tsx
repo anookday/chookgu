@@ -1,7 +1,7 @@
 import { ChartData } from 'chart.js'
 import Chart from '@components/Chart'
 import Button from '@components/Button'
-import { getMarginString, getValueString } from '@utils/numbers'
+import { getMarginString, getValueString } from '@util/numbers'
 import {
   Player,
   PlayerAsset,
@@ -9,7 +9,7 @@ import {
   getPlayerValueChartData,
   getPlayerValueChartOptions,
   getPlayerAge,
-} from '@utils/Player'
+} from '@util/Player'
 import styles from '@styles/components/PlayerDetails.module.scss'
 
 interface PlayerDetailsProps {

@@ -4,7 +4,7 @@ import Layout from '@components/Layout'
 import { useUser } from '@context/UserContext'
 import EmailIcon from '@public/email.svg'
 import styles from '@styles/components/SingleWidget.module.scss'
-import api from '@utils/api'
+import api from '@util/api'
 
 const Confirmation = () => {
   const { user } = useUser()

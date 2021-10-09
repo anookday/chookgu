@@ -1,14 +1,16 @@
 import { verify } from 'argon2'
 import { randomBytes } from 'crypto'
 import { Model } from 'mongoose'
+import { Details } from 'express-useragent'
 import {
   Injectable,
   UnauthorizedException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { InjectModel } from '@nestjs/mongoose'
-import { Token, TokenDocument } from '@auth/schemas/token.schema'
+import { Token, TokenDocument, TokenType } from '@auth/schemas/token.schema'
 import { MailService } from '@mail/mail.service'
 import { UserDocument, isUserDocument } from '@users/schemas/user.schema'
 import { UsersService } from '@users/users.service'
@@ -73,6 +75,13 @@ export class AuthService {
   }
 
   /**
+   * Return the token document with given id and type.
+   */
+  async getToken(id: string, type: TokenType) {
+    return await this.tokenModel.findOne({ _id: id, type })
+  }
+
+  /**
    * Send an account confirmation email to the user's registered email.
    */
   async sendVerificationEmail(user: string | UserDocument) {
@@ -127,5 +136,43 @@ export class AuthService {
     await verification.user.save()
     // delete verification token
     await verification.delete()
+  }
+
+  async sendResetPasswordEmail(email: string, ip: string, details: Details) {
+    const user = await this.usersService.findByEmail(email)
+
+    if (!user) {
+      throw new NotFoundException('User not found')
+    }
+
+    const token = randomBytes(64).toString('hex')
+    await this.tokenModel.create({
+      _id: token,
+      user: user._id,
+      type: 'pw-reset',
+    })
+
+    await this.mailService.sendPasswordReset(email, ip, details, token)
+  }
+
+  async resetPassword(password: string, token: string) {
+    const dbToken = await this.tokenModel.findById(token)
+
+    if (!dbToken) {
+      throw new NotFoundException('Token does not exist or has expired')
+    }
+
+    if (dbToken.type !== 'pw-reset') {
+      throw new BadRequestException('Token is invalid')
+    }
+
+    const user = await this.usersService.findById(dbToken.user.toString())
+
+    if (!user) {
+      throw new NotFoundException('User associated with token does not exist')
+    }
+
+    await this.usersService.updateProfile(dbToken.user.toString(), { password })
+    await dbToken.delete()
   }
 }

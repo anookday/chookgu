@@ -9,10 +9,10 @@ import PlayerCheckout from '@components/PlayerCheckout'
 import PlayerDetails from '@components/PlayerDetails'
 import { UserProps, getUserProps } from '@context/UserContext'
 import styles from '@styles/pages/Portfolio.module.scss'
-import api from '@utils/api'
-import { Player, PlayerAsset } from '@utils/Player'
-import { getMarginString } from '@utils/numbers'
-import { UserPortfolio } from '@utils/User'
+import api from '@util/api'
+import { Player, PlayerAsset } from '@util/Player'
+import { getMarginString } from '@util/numbers'
+import { UserPortfolio } from '@util/User'
 
 const Portfolio = (props: UserProps) => {
   // redirect if user is not authenticated

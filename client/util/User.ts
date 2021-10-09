@@ -1,4 +1,4 @@
-import { PlayerAsset } from '@utils/Player'
+import { PlayerAsset } from '@util/Player'
 
 export interface UserPortfolio {
   mode: string

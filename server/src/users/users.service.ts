@@ -67,11 +67,11 @@ export class UsersService {
     _id: string,
     { username, password }: UpdateUserProfileDto
   ) {
-    if (username && !isValidUsername(username)) {
+    if (username !== undefined && !isValidUsername(username)) {
       throw new BadRequestException('Invalid username')
     }
 
-    if (password && !isValidPassword(password)) {
+    if (password !== undefined && !isValidPassword(password)) {
       throw new BadRequestException('Invalid password')
     }
 

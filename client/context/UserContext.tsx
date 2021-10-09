@@ -1,8 +1,8 @@
 import { GetServerSideProps } from 'next'
 import { createContext, useContext, useState, ReactNode } from 'react'
 import { ParsedUrlQuery } from 'querystring'
-import { User } from '@utils/User'
-import api from '@utils/api'
+import { User } from '@util/User'
+import api from '@util/api'
 
 export interface UserProps {
   loggedIn: boolean

@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import Form, { FormProps } from '@components/Form'
 import Logo from '@public/player.svg'
-import api from '@utils/api'
+import api from '@util/api'
 import styles from '@styles/components/UserForm.module.scss'
 
 const Login = () => {
@@ -63,7 +63,14 @@ const Login = () => {
                 <Link href="/account/register">
                   <a className={styles.redirect__link}>Sign up</a>
                 </Link>
-                <Link href="/account/recover">
+                <Link
+                  href={{
+                    pathname: '/account/recover',
+                    query: {
+                      email,
+                    },
+                  }}
+                >
                   <a className={styles.redirect__link}>Forgot password</a>
                 </Link>
               </div>

@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import Button from '@components/Button'
 import Layout from '@components/Layout'
 import CheckMark from '@public/checkmark.svg'
-import api from '@utils/api'
+import api from '@util/api'
 import styles from '@styles/components/SingleWidget.module.scss'
 
 const Verify = () => {
@@ -41,27 +41,21 @@ const Verify = () => {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  let result: any = {
-    notFound: true,
-  }
+  if (query.token) {
+    try {
+      const response = await api.post(`/auth/verify?token=${query.token}`)
 
-  if (!query.token) {
-    return result
-  }
-
-  try {
-    const response = await api.post(`/auth/verify?token=${query.token}`)
-
-    if (response && response.status === 200) {
-      result = { props: {} }
-    }
-  } catch (error) {
-    if (error.response) {
-      console.error(error.response.data)
+      if (response && response.status === 200) {
+        return { props: {} }
+      }
+    } catch (error) {
+      if (error.response) {
+        console.error(error.response.data)
+      }
     }
   }
 
-  return result
+  return { notFound: true }
 }
 
 export default Verify

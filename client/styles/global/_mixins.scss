@@ -91,6 +91,14 @@
     & span {
       color: $color-accent;
     }
+
+    &--success {
+      color: $color-accent;
+    }
+
+    &--error {
+      color: $color-complement;
+    }
   }
 
   &__icon {

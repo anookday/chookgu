@@ -7,8 +7,8 @@ import PlayerCard from '@components/PlayerCard'
 import GridContainer from '@components/GridContainer'
 import { UserProps, getUserProps } from '@context/UserContext'
 import styles from '@styles/pages/Home.module.scss'
-import api from '@utils/api'
-import { Player } from '@utils/Player'
+import api from '@util/api'
+import { Player } from '@util/Player'
 
 const Home = (props: UserProps) => {
   // redirect if user is not authenticated

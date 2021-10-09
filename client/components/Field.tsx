@@ -1,75 +1,103 @@
-import { useState, useEffect, useRef } from 'react'
-import Button from '@components/Button'
+import { useState, useEffect, useRef, Dispatch, SetStateAction } from 'react'
 import styles from '@styles/components/Form.module.scss'
+import VisibilityOn from '@public/visibility.svg'
+import VisibilityOff from '@public/visibility_off.svg'
 
 interface FieldProps {
   type: string
-  label: string
   value: string
-  description: string
-  validate: (val: string) => boolean
-  onSave: (val: string) => Promise<void>
+  setValue: Dispatch<SetStateAction<string>>
+  label?: string
+  description?: string
+  focused?: true
+  validate?: (val: string) => boolean
 }
 
+/**
+ * Generic input field component.
+ */
 const Field = ({
   type,
-  label,
   value,
+  setValue,
+  label,
   description,
+  focused,
   validate,
-  onSave,
 }: FieldProps) => {
-  const [editing, setEditing] = useState(false)
-  const [text, setText] = useState(value)
+  const [visible, setVisible] = useState(false)
   const ref = useRef<HTMLInputElement>(null)
 
+  /**
+   * If focus is enabled, make browser focus this field's input element once
+   * component is created.
+   */
   useEffect(() => {
-    if (editing) {
+    if (focused) {
       ref.current?.focus()
+      ref.current?.select()
     }
-  }, [editing])
+  }, [])
 
-  const edit = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
+  /**
+   * Returns the input type. Used mainly to toggle password visibility.
+   */
+  const getType = () => {
+    if (type !== 'password') {
+      return type
+    }
+
+    return visible ? 'text' : 'password'
+  }
+
+  /**
+   * Returns field description's class name to change styling based on
+   * input validation.
+   */
+  const getDescriptionStyle = () => {
+    let style = styles.field__description
+
+    if (validate && !validate(value)) {
+      style += ' ' + styles['field__description--warning']
+    }
+
+    return style
+  }
+
+  /**
+   * Returns the visibility toggle component. Rendered only if the field
+   * is of type "password".
+   */
+  const renderVisibilityToggle = () => {
     if (type === 'password') {
-      setText('')
+      return visible ? (
+        <VisibilityOn
+          className={styles.field__icon}
+          onClick={() => setVisible(false)}
+        />
+      ) : (
+        <VisibilityOff
+          className={styles.field__icon}
+          onClick={() => setVisible(true)}
+        />
+      )
     }
-    setEditing(true)
-  }
 
-  const cancel = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    setText(value)
-    setEditing(false)
+    return null
   }
-
-  const save = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    await onSave(text)
-    setText(value)
-    setEditing(false)
-  }
-
-  const descStyle = validate(text)
-    ? styles.field__description
-    : `${styles.field__description} ${styles['field__description--warning']}`
 
   return (
     <label className={styles.field}>
       <span className={styles.field__title}>{label}</span>
-      <div className={styles.form__row}>
-        <div className={styles.form__row__content}>
-          <input
-            ref={ref}
-            className={styles.field__input}
-            type={type}
-            value={text}
-            onChange={(e) => setText(e.currentTarget.value)}
-            disabled={!editing}
-          />
-          <p className={descStyle}>{description}</p>
-        </div>
-      </div>
+      <input
+        ref={ref}
+        className={styles.field__input}
+        type={getType()}
+        value={value}
+        onChange={(e) => setValue(e.currentTarget.value)}
+      />
+      <p className={getDescriptionStyle()}>{description}</p>
+      {renderVisibilityToggle()}
     </label>
   )
 }

@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import Button from '@components/Button'
-import api from '@utils/api'
-import { getValueString } from '@utils/numbers'
-import { Player, PlayerAsset, isPlayerAsset } from '@utils/Player'
-import { User } from '@utils/User'
+import api from '@util/api'
+import { getValueString } from '@util/numbers'
+import { Player, PlayerAsset, isPlayerAsset } from '@util/Player'
+import { User } from '@util/User'
 import { useUser } from '@context/UserContext'
 import styles from '@styles/components/PlayerCheckout.module.scss'
 

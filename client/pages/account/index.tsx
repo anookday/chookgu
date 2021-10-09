@@ -7,8 +7,8 @@ import EditField from '@components/EditField'
 import { UserProps, getUserProps, useUser } from '@context/UserContext'
 import widgetStyles from '@styles/components/SingleWidget.module.scss'
 import formStyles from '@styles/components/Form.module.scss'
-import api from '@utils/api'
-import { User } from '@utils/User'
+import api from '@util/api'
+import { User } from '@util/User'
 
 const Account = (props: UserProps) => {
   const router = useRouter()

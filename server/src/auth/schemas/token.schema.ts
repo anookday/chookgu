@@ -5,6 +5,8 @@ import { VERIFICATION_MAX_AGE } from '@util/constants'
 
 export type TokenDocument = Token & Document
 
+export type TokenType = 'confirm' | 'pw-reset'
+
 @Schema()
 export class Token {
   @Prop({ type: String, required: true })
@@ -14,7 +16,7 @@ export class Token {
   user: Types.ObjectId | UserDocument
 
   @Prop({ type: String, required: true })
-  type: 'confirm' | 'pw-reset'
+  type: TokenType
 
   @Prop({ type: Date, default: Date.now, expires: VERIFICATION_MAX_AGE })
   expires: Date
