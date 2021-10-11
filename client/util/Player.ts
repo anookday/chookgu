@@ -1,7 +1,7 @@
 import { parseISO, differenceInYears } from 'date-fns'
 import { ChartData, ChartOptions } from 'chart.js'
 import 'chartjs-adapter-date-fns'
-import { getValueString } from '@util/numbers'
+import { formatValue } from '@util/numbers'
 import colors from '@styles/global/colors.module.scss'
 
 export interface PlayerValue {
@@ -91,7 +91,7 @@ export function getPlayerValueChartOptions(): ChartOptions<'line'> {
           color: colors.primaryLight,
           callback: (value, _, __) => {
             if (typeof value === 'number') {
-              return getValueString(value, true)
+              return formatValue(value, true)
             }
             return value
           },

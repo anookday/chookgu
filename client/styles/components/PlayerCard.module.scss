@@ -41,6 +41,10 @@
     &--negative {
       color: $color-complement;
     }
+
+    &--neutral {
+      color: $color-secondary;
+    }
   }
 
   $this: &;

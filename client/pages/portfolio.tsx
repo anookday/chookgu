@@ -4,14 +4,14 @@ import { useRouter } from 'next/router'
 import MainLayout from '@components/MainLayout'
 import Layout from '@components/Layout'
 import GridContainer from '@components/GridContainer'
-import PlayerCard from '@components/PlayerCard'
+import PlayerCard, { ValueStyle } from '@components/PlayerCard'
 import PlayerCheckout from '@components/PlayerCheckout'
 import PlayerDetails from '@components/PlayerDetails'
 import { UserProps, getUserProps } from '@context/UserContext'
 import styles from '@styles/pages/Portfolio.module.scss'
 import api from '@util/api'
 import { Player, PlayerAsset } from '@util/Player'
-import { getMarginString } from '@util/numbers'
+import { formatMargin, formatMarginPercent } from '@util/numbers'
 import { UserPortfolio } from '@util/User'
 
 const Portfolio = (props: UserProps) => {
@@ -61,6 +61,15 @@ const Portfolio = (props: UserProps) => {
 
   const renderPlayerAssets = () => {
     return playerAssets.map((asset, index) => {
+      const assetValue = asset.averageValue
+      const marketValue = asset.player.currentValue
+      let style: ValueStyle = 'positive'
+      if (assetValue == marketValue) {
+        style = 'neutral'
+      } else if (assetValue > marketValue) {
+        style = 'negative'
+      }
+
       return (
         <PlayerCard
           key={index}
@@ -72,15 +81,11 @@ const Portfolio = (props: UserProps) => {
           size="small"
           format="custom"
           customFormatOptions={{
-            value: getMarginString(
-              asset.averageValue,
-              asset.player.currentValue,
-              asset.amount
-            ),
-            style:
-              asset.averageValue < asset.player.currentValue
-                ? 'positive'
-                : 'negative',
+            value: `${asset.amount} × ${formatMargin(
+              assetValue,
+              marketValue
+            )} (${formatMarginPercent(assetValue, marketValue)})`,
+            style,
           }}
         />
       )

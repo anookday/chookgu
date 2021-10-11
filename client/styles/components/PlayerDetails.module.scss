@@ -51,43 +51,7 @@
   height: auto;
   display: grid;
   grid-template: {
-    columns: 1fr 1fr 1fr;
-    rows: 1fr 1fr;
-  }
-
-  &__average {
-    grid: {
-      column: 1;
-      row: 1;
-    }
-  }
-
-  &__market {
-    grid: {
-      column: 1;
-      row: 2;
-    }
-  }
-
-  &__amount {
-    grid: {
-      column: 2;
-      row: 1;
-    }
-  }
-
-  &__total {
-    grid: {
-      column: 2;
-      row: 2;
-    }
-  }
-
-  &__margin {
-    grid: {
-      column: 3;
-      row: 1 / -1;
-    }
+    columns: repeat(2, 1fr);
   }
 }
 

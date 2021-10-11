@@ -1,7 +1,7 @@
 import { ChartData } from 'chart.js'
 import Chart from '@components/Chart'
 import Button from '@components/Button'
-import { getMarginString, getValueString } from '@util/numbers'
+import { formatMargin, formatValue, formatMarginPercent } from '@util/numbers'
 import {
   Player,
   PlayerAsset,
@@ -56,31 +56,53 @@ const PlayerDetails = ({
 
   const renderInfo = () => {
     if (isPlayerAsset(player)) {
+      // player on the marketplace.
+      // different from player, which is a user-owned player asset
+      const mPlayer = player.player
+
+      const averageMargin = formatMargin(
+        player.averageValue,
+        mPlayer.currentValue
+      )
+      const totalMargin = formatMargin(
+        player.averageValue,
+        mPlayer.currentValue,
+        player.amount
+      )
+      const marginPercent = formatMarginPercent(
+        player.averageValue,
+        mPlayer.currentValue
+      )
+
       return (
         <div className={styles.asset}>
-          <div className={styles.asset__average}>
+          <div>
             <span className={styles.infoLabel}>Stock value: </span>
-            {getValueString(player.averageValue)}
+            {formatValue(player.averageValue)}
           </div>
-          <div className={styles.asset__market}>
+          <div>
             <span className={styles.infoLabel}>Market value: </span>
-            {getValueString(player.player.currentValue)}
+            {formatValue(player.player.currentValue)}
           </div>
-          <div className={styles.asset__amount}>
+          <div>
+            <span className={styles.infoLabel}>Total value: </span>
+            {formatValue(player.averageValue * player.amount)}
+          </div>
+          <div>
+            <span className={styles.infoLabel}>Average Margin: </span>
+            {averageMargin}
+          </div>
+          <div>
+            <span className={styles.infoLabel}>Total Margin: </span>
+            {totalMargin}
+          </div>
+          <div>
+            <span className={styles.infoLabel}>Percent Margin: </span>
+            {marginPercent}
+          </div>
+          <div>
             <span className={styles.infoLabel}>Stocks: </span>
             {player.amount}
-          </div>
-          <div className={styles.asset__total}>
-            <span className={styles.infoLabel}>Total value: </span>
-            {getValueString(player.averageValue * player.amount)}
-          </div>
-          <div className={styles.asset__margin}>
-            <span className={styles.infoLabel}>Margin: </span>
-            {getMarginString(
-              player.averageValue,
-              player.player.currentValue,
-              player.amount
-            )}
           </div>
         </div>
       )
@@ -105,7 +127,7 @@ const PlayerDetails = ({
           {_player.team}
         </div>
         <div className={styles.player__value}>
-          {getValueString(_player.currentValue)}
+          {formatValue(_player.currentValue)}
         </div>
       </div>
     )

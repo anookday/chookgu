@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Button from '@components/Button'
 import api from '@util/api'
-import { getValueString } from '@util/numbers'
+import { formatValue } from '@util/numbers'
 import { Player, PlayerAsset, isPlayerAsset } from '@util/Player'
 import { User } from '@util/User'
 import { useUser } from '@context/UserContext'
@@ -152,15 +152,15 @@ const PlayerCheckout = ({
             </div>
             <div className={styles.widget__text}>
               <span>Current balance:</span>
-              <span>{getValueString(portfolio.balance)}</span>
+              <span>{formatValue(portfolio.balance)}</span>
             </div>
             <div className={styles.widget__text}>
               <span>Price:</span>
-              <span>{getValueString(currentValue * amount)}</span>
+              <span>{formatValue(currentValue * amount)}</span>
             </div>
             <div className={styles.widget__text}>
               <span>Balance after transaction:</span>
-              <span>{getValueString(newBalance)}</span>
+              <span>{formatValue(newBalance)}</span>
             </div>
             <div className={styles.widget__footer}>
               <Button

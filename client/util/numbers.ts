@@ -1,7 +1,7 @@
-export function getValueString(
+export function formatValue(
   value: number,
-  compact?: true,
-  showSign?: true
+  compact: boolean = false,
+  showSign: boolean = false
 ): string {
   return value.toLocaleString('en-US', {
     style: 'currency',
@@ -13,21 +13,27 @@ export function getValueString(
   })
 }
 
-export function getPercent(value: number): string {
+export function formatPercent(
+  value: number,
+  showSign: boolean = false
+): string {
   return value.toLocaleString('en-US', {
     style: 'percent',
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
+    signDisplay: showSign ? 'always' : 'auto',
   })
 }
 
-export function getMarginString(
+export function formatMargin(
   previous: number,
   current: number,
-  amount: number
+  amount: number = 1,
+  compact: boolean = false
 ) {
-  const margin = (current - previous) * amount
-  const percent = (current - previous) / previous
+  return formatValue((current - previous) * amount, compact, true)
+}
 
-  return `${getValueString(margin, true, true)} (${getPercent(percent)})`
+export function formatMarginPercent(previous: number, current: number) {
+  return formatPercent((current - previous) / previous, true)
 }

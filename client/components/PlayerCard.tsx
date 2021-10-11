@@ -1,10 +1,10 @@
 import { Player, getPlayerAge } from '@util/Player'
-import { getValueString, getPercent } from '@util/numbers'
+import { formatValue, formatPercent } from '@util/numbers'
 import styles from '@styles/components/PlayerCard.module.scss'
 
-type CardSize = 'default' | 'small'
-type ValueFormat = 'default' | 'margin' | 'custom'
-type ValueStyle = 'positive' | 'negative'
+export type CardSize = 'default' | 'small'
+export type ValueFormat = 'default' | 'margin' | 'custom'
+export type ValueStyle = 'positive' | 'negative' | 'neutral'
 
 interface PlayerCardProps {
   player: Player
@@ -37,11 +37,13 @@ const PlayerCard = ({
   const renderValue = () => {
     switch (format) {
       case 'margin':
-        const margin = getValueString(player.margin || 0, true, true)
-        const ratio = getPercent(player.marginRatio || 0)
+        const margin = formatValue(player.margin || 0, true, true)
+        const ratio = formatPercent(player.marginRatio || 0)
         let style = styles.player__value
         if (player.margin && player.margin < 0) {
           style += ' ' + styles['player__value--negative']
+        } else if (player.margin && player.margin == 0) {
+          style += ' ' + styles['player__value--neutral']
         }
 
         return <div className={style}>{`${margin} (${ratio})`}</div>
@@ -49,8 +51,13 @@ const PlayerCard = ({
       case 'custom':
         if (customFormatOptions) {
           let style = styles.player__value
-          if (customFormatOptions.style === 'negative') {
-            style += ' ' + styles['player__value--negative']
+          switch (customFormatOptions.style) {
+            case 'negative':
+              style += ' ' + styles['player__value--negative']
+              break
+            case 'neutral':
+              style += ' ' + styles['player__value--neutral']
+              break
           }
 
           return <div className={style}>{customFormatOptions.value}</div>
@@ -59,7 +66,7 @@ const PlayerCard = ({
       default:
         return (
           <div className={styles.player__value}>
-            {getValueString(player.currentValue, true)}
+            {formatValue(player.currentValue, true)}
           </div>
         )
     }
