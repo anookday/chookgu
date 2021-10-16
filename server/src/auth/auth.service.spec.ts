@@ -1,29 +1,32 @@
 import { Model } from 'mongoose'
-import { hash } from 'argon2'
 
 import { Test, TestingModule } from '@nestjs/testing'
 import { MongooseModule } from '@nestjs/mongoose'
-import { UnauthorizedException, BadRequestException } from '@nestjs/common'
+import {
+  UnauthorizedException,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common'
 import { JwtModule } from '@nestjs/jwt'
 
 import { AuthService } from '@auth/auth.service'
-import { Token, TokenSchema } from '@auth/schemas/token.schema'
+import { Token, TokenSchema, TokenDocument } from '@auth/schemas/token.schema'
 import { MailService } from '@mail/mail.service'
 import { UsersModule } from '@users/users.module'
 import { User, UserSchema, UserDocument } from '@users/schemas/user.schema'
 import { CreateUserProfileDto } from '@users/dto/create-userProfile.dto'
-import { users } from '@test/data'
+import { users, passwords } from '@test/data'
 import { closeInMongodConnection, rootMongooseTestModule } from '@test/database'
 
 describe('AuthService', () => {
   let module: TestingModule
   let service: AuthService
+  // models for direct access to database documents
+  let userModel: Model<UserDocument>
+  let tokenModel: Model<TokenDocument>
   // hash maps to make testing easier
   let ids: any = {}
   let emails: any = {}
-  let pws: any = {}
-  // uninitialized list of users with hashed passwords
-  let hashedUsers: CreateUserProfileDto[] = []
   // variable used to test creating a valid profile
   const validRegisterFields: CreateUserProfileDto = {
     email: 'hello@gmail.com',
@@ -55,34 +58,27 @@ describe('AuthService', () => {
     // initialize service
     service = module.get<AuthService>(AuthService)
 
+    // initialize models
+    userModel = module.get<Model<UserDocument>>('UserModel')
+    tokenModel = module.get<Model<TokenDocument>>('TokenModel')
+
     // initialize test variables
     for (let user of users) {
-      pws[user.username.split(' ')[0].toLowerCase()] = user.password
       emails[user.username.split(' ')[0].toLowerCase()] = user.email
-      const password = await hash(user.password)
-      hashedUsers.push({
-        ...user,
-        password,
-      })
     }
   })
 
   beforeEach(async () => {
-    // populate users with initial data
-    const myModel = module.get<Model<UserDocument>>('UserModel')
-    await myModel.deleteMany({})
-    const initialUsers = await myModel.create(hashedUsers)
+    // reset db
+    await userModel.deleteMany({})
+    await tokenModel.deleteMany({})
 
+    // populate db with sample data
+    const initialUsers = await userModel.create(users)
+
+    // save document ids to hash map
     for (let user of initialUsers) {
-      // save document ids to hash map
       ids[user.username.split(' ')[0].toLowerCase()] = user.id
-
-      // verify Mary and make her an admin
-      if (user.username === 'Mary Sue') {
-        user.verified = true
-        user.auth = 'admin'
-        await user.save()
-      }
     }
   })
 
@@ -96,13 +92,13 @@ describe('AuthService', () => {
 
   it('validates existing users', async () => {
     await expect(
-      service.validateUser(emails.john, pws.john)
+      service.validateUser(emails.john, passwords.john)
     ).resolves.toBeDefined()
     await expect(
-      service.validateUser(emails.mary, pws.mary)
+      service.validateUser(emails.mary, passwords.mary)
     ).resolves.toBeDefined()
     await expect(
-      service.validateUser(emails.sheesh, pws.sheesh)
+      service.validateUser(emails.sheesh, passwords.sheesh)
     ).resolves.toBeDefined()
   })
 
@@ -114,19 +110,33 @@ describe('AuthService', () => {
 
     // invalid password
     await expect(
-      service.validateUser(emails.john, pws.mary)
+      service.validateUser(emails.john, passwords.mary)
     ).rejects.toThrowError(UnauthorizedException)
   })
 
-  it('registers users with valid fields', async () => {
-    await expect(service.register(validRegisterFields)).resolves.toBeDefined()
+  it('registers and verifies users with valid fields', async () => {
+    // register
+    let user = await service.register(validRegisterFields)
+    expect(user).not.toBeNull()
+    expect(user.verified).toEqual(false)
 
     await expect(
       service.validateUser(
         validRegisterFields.email,
         validRegisterFields.password
       )
-    ).resolves.toBeDefined()
+    ).resolves.not.toBeNull()
+
+    // verify
+    const token = await tokenModel.findOne({ user: user.id, type: 'confirm' })
+    expect(token).not.toBeNull()
+
+    await service.verify(token.id)
+    user = await userModel.findById(user.id)
+    expect(user.verified).toEqual(true)
+    await expect(
+      tokenModel.findOne({ user: user.id, type: 'confirm' })
+    ).resolves.toBeNull()
   })
 
   it('does not register user with invalid email', async () => {
@@ -157,6 +167,34 @@ describe('AuthService', () => {
     await expect(
       service.register({ ...validRegisterFields, password: 'tooshort' })
     ).rejects.toThrowError(BadRequestException)
+  })
+
+  it('does not verify user with invalid token', async () => {
+    await expect(service.verify('someInvalidToken')).rejects.toThrowError(
+      NotFoundException
+    )
+  })
+
+  it('requests password reset and changes password to new valid value', async () => {
+    const newPassword = 'newpassword'
+    await service.sendResetPasswordEmail(emails.john, '', null)
+
+    const token = await tokenModel.findOne({ user: ids.john, type: 'pw-reset' })
+    expect(token).not.toBeNull()
+
+    await service.resetPassword(newPassword, token.id)
+    await expect(
+      service.validateUser(emails.john, newPassword)
+    ).resolves.not.toBeNull()
+    await expect(
+      tokenModel.findOne({ user: ids.john, type: 'pw-reset' })
+    ).resolves.toBeNull()
+  })
+
+  it('rejects password reset request if user is invalid', async () => {
+    await expect(
+      service.sendResetPasswordEmail('invalid@email.com', '', null)
+    ).rejects.toThrowError(NotFoundException)
   })
 
   afterAll(async () => {

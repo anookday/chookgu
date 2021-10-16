@@ -5,9 +5,15 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { MongooseModule } from '@nestjs/mongoose'
 import { NotFoundException, BadRequestException } from '@nestjs/common'
 
+import {
+  Player,
+  PlayerSchema,
+  PlayerDocument,
+  isPlayerDocument,
+} from '@players/schemas/player.schema'
 import { UsersService } from '@users/users.service'
 import { User, UserSchema, UserDocument } from '@users/schemas/user.schema'
-import { users } from '@test/data'
+import { users, players } from '@test/data'
 import { closeInMongodConnection, rootMongooseTestModule } from '@test/database'
 
 describe('UsersService', () => {
@@ -25,30 +31,30 @@ describe('UsersService', () => {
           useCreateIndex: true,
           useFindAndModify: false,
         }),
-        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+        MongooseModule.forFeature([
+          { name: User.name, schema: UserSchema },
+          { name: Player.name, schema: PlayerSchema },
+        ]),
       ],
       providers: [UsersService],
     }).compile()
 
     // initialize service
     service = module.get<UsersService>(UsersService)
+
+    // popuplate players with sample data
+    const playerModel = module.get<Model<PlayerDocument>>('PlayerModel')
+    await playerModel.create(players)
   })
 
   beforeEach(async () => {
     // populate users with initial data
-    const myModel = module.get<Model<UserDocument>>('UserModel')
-    await myModel.deleteMany({})
-    const initialUsers = await myModel.create(users)
+    const userModel = module.get<Model<UserDocument>>('UserModel')
+    await userModel.deleteMany({})
+    const initialUsers = await userModel.create(users)
 
     for (let user of initialUsers) {
       ids[user.username.split(' ')[0].toLowerCase()] = user.id
-
-      // verify Mary and make her an admin
-      if (user.username === 'Mary Sue') {
-        user.verified = true
-        user.auth = 'admin'
-        await user.save()
-      }
     }
   })
 
@@ -120,6 +126,20 @@ describe('UsersService', () => {
     await expect(service.findById(ids.sheesh)).rejects.toThrowError(
       NotFoundException
     )
+  })
+
+  it('gets user portfolio', async () => {
+    const portfolio = await service.getPortfolio(ids.john, 'standard')
+    expect(portfolio).toBeDefined()
+    expect(portfolio.length).toEqual(2)
+    expect(portfolio[0].mode).toEqual('standard')
+    expect(portfolio[0].balance).toEqual(500000000)
+    expect(portfolio[0].players.length).toEqual(2)
+
+    let rashford = portfolio[0].players[0]
+    expect(rashford.amount).toEqual(2)
+    expect(rashford.averageValue).toEqual(85000000)
+    expect(isPlayerDocument(rashford.player)).toEqual(true)
   })
 
   afterAll(async () => {

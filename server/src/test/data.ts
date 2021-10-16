@@ -1,21 +1,90 @@
-import { CreateUserProfileDto } from '@users/dto/create-userProfile.dto'
+import { User } from '@users/schemas/user.schema'
+import { UserPortfolio } from '@users/schemas/userPortfolio.schema'
 import { PlayerDto } from '@players/dto/player.dto'
 
-export const users: CreateUserProfileDto[] = [
+// unencrypted user passwords to test validation
+export const passwords = {
+  john: 'johndoe123',
+  mary: 'Y@@sQu33NN',
+  sheesh: '32qhriulfsy74q',
+}
+
+// sample user portfolio
+export const portfolio: UserPortfolio[] = [
+  {
+    mode: 'standard',
+    balance: 500000000,
+    players: [
+      {
+        player: 258923,
+        amount: 2,
+        averageValue: 85000000,
+      },
+      {
+        player: 91845,
+        amount: 3,
+        averageValue: 85000000,
+      },
+    ],
+  },
+  {
+    mode: 'epl-2021',
+    balance: 100000000,
+    players: [
+      {
+        player: 148455,
+        amount: 1,
+        averageValue: 120000000,
+      },
+    ],
+  },
+]
+
+export const emptyPortfolio: UserPortfolio[] = [
+  {
+    mode: 'standard',
+    balance: 500000000,
+    players: [],
+  },
+]
+
+// sample users
+export const users: User[] = [
   {
     email: 'johndoe@gmail.com',
     username: 'John Doe',
-    password: 'johndoe123',
+    // password: johndoe123
+    password:
+      '$argon2i$v=19$m=4096,t=3,p=1$UXc1NG9VZUlLSXYxa0xNeQ$IbNdmgC6qFWpKdl4CvoFAfRVJNmoymNWvQSLHKM4aa0',
+    portfolio: portfolio,
+    verified: true,
+    auth: 'user',
+    created: new Date(),
+    modified: new Date(),
   },
   {
     email: 'marysue@outlook.com',
     username: 'Mary Sue',
-    password: 'Y@@sQu33NN',
+    // password: Y@@sQu33NN
+    password:
+      '$argon2i$v=19$m=4096,t=3,p=1$RE9zSXcyMmQzWHVDVWM4bg$9v3NTkW2sGTW//U6cYc5wzNCYGo4gl5MhXz0OI1ezG8',
+    portfolio: emptyPortfolio,
+    verified: true,
+    auth: 'admin',
+    created: new Date(),
+    modified: new Date(),
   },
   {
     email: 'sheesh@sheesh.com',
     username: 'SHEESH',
-    password: '32qhriulfsy74q',
+    // password: 32qhriulfsy74q
+    password:
+      '$argon2i$v=19$m=4096,t=3,p=1$T1RvOE1GTmk3VGhVb3NRWA$BGTpikrBqJCM9bSrCCi20xD8BfyagMB0YbAV2VwJntM',
+    portfolio: [],
+    verified: false,
+    auth: 'user',
+    created: new Date(),
+    modified: new Date(),
   },
 ]
 

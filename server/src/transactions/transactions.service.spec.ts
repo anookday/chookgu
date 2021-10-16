@@ -22,7 +22,7 @@ describe('TransactionsService', () => {
   let service: TransactionsService
 
   // sample user
-  let john: UserDocument
+  let mary: UserDocument
 
   // sample players
   const kane = players.find((player) => player.name === 'Harry Kane')
@@ -59,23 +59,19 @@ describe('TransactionsService', () => {
     await playerModel.create(players)
     const userModel = module.get<Model<UserDocument>>('UserModel')
     await userModel.deleteMany({})
-    const createdUsers = await userModel.create(users)
-
-    // initialize user
-    john = createdUsers[0]
-    john.portfolio[0].balance = 500000000
-    await john.save()
+    const dbUsers = await userModel.create(users)
+    mary = dbUsers[1]
   })
 
   it('is defined', async () => {
     expect(service).toBeDefined()
-    expect(john).toBeDefined()
-    expect(john.username).toEqual('John Doe')
+    expect(mary).toBeDefined()
+    expect(mary.username).toEqual('Mary Sue')
   })
 
   it('buys valid amount of valid players', async () => {
     // buy 1 Heung-min Son for 85M
-    let user = await service.buyPlayer('standard', john.id, son._id, 1)
+    let user = await service.buyPlayer('standard', mary.id, son._id, 1)
     expect(user).toBeDefined()
     expect(user.portfolio[0].balance).toEqual(415000000)
     expect(user.portfolio[0].players.length).toEqual(1)
@@ -84,7 +80,7 @@ describe('TransactionsService', () => {
     expect(user.portfolio[0].players[0].averageValue).toEqual(85000000)
 
     // buy 2 more Heung-min Son for 170M
-    user = await service.buyPlayer('standard', john.id, son._id, 2)
+    user = await service.buyPlayer('standard', mary.id, son._id, 2)
     expect(user).toBeDefined()
     expect(user.portfolio[0].balance).toEqual(245000000)
     expect(user.portfolio[0].players.length).toEqual(1)
@@ -93,7 +89,7 @@ describe('TransactionsService', () => {
     expect(user.portfolio[0].players[0].averageValue).toEqual(85000000)
 
     // buy 3 Bernardo Silva for 210M
-    user = await service.buyPlayer('standard', john.id, silva._id, 3)
+    user = await service.buyPlayer('standard', mary.id, silva._id, 3)
     expect(user).toBeDefined()
     expect(user.portfolio[0].balance).toEqual(35000000)
     expect(user.portfolio[0].players.length).toEqual(2)
@@ -102,7 +98,7 @@ describe('TransactionsService', () => {
     expect(user.portfolio[0].players[1].averageValue).toEqual(70000000)
 
     // check that transaction history is valid
-    const transactions = await service.getUserTransactions(john.id, 0)
+    const transactions = await service.getUserTransactions(mary.id, 0)
     expect(transactions).toBeDefined()
     expect(transactions.length).toEqual(3)
     // first transaction
@@ -124,7 +120,7 @@ describe('TransactionsService', () => {
 
   it('sells valid amount of valid players', async () => {
     // buy 4 Harry Kane for 480M
-    let user = await service.buyPlayer('standard', john.id, kane._id, 4)
+    let user = await service.buyPlayer('standard', mary.id, kane._id, 4)
     expect(user).toBeDefined()
     expect(user.portfolio[0].balance).toEqual(20000000)
     expect(user.portfolio[0].players.length).toEqual(1)
@@ -133,7 +129,7 @@ describe('TransactionsService', () => {
     expect(user.portfolio[0].players[0].averageValue).toEqual(120000000)
 
     // sell 1 Harry Kane for 120M
-    user = await service.sellPlayer('standard', john.id, kane._id, 1)
+    user = await service.sellPlayer('standard', mary.id, kane._id, 1)
     expect(user).toBeDefined()
     expect(user.portfolio[0].balance).toEqual(140000000)
     expect(user.portfolio[0].players.length).toEqual(1)
@@ -142,7 +138,7 @@ describe('TransactionsService', () => {
     expect(user.portfolio[0].players[0].averageValue).toEqual(120000000)
 
     // sell 2 Harry Kane for 240M
-    user = await service.sellPlayer('standard', john.id, kane._id, 2)
+    user = await service.sellPlayer('standard', mary.id, kane._id, 2)
     expect(user).toBeDefined()
     expect(user.portfolio[0].balance).toEqual(380000000)
     expect(user.portfolio[0].players.length).toEqual(1)
@@ -151,13 +147,13 @@ describe('TransactionsService', () => {
     expect(user.portfolio[0].players[0].averageValue).toEqual(120000000)
 
     // sell last remaining Harry Kane for 120M
-    user = await service.sellPlayer('standard', john.id, kane._id, 1)
+    user = await service.sellPlayer('standard', mary.id, kane._id, 1)
     expect(user).toBeDefined()
     expect(user.portfolio[0].balance).toEqual(500000000)
     expect(user.portfolio[0].players.length).toEqual(0)
 
     // check that transaction history is valid
-    const transactions = await service.getUserTransactions(john.id, 0)
+    const transactions = await service.getUserTransactions(mary.id, 0)
     expect(transactions).toBeDefined()
     expect(transactions.length).toEqual(4)
     // first transaction
@@ -185,49 +181,49 @@ describe('TransactionsService', () => {
   it('fails to buy if amount of players is invalid', async () => {
     // cannot buy less than 1 players
     await expect(
-      service.buyPlayer('standard', john.id, son._id, 0)
+      service.buyPlayer('standard', mary.id, son._id, 0)
     ).rejects.toThrowError(BadRequestException)
     await expect(
-      service.buyPlayer('standard', john.id, son._id, -123)
+      service.buyPlayer('standard', mary.id, son._id, -123)
     ).rejects.toThrowError(BadRequestException)
 
     // cannot buy amount over user's available funds
     await expect(
-      service.buyPlayer('standard', john.id, son._id, 10)
+      service.buyPlayer('standard', mary.id, son._id, 10)
     ).rejects.toThrowError(BadRequestException)
   })
 
   it('fails to buy if player is invalid', async () => {
     await expect(
-      service.buyPlayer('standard', john.id, 0, 1)
+      service.buyPlayer('standard', mary.id, 0, 1)
     ).rejects.toThrowError(BadRequestException)
   })
 
   it('fails to sell if amount of players is invalid', async () => {
-    await service.buyPlayer('standard', john.id, kane._id, 4)
+    await service.buyPlayer('standard', mary.id, kane._id, 4)
     // cannot sell less than 1 players
     await expect(
-      service.sellPlayer('standard', john.id, kane._id, 0)
+      service.sellPlayer('standard', mary.id, kane._id, 0)
     ).rejects.toThrowError(BadRequestException)
     await expect(
-      service.sellPlayer('standard', john.id, kane._id, -123)
+      service.sellPlayer('standard', mary.id, kane._id, -123)
     ).rejects.toThrowError(BadRequestException)
 
     // cannot sell amount over amount that user owns
     await expect(
-      service.sellPlayer('standard', john.id, kane._id, 5)
+      service.sellPlayer('standard', mary.id, kane._id, 5)
     ).rejects.toThrowError(BadRequestException)
   })
 
   it('fails to sell if player is invalid', async () => {
     // cannot sell if player does not exist
     await expect(
-      service.sellPlayer('standard', john.id, 0, 1)
+      service.sellPlayer('standard', mary.id, 0, 1)
     ).rejects.toThrowError(BadRequestException)
 
     // cannot sell if user does not own player
     await expect(
-      service.sellPlayer('standard', john.id, silva._id, 1)
+      service.sellPlayer('standard', mary.id, silva._id, 1)
     ).rejects.toThrowError(BadRequestException)
   })
 
