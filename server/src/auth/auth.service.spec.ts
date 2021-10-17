@@ -12,6 +12,7 @@ import { JwtModule } from '@nestjs/jwt'
 import { AuthService } from '@auth/auth.service'
 import { Token, TokenSchema, TokenDocument } from '@auth/schemas/token.schema'
 import { MailService } from '@mail/mail.service'
+import { PortfoliosModule } from '@portfolios/portfolios.module'
 import { UsersModule } from '@users/users.module'
 import { User, UserSchema, UserDocument } from '@users/schemas/user.schema'
 import { CreateUserProfileDto } from '@users/dto/create-userProfile.dto'
@@ -39,6 +40,7 @@ describe('AuthService', () => {
     module = await Test.createTestingModule({
       imports: [
         UsersModule,
+        PortfoliosModule,
         JwtModule.register({
           secret: 'JwtTestKey',
           signOptions: { expiresIn: '5s' },

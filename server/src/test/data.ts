@@ -1,6 +1,15 @@
+import { formatISO, subWeeks } from 'date-fns'
+import { Types } from 'mongoose'
 import { User } from '@users/schemas/user.schema'
-import { UserPortfolio } from '@users/schemas/userPortfolio.schema'
+import { Portfolio } from '@portfolios/schemas/portfolio.schema'
 import { PlayerDto } from '@players/dto/player.dto'
+
+// unique user ids
+export const ids = {
+  john: new Types.ObjectId(),
+  mary: new Types.ObjectId(),
+  sheesh: new Types.ObjectId(),
+}
 
 // unencrypted user passwords to test validation
 export const passwords = {
@@ -10,9 +19,10 @@ export const passwords = {
 }
 
 // sample user portfolio
-export const portfolio: UserPortfolio[] = [
+export const portfolios: Portfolio[] = [
   {
-    mode: 'standard',
+    user: ids.john,
+    season: 'standard',
     balance: 500000000,
     players: [
       {
@@ -28,7 +38,8 @@ export const portfolio: UserPortfolio[] = [
     ],
   },
   {
-    mode: 'epl-2021',
+    user: ids.john,
+    season: 'epl-2021',
     balance: 100000000,
     players: [
       {
@@ -38,11 +49,9 @@ export const portfolio: UserPortfolio[] = [
       },
     ],
   },
-]
-
-export const emptyPortfolio: UserPortfolio[] = [
   {
-    mode: 'standard',
+    user: ids.mary,
+    season: 'standard',
     balance: 500000000,
     players: [],
   },
@@ -51,36 +60,36 @@ export const emptyPortfolio: UserPortfolio[] = [
 // sample users
 export const users: User[] = [
   {
+    _id: ids.john,
     email: 'johndoe@gmail.com',
     username: 'John Doe',
     // password: johndoe123
     password:
       '$argon2i$v=19$m=4096,t=3,p=1$UXc1NG9VZUlLSXYxa0xNeQ$IbNdmgC6qFWpKdl4CvoFAfRVJNmoymNWvQSLHKM4aa0',
-    portfolio: portfolio,
     verified: true,
     auth: 'user',
     created: new Date(),
     modified: new Date(),
   },
   {
+    _id: ids.mary,
     email: 'marysue@outlook.com',
     username: 'Mary Sue',
     // password: Y@@sQu33NN
     password:
       '$argon2i$v=19$m=4096,t=3,p=1$RE9zSXcyMmQzWHVDVWM4bg$9v3NTkW2sGTW//U6cYc5wzNCYGo4gl5MhXz0OI1ezG8',
-    portfolio: emptyPortfolio,
     verified: true,
     auth: 'admin',
     created: new Date(),
     modified: new Date(),
   },
   {
+    _id: ids.sheesh,
     email: 'sheesh@sheesh.com',
     username: 'SHEESH',
     // password: 32qhriulfsy74q
     password:
       '$argon2i$v=19$m=4096,t=3,p=1$T1RvOE1GTmk3VGhVb3NRWA$BGTpikrBqJCM9bSrCCi20xD8BfyagMB0YbAV2VwJntM',
-    portfolio: [],
     verified: false,
     auth: 'user',
     created: new Date(),
@@ -102,7 +111,7 @@ export const players: PlayerDto[] = [
     team: 'Manchester City',
     value: [
       {
-        date: '2021-08-28T09:57:00.871Z',
+        date: formatISO(new Date()),
         amount: 75000000,
       },
     ],
@@ -119,7 +128,7 @@ export const players: PlayerDto[] = [
     team: 'Manchester City',
     value: [
       {
-        date: '2021-08-28T09:57:00.881Z',
+        date: formatISO(new Date()),
         amount: 100000000,
       },
     ],
@@ -136,7 +145,7 @@ export const players: PlayerDto[] = [
     team: 'Manchester City',
     value: [
       {
-        date: '2021-08-28T09:57:00.878Z',
+        date: formatISO(new Date()),
         amount: 70000000,
       },
     ],
@@ -153,7 +162,23 @@ export const players: PlayerDto[] = [
     team: 'Manchester United',
     value: [
       {
-        date: '2021-08-28T09:57:05.146Z',
+        date: formatISO(subWeeks(new Date(), 4)),
+        amount: 65000000,
+      },
+      {
+        date: formatISO(subWeeks(new Date(), 3)),
+        amount: 70000000,
+      },
+      {
+        date: formatISO(subWeeks(new Date(), 2)),
+        amount: 75000000,
+      },
+      {
+        date: formatISO(subWeeks(new Date(), 1)),
+        amount: 80000000,
+      },
+      {
+        date: formatISO(new Date()),
         amount: 85000000,
       },
     ],
@@ -170,7 +195,7 @@ export const players: PlayerDto[] = [
     team: 'Liverpool FC',
     value: [
       {
-        date: '2021-08-28T09:57:08.319Z',
+        date: formatISO(new Date()),
         amount: 85000000,
       },
     ],
@@ -187,7 +212,7 @@ export const players: PlayerDto[] = [
     team: 'Liverpool FC',
     value: [
       {
-        date: '2021-08-28T09:57:08.312Z',
+        date: formatISO(new Date()),
         amount: 75000000,
       },
     ],
@@ -204,7 +229,7 @@ export const players: PlayerDto[] = [
     team: 'Chelsea FC',
     value: [
       {
-        date: '2021-08-28T09:57:03.093Z',
+        date: formatISO(new Date()),
         amount: 65000000,
       },
     ],
@@ -221,7 +246,7 @@ export const players: PlayerDto[] = [
     team: 'Manchester United',
     value: [
       {
-        date: '2021-08-28T09:57:05.147Z',
+        date: formatISO(new Date()),
         amount: 100000000,
       },
     ],
@@ -238,7 +263,7 @@ export const players: PlayerDto[] = [
     team: 'Manchester City',
     value: [
       {
-        date: '2021-08-28T09:57:00.881Z',
+        date: formatISO(new Date()),
         amount: 70000000,
       },
     ],
@@ -255,7 +280,7 @@ export const players: PlayerDto[] = [
     team: 'West Ham United',
     value: [
       {
-        date: '2021-08-28T09:57:25.825Z',
+        date: formatISO(new Date()),
         amount: 70000000,
       },
     ],
@@ -272,7 +297,7 @@ export const players: PlayerDto[] = [
     team: 'Tottenham Hotspur',
     value: [
       {
-        date: '2021-08-28T09:57:11.379Z',
+        date: formatISO(new Date()),
         amount: 120000000,
       },
     ],
@@ -289,7 +314,23 @@ export const players: PlayerDto[] = [
     team: 'Tottenham Hotspur',
     value: [
       {
-        date: '2021-08-28T09:57:11.375Z',
+        date: formatISO(subWeeks(new Date(), 4)),
+        amount: 70000000,
+      },
+      {
+        date: formatISO(subWeeks(new Date(), 3)),
+        amount: 80000000,
+      },
+      {
+        date: formatISO(subWeeks(new Date(), 2)),
+        amount: 95000000,
+      },
+      {
+        date: formatISO(subWeeks(new Date(), 1)),
+        amount: 65000000,
+      },
+      {
+        date: formatISO(new Date()),
         amount: 85000000,
       },
     ],
@@ -306,7 +347,7 @@ export const players: PlayerDto[] = [
     team: 'Liverpool FC',
     value: [
       {
-        date: '2021-08-28T09:57:08.322Z',
+        date: formatISO(new Date()),
         amount: 100000000,
       },
     ],
@@ -323,7 +364,7 @@ export const players: PlayerDto[] = [
     team: 'Manchester United',
     value: [
       {
-        date: '2021-08-28T09:57:05.137Z',
+        date: formatISO(new Date()),
         amount: 70000000,
       },
     ],
@@ -340,7 +381,7 @@ export const players: PlayerDto[] = [
     team: 'Manchester City',
     value: [
       {
-        date: '2021-08-28T09:57:00.883Z',
+        date: formatISO(new Date()),
         amount: 80000000,
       },
     ],
@@ -357,7 +398,7 @@ export const players: PlayerDto[] = [
     team: 'Manchester United',
     value: [
       {
-        date: '2021-08-28T09:57:05.143Z',
+        date: formatISO(new Date()),
         amount: 90000000,
       },
     ],
@@ -374,7 +415,7 @@ export const players: PlayerDto[] = [
     team: 'Chelsea FC',
     value: [
       {
-        date: '2021-08-28T09:57:03.080Z',
+        date: formatISO(new Date()),
         amount: 75000000,
       },
     ],
@@ -391,7 +432,7 @@ export const players: PlayerDto[] = [
     team: 'Chelsea FC',
     value: [
       {
-        date: '2021-08-28T09:57:03.092Z',
+        date: formatISO(new Date()),
         amount: 100000000,
       },
     ],
@@ -408,7 +449,7 @@ export const players: PlayerDto[] = [
     team: 'Chelsea FC',
     value: [
       {
-        date: '2021-08-28T09:57:03.081Z',
+        date: formatISO(new Date()),
         amount: 70000000,
       },
     ],
@@ -425,7 +466,7 @@ export const players: PlayerDto[] = [
     team: 'Manchester City',
     value: [
       {
-        date: '2021-08-28T09:57:00.882Z',
+        date: formatISO(new Date()),
         amount: 90000000,
       },
     ],

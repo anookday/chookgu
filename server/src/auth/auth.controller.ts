@@ -55,9 +55,9 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('/profile')
   async getProfile(@User('_id') userId: string) {
-    const { username, email, portfolio, verified, auth } =
+    const { username, email, verified, auth } =
       await this.usersService.findById(userId)
-    return { username, email, portfolio, verified, auth }
+    return { username, email, verified, auth }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -66,9 +66,9 @@ export class AuthController {
     @User('_id') userId: string,
     @Body() updateUserProfileDto: UpdateUserProfileDto
   ) {
-    const { username, email, portfolio, verified, auth } =
+    const { username, email, verified, auth } =
       await this.usersService.updateProfile(userId, updateUserProfileDto)
-    return { username, email, portfolio, verified, auth }
+    return { username, email, verified, auth }
   }
 
   @UseGuards(JwtAuthGuard)

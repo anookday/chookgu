@@ -16,6 +16,7 @@
       "@auth/*": ["src/auth/*"],
       "@mail/*": ["src/mail/*"],
       "@players/*": ["src/players/*"],
+      "@portfolios/*": ["src/portfolios/*"],
       "@test/*": ["src/test/*"],
       "@transactions/*": ["src/transactions/*"],
       "@users/*": ["src/users/*"],

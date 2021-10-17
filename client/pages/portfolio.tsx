@@ -27,9 +27,11 @@ const Portfolio = (props: UserProps) => {
   const [season, setSeason] = useState('standard')
 
   const getPortfolio = async () => {
-    const response = await api.get<UserPortfolio[]>('/user/portfolio')
+    const response = await api.get<UserPortfolio>(
+      `/user/portfolio?season=${season}`
+    )
 
-    const players = response.data.find(({ mode }) => mode === season)?.players
+    const players = response.data?.players
     setPlayerAssets(players || [])
   }
 

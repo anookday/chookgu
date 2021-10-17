@@ -12,6 +12,7 @@ import { JwtService } from '@nestjs/jwt'
 import { InjectModel } from '@nestjs/mongoose'
 import { Token, TokenDocument, TokenType } from '@auth/schemas/token.schema'
 import { MailService } from '@mail/mail.service'
+import { PortfoliosService } from '@portfolios/portfolios.service'
 import { UserDocument, isUserDocument } from '@users/schemas/user.schema'
 import { UsersService } from '@users/users.service'
 import { CreateUserProfileDto } from '@users/dto/create-userProfile.dto'
@@ -21,6 +22,7 @@ import { USER_STARTING_BALANCE } from '@util/constants'
 export class AuthService {
   constructor(
     private usersService: UsersService,
+    private portfoliosService: PortfoliosService,
     private mailService: MailService,
     private jwtService: JwtService,
     @InjectModel(Token.name)
@@ -126,16 +128,19 @@ export class AuthService {
     if (verification.user.verified) return
     // verify user
     verification.user.verified = true
-    // give user starting credits
-    verification.user.portfolio.find(
-      ({ mode }) => mode === 'standard'
-    ).balance = USER_STARTING_BALANCE
     // indicate that user profile has been updated
     verification.user.modified = new Date()
     // update user document
     await verification.user.save()
     // delete verification token
     await verification.delete()
+
+    // give user starting credits
+    await this.portfoliosService.create(
+      verification.user._id,
+      'standard',
+      USER_STARTING_BALANCE
+    )
   }
 
   async sendResetPasswordEmail(email: string, ip: string, details: Details) {

@@ -1,9 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document, Types } from 'mongoose'
-import {
-  UserPortfolio,
-  UserPortfolioSchema,
-} from '@users/schemas/userPortfolio.schema'
+import { Document, Types, Schema as MongooseSchema } from 'mongoose'
 
 export type UserAuth = 'admin' | 'user'
 
@@ -11,14 +7,14 @@ export type UserDocument = User & Document
 
 @Schema()
 export class User {
+  @Prop({ type: MongooseSchema.Types.ObjectId, auto: true })
+  _id: Types.ObjectId
+
   @Prop({ required: true })
   email: string
 
   @Prop({ required: true })
   username: string
-
-  @Prop({ type: [UserPortfolioSchema], default: [{ mode: 'standard' }] })
-  portfolio: UserPortfolio[]
 
   @Prop({ select: false, required: true })
   password: string

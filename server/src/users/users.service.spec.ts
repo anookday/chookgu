@@ -9,7 +9,6 @@ import {
   Player,
   PlayerSchema,
   PlayerDocument,
-  isPlayerDocument,
 } from '@players/schemas/player.schema'
 import { UsersService } from '@users/users.service'
 import { User, UserSchema, UserDocument } from '@users/schemas/user.schema'
@@ -126,20 +125,6 @@ describe('UsersService', () => {
     await expect(service.findById(ids.sheesh)).rejects.toThrowError(
       NotFoundException
     )
-  })
-
-  it('gets user portfolio', async () => {
-    const portfolio = await service.getPortfolio(ids.john, 'standard')
-    expect(portfolio).toBeDefined()
-    expect(portfolio.length).toEqual(2)
-    expect(portfolio[0].mode).toEqual('standard')
-    expect(portfolio[0].balance).toEqual(500000000)
-    expect(portfolio[0].players.length).toEqual(2)
-
-    let rashford = portfolio[0].players[0]
-    expect(rashford.amount).toEqual(2)
-    expect(rashford.averageValue).toEqual(85000000)
-    expect(isPlayerDocument(rashford.player)).toEqual(true)
   })
 
   afterAll(async () => {
