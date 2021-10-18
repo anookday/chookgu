@@ -94,17 +94,12 @@ describe('TransactionsService', () => {
 
   it('buys valid amount of valid players', async () => {
     // buy 1 Heung-min Son for 85M
-    let user = await service.buyPlayer(
+    let portfolio = await service.buyPlayer(
       'standard',
       ids.mary.toString(),
       son._id,
       1
     )
-    expect(user).toBeDefined()
-    let portfolio = await portfolioModel.findOne({
-      user: ids.mary,
-      season: 'standard',
-    })
     expect(portfolio).not.toBeNull()
     expect(portfolio.balance).toEqual(415000000)
     expect(portfolio.players.length).toEqual(1)
@@ -113,12 +108,12 @@ describe('TransactionsService', () => {
     expect(portfolio.players[0].averageValue).toEqual(85000000)
 
     // buy 2 more Heung-min Son for 170M
-    user = await service.buyPlayer('standard', ids.mary.toString(), son._id, 2)
-    portfolio = await portfolioModel.findOne({
-      user: ids.mary,
-      season: 'standard',
-    })
-    expect(user).toBeDefined()
+    portfolio = await service.buyPlayer(
+      'standard',
+      ids.mary.toString(),
+      son._id,
+      2
+    )
     expect(portfolio.balance).toEqual(245000000)
     expect(portfolio.players.length).toEqual(1)
     expect(portfolio.players[0].player).toEqual(son._id)
@@ -126,17 +121,12 @@ describe('TransactionsService', () => {
     expect(portfolio.players[0].averageValue).toEqual(85000000)
 
     // buy 3 Bernardo Silva for 210M
-    user = await service.buyPlayer(
+    portfolio = await service.buyPlayer(
       'standard',
       ids.mary.toString(),
       silva._id,
       3
     )
-    portfolio = await portfolioModel.findOne({
-      user: ids.mary,
-      season: 'standard',
-    })
-    expect(user).toBeDefined()
     expect(portfolio.balance).toEqual(35000000)
     expect(portfolio.players.length).toEqual(2)
     expect(portfolio.players[1].player).toEqual(silva._id)
@@ -169,17 +159,12 @@ describe('TransactionsService', () => {
 
   it('sells valid amount of valid players', async () => {
     // buy 4 Harry Kane for 480M
-    let user = await service.buyPlayer(
+    let portfolio = await service.buyPlayer(
       'standard',
       ids.mary.toString(),
       kane._id,
       4
     )
-    let portfolio = await portfolioModel.findOne({
-      user: ids.mary,
-      season: 'standard',
-    })
-    expect(user).toBeDefined()
     expect(portfolio.balance).toEqual(20000000)
     expect(portfolio.players.length).toEqual(1)
     expect(portfolio.players[0].player).toEqual(kane._id)
@@ -187,17 +172,12 @@ describe('TransactionsService', () => {
     expect(portfolio.players[0].averageValue).toEqual(120000000)
 
     // sell 1 Harry Kane for 120M
-    user = await service.sellPlayer(
+    portfolio = await service.sellPlayer(
       'standard',
       ids.mary.toString(),
       kane._id,
       1
     )
-    portfolio = await portfolioModel.findOne({
-      user: ids.mary,
-      season: 'standard',
-    })
-    expect(user).toBeDefined()
     expect(portfolio.balance).toEqual(140000000)
     expect(portfolio.players.length).toEqual(1)
     expect(portfolio.players[0].player).toEqual(kane._id)
@@ -205,17 +185,12 @@ describe('TransactionsService', () => {
     expect(portfolio.players[0].averageValue).toEqual(120000000)
 
     // sell 2 Harry Kane for 240M
-    user = await service.sellPlayer(
+    portfolio = await service.sellPlayer(
       'standard',
       ids.mary.toString(),
       kane._id,
       2
     )
-    portfolio = await portfolioModel.findOne({
-      user: ids.mary,
-      season: 'standard',
-    })
-    expect(user).toBeDefined()
     expect(portfolio.balance).toEqual(380000000)
     expect(portfolio.players.length).toEqual(1)
     expect(portfolio.players[0].player).toEqual(kane._id)
@@ -223,17 +198,12 @@ describe('TransactionsService', () => {
     expect(portfolio.players[0].averageValue).toEqual(120000000)
 
     // sell last remaining Harry Kane for 120M
-    user = await service.sellPlayer(
+    portfolio = await service.sellPlayer(
       'standard',
       ids.mary.toString(),
       kane._id,
       1
     )
-    portfolio = await portfolioModel.findOne({
-      user: ids.mary,
-      season: 'standard',
-    })
-    expect(user).toBeDefined()
     expect(portfolio.balance).toEqual(500000000)
     expect(portfolio.players.length).toEqual(0)
 

@@ -54,7 +54,7 @@ export class TransactionsService {
     }
 
     // update portfolio associated with selected user and season
-    const portfolio = await this.portfoliosService.update(
+    const portfolio = await this.portfoliosService.addPlayer(
       userId,
       season,
       player,
@@ -79,7 +79,7 @@ export class TransactionsService {
       throw new InternalServerErrorException('Failed to create transaction')
     }
 
-    return transaction
+    return portfolio.populate('players.player')
   }
 
   async sellPlayer(
@@ -99,11 +99,11 @@ export class TransactionsService {
       throw new BadRequestException('Invalid player')
     }
 
-    const portfolio = await this.portfoliosService.update(
+    const portfolio = await this.portfoliosService.removePlayer(
       userId,
       season,
       player,
-      -amount
+      amount
     )
 
     // update portfolio associated with selected user and season
@@ -125,6 +125,6 @@ export class TransactionsService {
       throw new InternalServerErrorException('Failed to create transaction')
     }
 
-    return transaction
+    return portfolio.populate('players.player')
   }
 }

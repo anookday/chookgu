@@ -5,12 +5,12 @@ import Layout from '@components/Layout'
 import MainLayout from '@components/MainLayout'
 import PlayerCard from '@components/PlayerCard'
 import GridContainer from '@components/GridContainer'
-import { UserProps, getUserProps } from '@context/UserContext'
+import { GlobalProps, getGlobalProps } from '@context/GlobalContext'
 import styles from '@styles/pages/Home.module.scss'
 import api from '@util/api'
 import { Player } from '@util/Player'
 
-const Home = (props: UserProps) => {
+const Home = (props: GlobalProps) => {
   // redirect if user is not authenticated
   const router = useRouter()
   if (!props.loggedIn) {
@@ -64,7 +64,7 @@ const Home = (props: UserProps) => {
 }
 
 Home.getLayout = (page: ReactElement) => {
-  const props: UserProps = page.props
+  const props: GlobalProps = page.props
 
   return (
     <div>
@@ -80,6 +80,6 @@ Home.getLayout = (page: ReactElement) => {
   )
 }
 
-export const getServerSideProps = getUserProps
+export const getServerSideProps = getGlobalProps
 
 export default Home

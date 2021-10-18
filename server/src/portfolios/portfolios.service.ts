@@ -19,7 +19,9 @@ export class PortfoliosService {
   ) {}
 
   async get(user: string, season: string) {
-    const portfolio = this.portfolioModel.findOne({ user, season })
+    const portfolio = await this.portfolioModel
+      .findOne({ user, season })
+      .populate('players.player')
 
     if (!portfolio) {
       throw new NotFoundException('Invalid user id or season')
@@ -29,7 +31,7 @@ export class PortfoliosService {
   }
 
   async create(user: string, season: string, balance?: number) {
-    const existing = await this.get(user, season)
+    const existing = await this.portfolioModel.findOne({ user, season })
     if (existing) {
       throw new BadRequestException('Portfolio already exists')
     }
@@ -37,69 +39,90 @@ export class PortfoliosService {
     return await this.portfolioModel.create({ user, season, balance })
   }
 
-  async update(user: string, season: string, player: Player, amount: number) {
-    // updating 0 of a player does nothing
-    if (amount === 0) {
-      throw new BadRequestException('Amount cannot be 0')
+  async addPlayer(
+    user: string,
+    season: string,
+    player: Player,
+    amount: number
+  ) {
+    if (amount < 1) {
+      throw new BadRequestException('Amount must be a positive integer')
     }
 
     // portfolio does not exist
-    let portfolio = await this.get(user, season)
+    let portfolio = await this.portfolioModel.findOne({ user, season })
+    if (!portfolio) {
+      throw new NotFoundException('Portfolio not found')
+    }
+
+    const updateValue = player.currentValue * amount
+    const updatedBalance = portfolio.balance - updateValue
+
+    // insufficient balance
+    if (updatedBalance < 0) {
+      throw new BadRequestException('Insufficient balance')
+    }
+
+    let asset = portfolio.players.find((p) => p.player === player._id)
+    // owns at least 1 of given player
+    if (asset) {
+      asset.averageValue =
+        (asset.averageValue * asset.amount + updateValue) /
+        (asset.amount + amount)
+      asset.amount += amount
+    }
+    // owns 0 of given player
+    else {
+      portfolio.players.push({
+        player: player._id,
+        amount,
+        averageValue: player.currentValue,
+      })
+    }
+
+    portfolio.balance -= updateValue
+
+    return await portfolio.save()
+  }
+
+  async removePlayer(
+    user: string,
+    season: string,
+    player: Player,
+    amount: number
+  ) {
+    if (amount < 1) {
+      throw new BadRequestException('Amount must be a positive integer')
+    }
+
+    // portfolio does not exist
+    let portfolio = await this.portfolioModel.findOne({ user, season })
     if (!portfolio) {
       throw new NotFoundException('Portfolio not found')
     }
 
     let asset = portfolio.players.find((p) => p.player === player._id)
-    const updateValue = player.currentValue * amount
-    const updatedBalance = portfolio.balance - updateValue
-
-    // adding players
-    if (amount > 0) {
-      // insufficient balance
-      if (updatedBalance < 0) {
-        throw new BadRequestException('Insufficient balance')
-      }
-      // owns at least 1 of given player
-      if (asset) {
-        const updatedAmount = asset.amount + amount
-        asset.averageValue =
-          (asset.averageValue * asset.amount + updateValue) / updatedAmount
-        asset.amount = updatedAmount
-      }
-      // owns 0 of given player
-      else {
-        portfolio.players.push({
-          player: player._id,
-          amount,
-          averageValue: player.currentValue,
-        })
-      }
+    // owns 0 of given player
+    if (!asset) {
+      throw new BadRequestException('Player asset not found')
     }
-
-    // subtracting players
+    const updatedAmount = asset.amount - amount
+    // does not own given amount of players
+    if (updatedAmount < 0) {
+      throw new BadRequestException('Insufficient player assets')
+    }
+    // if update results in 0 assets, remove the asset object from document
+    if (updatedAmount === 0) {
+      portfolio.players = portfolio.players.filter(
+        (p) => p.player !== player._id
+      )
+    }
+    // otherwise, update asset's amount
     else {
-      // owns 0 of given player
-      if (!asset) {
-        throw new BadRequestException('Invalid amount of given player')
-      }
-      const updatedAmount = asset.amount + amount
-      // does not own given amount of players
-      if (updatedAmount < 0) {
-        throw new BadRequestException('Insufficient player assets')
-      }
-      // if update results in 0 assets, remove the asset object from document
-      if (updatedAmount === 0) {
-        portfolio.players = portfolio.players.filter(
-          (p) => p.player !== player._id
-        )
-      }
-      // otherwise, update asset's amount
-      else {
-        asset.amount = updatedAmount
-      }
+      asset.amount = updatedAmount
     }
 
-    portfolio.balance -= updateValue
+    portfolio.balance += player.currentValue * amount
 
     return await portfolio.save()
   }

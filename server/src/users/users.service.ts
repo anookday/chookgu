@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  InternalServerErrorException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { User, UserDocument } from '@users/schemas/user.schema'
@@ -60,7 +61,18 @@ export class UsersService {
     // hash password with salt
     const hashedPw = await hash(password)
 
-    return await this.userModel.create({ username, email, password: hashedPw })
+    // create user in database
+    const newUser = await this.userModel.create({
+      username,
+      email,
+      password: hashedPw,
+    })
+
+    if (!newUser) {
+      throw new InternalServerErrorException('Failed to create new user')
+    }
+
+    return newUser
   }
 
   async updateProfile(

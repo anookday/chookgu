@@ -15,7 +15,6 @@ import { MailService } from '@mail/mail.service'
 import { PortfoliosService } from '@portfolios/portfolios.service'
 import { UserDocument, isUserDocument } from '@users/schemas/user.schema'
 import { UsersService } from '@users/users.service'
-import { CreateUserProfileDto } from '@users/dto/create-userProfile.dto'
 import { USER_STARTING_BALANCE } from '@util/constants'
 
 @Injectable()
@@ -58,22 +57,6 @@ export class AuthService {
    */
   login(userId: string) {
     return this.jwtService.sign({ userId })
-  }
-
-  /**
-   * Validate and create new user. If successful, send a confirmation email to
-   * the user's given email address.
-   */
-  async register({ email, username, password }: CreateUserProfileDto) {
-    // create new user in database
-    const newUser = await this.usersService.create(email, username, password)
-
-    // send confirmation email to newly created account
-    if (newUser) {
-      await this.sendVerificationEmail(newUser)
-    }
-
-    return newUser
   }
 
   /**

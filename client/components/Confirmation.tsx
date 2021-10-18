@@ -7,7 +7,7 @@ import styles from '@styles/components/SingleWidget.module.scss'
 import api from '@util/api'
 
 const Confirmation = () => {
-  const { user } = useUser()
+  const [user] = useUser()
   const [message, setMessage] = useState('Resend Confirmation')
 
   const resendConfirmation = async () => {

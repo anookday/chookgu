@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import Button from '@components/Button'
+import { usePortfolio } from '@context/PortfolioContext'
+import styles from '@styles/components/PlayerCheckout.module.scss'
 import api from '@util/api'
 import { formatValue } from '@util/numbers'
 import { Player, PlayerAsset, isPlayerAsset } from '@util/Player'
-import { User } from '@util/User'
-import { useUser } from '@context/UserContext'
-import styles from '@styles/components/PlayerCheckout.module.scss'
+import { Portfolio } from '@util/Portfolio'
 
 enum TransactionStatus {
   Ready,
@@ -17,27 +17,17 @@ enum TransactionStatus {
 interface PlayerCheckoutProps {
   className?: string
   player: Player | PlayerAsset
-  season: string
   // function to call whenever user navigates away from checkout component
   onBack?: () => void
-  // function to call as soon as transaction succeeds
-  onComplete?: () => Promise<void>
 }
 
-const PlayerCheckout = ({
-  className,
-  player,
-  season,
-  onBack,
-  onComplete,
-}: PlayerCheckoutProps) => {
-  const { user, setUser } = useUser()
+const PlayerCheckout = ({ className, player, onBack }: PlayerCheckoutProps) => {
+  const [portfolio, setPortfolio] = usePortfolio()
   const [amount, setAmount] = useState(1)
   const [status, setStatus] = useState<TransactionStatus>(
     TransactionStatus.Ready
   )
 
-  const portfolio = user.portfolio.find(({ mode }) => mode === season)
   const minAmount = 1
   const style = className ? `${styles.widget} ${className}` : styles.widget
 
@@ -68,32 +58,20 @@ const PlayerCheckout = ({
   const sendTransaction = async () => {
     setStatus(TransactionStatus.Processing)
     try {
-      const result = await api.post<User>(apiEndpoint, {
-        season,
+      const result = await api.post<Portfolio>(apiEndpoint, {
+        season: portfolio.season,
         playerId: playerId,
         amount,
       })
       setStatus(TransactionStatus.Success)
-      setUser(result.data)
-      onComplete && (await onComplete())
-    } catch (e) {
+      setPortfolio(result.data)
+    } catch (err) {
+      console.error(err.response)
       setStatus(TransactionStatus.Failed)
     }
   }
 
   const renderContent = () => {
-    // render if invalid season is given
-    if (!portfolio) {
-      return (
-        <div className={style}>
-          <div>An unexpected error has occurred. Try refreshing the page.</div>
-          <div className={styles.widget__footer}>
-            <Button text="Go Back" onClick={() => onBack && onBack()} />
-          </div>
-        </div>
-      )
-    }
-
     // render if user cannot afford the minimum
     if (!isPlayerAsset(player) && portfolio.balance < player.currentValue) {
       return (
@@ -173,10 +151,6 @@ const PlayerCheckout = ({
           </>
         )
     }
-  }
-
-  if (!portfolio) {
-    return renderContent()
   }
 
   if (isPlayerAsset(player)) {

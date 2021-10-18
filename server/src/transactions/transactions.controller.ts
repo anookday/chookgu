@@ -22,12 +22,14 @@ export class TransactionsController {
     @User('_id') userId: string,
     @Body() { season, playerId, amount }: TransactionDto
   ) {
-    return await this.transactionsService.buyPlayer(
+    const portfolio = await this.transactionsService.buyPlayer(
       season,
       userId,
       playerId,
       amount
     )
+
+    return await portfolio.populate('players.player').execPopulate()
   }
 
   @UseGuards(JwtAuthGuard)
@@ -37,11 +39,13 @@ export class TransactionsController {
     @User('_id') userId: string,
     @Body() { season, playerId, amount }: TransactionDto
   ) {
-    return await this.transactionsService.sellPlayer(
+    const portfolio = await this.transactionsService.sellPlayer(
       season,
       userId,
       playerId,
       amount
     )
+
+    return await portfolio.populate('players.player').execPopulate()
   }
 }

@@ -1,17 +1,15 @@
-import { PlayerAsset } from '@util/Player'
-
-export interface UserPortfolio {
-  mode: string
-  balance: number
-  players?: PlayerAsset[]
-}
-
 export type UserAuth = 'user' | 'admin'
 
 export interface User {
   username: string
   email: string
-  portfolio: UserPortfolio[]
   verified: boolean
   auth: UserAuth
+}
+
+export const defaultUser: User = {
+  username: '',
+  email: '',
+  verified: false,
+  auth: 'user',
 }

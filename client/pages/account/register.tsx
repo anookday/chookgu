@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import axios from 'axios'
 import Form, { FormProps } from '@components/Form'
 import Logo from '@public/player.svg'
 import api from '@util/api'
@@ -19,15 +18,16 @@ const Register = () => {
     e.preventDefault()
     setError('')
     try {
-      await api.post('/auth/profile', {
+      await api.post('user', {
         email,
         username,
         password,
       })
       await api.post(`/auth/login?email=${email}&password=${password}`)
+      await api.post('auth/send-confirmation')
       router.push('/')
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
+      if (error.response && error.response.data) {
         setError(error.response.data.message)
       } else {
         setError('Unknown error occurred. Please try again later.')

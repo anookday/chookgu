@@ -5,20 +5,16 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { MongooseModule } from '@nestjs/mongoose'
 import { NotFoundException, BadRequestException } from '@nestjs/common'
 
-import {
-  Player,
-  PlayerSchema,
-  PlayerDocument,
-} from '@players/schemas/player.schema'
 import { UsersService } from '@users/users.service'
 import { User, UserSchema, UserDocument } from '@users/schemas/user.schema'
-import { users, players } from '@test/data'
+import { users, ids, emails, validFields } from '@test/data'
 import { closeInMongodConnection, rootMongooseTestModule } from '@test/database'
 
 describe('UsersService', () => {
   let module: TestingModule
   let service: UsersService
-  let ids: any = {}
+  // models
+  let userModel: Model<UserDocument>
 
   beforeAll(async () => {
     // initialize module
@@ -30,10 +26,7 @@ describe('UsersService', () => {
           useCreateIndex: true,
           useFindAndModify: false,
         }),
-        MongooseModule.forFeature([
-          { name: User.name, schema: UserSchema },
-          { name: Player.name, schema: PlayerSchema },
-        ]),
+        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
       ],
       providers: [UsersService],
     }).compile()
@@ -41,20 +34,14 @@ describe('UsersService', () => {
     // initialize service
     service = module.get<UsersService>(UsersService)
 
-    // popuplate players with sample data
-    const playerModel = module.get<Model<PlayerDocument>>('PlayerModel')
-    await playerModel.create(players)
+    // initialize models
+    userModel = module.get<Model<UserDocument>>('UserModel')
   })
 
   beforeEach(async () => {
     // populate users with initial data
-    const userModel = module.get<Model<UserDocument>>('UserModel')
     await userModel.deleteMany({})
-    const initialUsers = await userModel.create(users)
-
-    for (let user of initialUsers) {
-      ids[user.username.split(' ')[0].toLowerCase()] = user.id
-    }
+    await userModel.create(users)
   })
 
   it('is defined', async () => {
@@ -62,24 +49,16 @@ describe('UsersService', () => {
   })
 
   it('finds existing users by id', async () => {
-    await expect(service.findById(ids.john)).resolves.toBeDefined()
-    await expect(service.findById(ids.mary)).resolves.toBeDefined()
-    await expect(service.findById(ids.sheesh)).resolves.toBeDefined()
+    await expect(service.findById(ids.john.toString())).resolves.toBeDefined()
+    await expect(service.findById(ids.mary.toString())).resolves.toBeDefined()
     await expect(service.findById('doesnotexist')).rejects.toThrowError(
       NotFoundException
     )
   })
 
   it('finds existing users by email', async () => {
-    await expect(
-      service.findByEmail('johndoe@gmail.com')
-    ).resolves.toBeDefined()
-    await expect(
-      service.findByEmail('marysue@outlook.com')
-    ).resolves.toBeDefined()
-    await expect(
-      service.findByEmail('sheesh@sheesh.com')
-    ).resolves.toBeDefined()
+    await expect(service.findByEmail(emails.john)).resolves.not.toBeNull()
+    await expect(service.findByEmail(emails.mary)).resolves.not.toBeNull()
     await expect(service.findByEmail('doesnot@exist.com')).resolves.toBeNull()
   })
 
@@ -91,25 +70,53 @@ describe('UsersService', () => {
   })
 
   it('creates new user', async () => {
-    const newUser = await service.create(
-      'newuser@email.com',
-      'Bruce Wayne',
-      'ImNotBatman'
-    )
+    await expect(
+      service.create(
+        validFields.email,
+        validFields.username,
+        validFields.password
+      )
+    ).resolves.not.toBeNull()
 
-    expect(newUser).toBeDefined()
-    expect(newUser.username).toEqual('Bruce Wayne')
-    await expect(service.findById(newUser.id)).resolves.toBeDefined()
+    await expect(service.findByEmail(validFields.email)).resolves.not.toBeNull()
   })
 
-  it('prevents creating new user if email is duplicate of verified email', async () => {
+  it('does not create user with invalid email', async () => {
+    // email is empty string
     await expect(
-      service.create('marysue@outlook.com', 'Not Mary', 'asdfasdfasdf')
+      service.create('', validFields.username, validFields.password)
+    ).rejects.toThrowError(BadRequestException)
+
+    // email is duplicate
+    await expect(
+      service.create(emails.john, validFields.username, validFields.password)
+    ).rejects.toThrowError(BadRequestException)
+  })
+
+  it('does not create user with invalid username', async () => {
+    // too short
+    await expect(
+      service.create(validFields.email, '', validFields.password)
+    ).rejects.toThrowError(BadRequestException)
+
+    // too long
+    await expect(
+      service.create(
+        validFields.email,
+        'morethan30characterssssssssssss',
+        validFields.password
+      )
+    ).rejects.toThrowError(BadRequestException)
+  })
+
+  it('does not create user with invalid password', async () => {
+    await expect(
+      service.create(validFields.email, validFields.username, 'tooshort')
     ).rejects.toThrowError(BadRequestException)
   })
 
   it('updates existing user', async () => {
-    const mary = await service.updateProfile(ids.mary, {
+    const mary = await service.updateProfile(ids.mary.toString(), {
       username: 'Mary Jane',
       password: 'peterparker',
     })
@@ -120,9 +127,10 @@ describe('UsersService', () => {
   })
 
   it('deletes existing user', async () => {
-    await expect(service.findById(ids.sheesh)).resolves.toBeDefined()
-    await expect(service.deleteUser(ids.sheesh)).resolves.toBeDefined()
-    await expect(service.findById(ids.sheesh)).rejects.toThrowError(
+    await expect(
+      service.deleteUser(ids.john.toString())
+    ).resolves.not.toBeNull()
+    await expect(service.findById(ids.john.toString())).rejects.toThrowError(
       NotFoundException
     )
   })

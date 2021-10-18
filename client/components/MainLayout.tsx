@@ -5,10 +5,12 @@ import Button from '@components/Button'
 import UserMenu from '@components/UserMenu'
 import Landing from '@components/Landing'
 import Confirmation from '@components/Confirmation'
-import { UserProps, UserContextProvider } from '@context/UserContext'
+import { GlobalProps } from '@context/GlobalContext'
+import { UserContextProvider } from '@context/UserContext'
+import { PortfolioContextProvider } from '@context/PortfolioContext'
 import styles from '@styles/components/MainLayout.module.scss'
 
-interface MainLayoutProps extends UserProps {
+interface MainLayoutProps extends GlobalProps {
   selected?: string
   children?: JSX.Element
 }
@@ -38,12 +40,14 @@ const MainLayout = (props: MainLayoutProps) => {
     if (!props.user.verified) {
       return (
         <UserContextProvider value={props.user}>
-          <Header navigation={[]}>
-            <UserMenu />
-          </Header>
-          <main>
-            <Confirmation />
-          </main>
+          <PortfolioContextProvider value={props.portfolio}>
+            <Header navigation={[]}>
+              <UserMenu />
+            </Header>
+            <main>
+              <Confirmation />
+            </main>
+          </PortfolioContextProvider>
         </UserContextProvider>
       )
     }
@@ -66,10 +70,12 @@ const MainLayout = (props: MainLayoutProps) => {
 
     return (
       <UserContextProvider value={props.user}>
-        <Header navigation={navigation}>
-          <UserMenu />
-        </Header>
-        <main>{props.children}</main>
+        <PortfolioContextProvider value={props.portfolio}>
+          <Header navigation={navigation}>
+            <UserMenu />
+          </Header>
+          <main>{props.children}</main>
+        </PortfolioContextProvider>
       </UserContextProvider>
     )
   }

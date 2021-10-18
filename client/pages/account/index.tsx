@@ -4,22 +4,23 @@ import { useRouter } from 'next/router'
 import MainLayout from '@components/MainLayout'
 import Layout from '@components/Layout'
 import EditField from '@components/EditField'
-import { UserProps, getUserProps, useUser } from '@context/UserContext'
+import { GlobalProps, getGlobalProps } from '@context/GlobalContext'
+import { useUser } from '@context/UserContext'
 import widgetStyles from '@styles/components/SingleWidget.module.scss'
 import formStyles from '@styles/components/Form.module.scss'
 import api from '@util/api'
 import { User } from '@util/User'
 
-const Account = (props: UserProps) => {
+const Account = (props: GlobalProps) => {
   const router = useRouter()
-  const { user, setUser } = useUser()
+  const [user, setUser] = useUser()
 
   if (!props.loggedIn) {
     router.push('/')
   }
 
   const onUsernameSave = async (username: string) => {
-    const result = await api.patch<User>('/auth/profile', { username })
+    const result = await api.patch<User>('user', { username })
     setUser(result.data)
   }
 
@@ -28,7 +29,7 @@ const Account = (props: UserProps) => {
   }
 
   const onPasswordSave = async (password: string) => {
-    const result = await api.patch<User>('/auth/profile', { password })
+    const result = await api.patch<User>('user', { password })
     setUser(result.data)
   }
 
@@ -79,7 +80,7 @@ const Account = (props: UserProps) => {
 }
 
 Account.getLayout = (page: ReactElement) => {
-  const props: UserProps = page.props
+  const props: GlobalProps = page.props
 
   return (
     <div>
@@ -93,6 +94,6 @@ Account.getLayout = (page: ReactElement) => {
   )
 }
 
-export const getServerSideProps = getUserProps
+export const getServerSideProps = getGlobalProps
 
 export default Account

@@ -2,11 +2,7 @@ import { Model } from 'mongoose'
 
 import { Test, TestingModule } from '@nestjs/testing'
 import { MongooseModule } from '@nestjs/mongoose'
-import {
-  UnauthorizedException,
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common'
+import { UnauthorizedException, NotFoundException } from '@nestjs/common'
 import { JwtModule } from '@nestjs/jwt'
 
 import { AuthService } from '@auth/auth.service'
@@ -14,26 +10,18 @@ import { Token, TokenSchema, TokenDocument } from '@auth/schemas/token.schema'
 import { MailService } from '@mail/mail.service'
 import { PortfoliosModule } from '@portfolios/portfolios.module'
 import { UsersModule } from '@users/users.module'
+import { UsersService } from '@users/users.service'
 import { User, UserSchema, UserDocument } from '@users/schemas/user.schema'
-import { CreateUserProfileDto } from '@users/dto/create-userProfile.dto'
-import { users, passwords } from '@test/data'
+import { users, ids, emails, passwords, validFields } from '@test/data'
 import { closeInMongodConnection, rootMongooseTestModule } from '@test/database'
 
 describe('AuthService', () => {
   let module: TestingModule
   let service: AuthService
+  let usersService: UsersService
   // models for direct access to database documents
   let userModel: Model<UserDocument>
   let tokenModel: Model<TokenDocument>
-  // hash maps to make testing easier
-  let ids: any = {}
-  let emails: any = {}
-  // variable used to test creating a valid profile
-  const validRegisterFields: CreateUserProfileDto = {
-    email: 'hello@gmail.com',
-    username: 'hello world',
-    password: 'atleast10charslong!',
-  }
 
   beforeAll(async () => {
     // initialize module
@@ -59,29 +47,17 @@ describe('AuthService', () => {
 
     // initialize service
     service = module.get<AuthService>(AuthService)
+    usersService = module.get<UsersService>(UsersService)
 
     // initialize models
     userModel = module.get<Model<UserDocument>>('UserModel')
     tokenModel = module.get<Model<TokenDocument>>('TokenModel')
-
-    // initialize test variables
-    for (let user of users) {
-      emails[user.username.split(' ')[0].toLowerCase()] = user.email
-    }
   })
 
   beforeEach(async () => {
-    // reset db
     await userModel.deleteMany({})
+    await userModel.create(users)
     await tokenModel.deleteMany({})
-
-    // populate db with sample data
-    const initialUsers = await userModel.create(users)
-
-    // save document ids to hash map
-    for (let user of initialUsers) {
-      ids[user.username.split(' ')[0].toLowerCase()] = user.id
-    }
   })
 
   it('is defined', async () => {
@@ -89,7 +65,7 @@ describe('AuthService', () => {
   })
 
   it('can login', async () => {
-    expect(service.login(ids.john)).toBeDefined()
+    expect(service.login(ids.john.toString())).toBeDefined()
   })
 
   it('validates existing users', async () => {
@@ -98,9 +74,6 @@ describe('AuthService', () => {
     ).resolves.toBeDefined()
     await expect(
       service.validateUser(emails.mary, passwords.mary)
-    ).resolves.toBeDefined()
-    await expect(
-      service.validateUser(emails.sheesh, passwords.sheesh)
     ).resolves.toBeDefined()
   })
 
@@ -117,58 +90,18 @@ describe('AuthService', () => {
   })
 
   it('registers and verifies users with valid fields', async () => {
-    // register
-    let user = await service.register(validRegisterFields)
-    expect(user).not.toBeNull()
-    expect(user.verified).toEqual(false)
-
-    await expect(
-      service.validateUser(
-        validRegisterFields.email,
-        validRegisterFields.password
-      )
-    ).resolves.not.toBeNull()
-
-    // verify
-    const token = await tokenModel.findOne({ user: user.id, type: 'confirm' })
+    // send verification mail
+    await service.sendVerificationEmail(ids.mary.toString())
+    const token = await tokenModel.findOne({ user: ids.mary, type: 'confirm' })
     expect(token).not.toBeNull()
 
+    // verify user
     await service.verify(token.id)
-    user = await userModel.findById(user.id)
+    const user = await userModel.findById(ids.mary)
     expect(user.verified).toEqual(true)
     await expect(
-      tokenModel.findOne({ user: user.id, type: 'confirm' })
+      tokenModel.findOne({ user: ids.mary, type: 'confirm' })
     ).resolves.toBeNull()
-  })
-
-  it('does not register user with invalid email', async () => {
-    // email is empty string
-    await expect(
-      service.register({ ...validRegisterFields, email: '' })
-    ).rejects.toThrowError(BadRequestException)
-
-    // email is duplicate
-    await expect(
-      service.register({ ...validRegisterFields, email: emails.mary })
-    ).rejects.toThrowError(BadRequestException)
-  })
-
-  it('does not register user with invalid username', async () => {
-    await expect(
-      service.register({ ...validRegisterFields, username: '' })
-    ).rejects.toThrowError(BadRequestException)
-    await expect(
-      service.register({
-        ...validRegisterFields,
-        username: 'morethan30characterssssssssssss',
-      })
-    ).rejects.toThrowError(BadRequestException)
-  })
-
-  it('does not register user with invalid password', async () => {
-    await expect(
-      service.register({ ...validRegisterFields, password: 'tooshort' })
-    ).rejects.toThrowError(BadRequestException)
   })
 
   it('does not verify user with invalid token', async () => {

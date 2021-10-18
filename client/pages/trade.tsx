@@ -7,7 +7,7 @@ import Layout from '@components/Layout'
 import Scroll from '@components/Scroll'
 import PlayerCard from '@components/PlayerCard'
 import PlayerDetails from '@components/PlayerDetails'
-import { UserProps, getUserProps } from '@context/UserContext'
+import { GlobalProps, getGlobalProps } from '@context/GlobalContext'
 import { Player } from '@util/Player'
 import api from '@util/api'
 import styles from '@styles/pages/Trade.module.scss'
@@ -22,7 +22,7 @@ interface SearchOptions {
   sortOrder: SortOrder
 }
 
-const Trade = (props: UserProps) => {
+const Trade = (props: GlobalProps) => {
   // redirect if user is not authenticated
   const router = useRouter()
   if (!props.loggedIn) {
@@ -38,7 +38,6 @@ const Trade = (props: UserProps) => {
   const [players, setPlayers] = useState<Player[]>([])
   const [selected, setSelected] = useState<Player | undefined>(undefined)
   const [checkout, setCheckout] = useState(false)
-  const [season, setSeason] = useState('standard')
 
   // fetch players every time search options change
   useEffect(() => {
@@ -111,7 +110,6 @@ const Trade = (props: UserProps) => {
         <PlayerCheckout
           className={styles.details}
           player={selected}
-          season={season}
           onBack={() => setCheckout(false)}
         />
       )
@@ -170,7 +168,7 @@ const Trade = (props: UserProps) => {
  * Page template
  */
 Trade.getLayout = (page: ReactElement) => {
-  const props: UserProps = page.props
+  const props: GlobalProps = page.props
 
   return (
     <div>
@@ -186,6 +184,6 @@ Trade.getLayout = (page: ReactElement) => {
   )
 }
 
-export const getServerSideProps = getUserProps
+export const getServerSideProps = getGlobalProps
 
 export default Trade

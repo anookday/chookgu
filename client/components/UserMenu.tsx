@@ -2,15 +2,15 @@ import { useRouter } from 'next/router'
 import Dropdown, { DropdownItem } from '@components/Dropdown'
 import picture from '@public/profile.jpg'
 import { useUser } from '@context/UserContext'
+import { usePortfolio } from '@context/PortfolioContext'
 import { formatValue } from '@util/numbers'
 import api from '@util/api'
 import styles from '@styles/components/UserMenu.module.scss'
 
 const UserMenu = () => {
-  const { user } = useUser()
+  const [user] = useUser()
+  const [portfolio] = usePortfolio()
   const router = useRouter()
-  // TODO: get rid of hard coded value for season
-  const season = 'standard'
 
   const logout = async () => {
     try {
@@ -26,7 +26,6 @@ const UserMenu = () => {
     }
   }
 
-  let balance = user.portfolio.find(({ mode }) => mode === season)?.balance || 0
   let options: DropdownItem[] = [
     { text: 'Settings', onClick: () => router.push('/account') },
     { text: 'Log Out', onClick: () => logout() },
@@ -41,7 +40,9 @@ const UserMenu = () => {
   return (
     <Dropdown items={options}>
       <div className={styles.user}>
-        <span className={styles.user__balance}>{formatValue(balance)}</span>
+        <span className={styles.user__balance}>
+          {formatValue(portfolio.balance)}
+        </span>
         <span className={styles.user__name}>{user.username}</span>
         <img
           src={picture.src}
