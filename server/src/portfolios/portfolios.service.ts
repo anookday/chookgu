@@ -1,15 +1,17 @@
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
+import { getYear, getMonth, getWeekOfMonth, getDay, getDate } from 'date-fns'
 import { InjectModel } from '@nestjs/mongoose'
 import {
   Injectable,
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common'
-import { Player } from '@players/schemas/player.schema'
+import { Player, isPlayerDocument } from '@players/schemas/player.schema'
 import {
   Portfolio,
   PortfolioDocument,
 } from '@portfolios/schemas/portfolio.schema'
+import { PortfolioValueDto } from '@portfolios/dto/portfolio-value.dto'
 
 @Injectable()
 export class PortfoliosService {
@@ -127,12 +129,128 @@ export class PortfoliosService {
     return await portfolio.save()
   }
 
-  async delete(_id: string, season: string) {
-    return await this.portfolioModel.remove({ _id, season })
+  async delete(user: string, season: string) {
+    return await this.portfolioModel.remove({ user, season })
   }
 
-  // TODO
-  async getPortfolioValue(_id: string, season: string) {
-    return []
+  async getPortfolioValue(user: string, season: string) {
+    const portfolio = await this.get(user, season)
+
+    let result: PortfolioValueDto[] = []
+
+    for (let asset of portfolio.players) {
+      if (!isPlayerDocument(asset.player)) continue
+
+      for (let playerValue of asset.player.value) {
+        const year = getYear(playerValue.date)
+        const month = getMonth(playerValue.date)
+        const week = getWeekOfMonth(playerValue.date)
+        const day = getDate(playerValue.date)
+        const value = playerValue.amount * asset.amount
+
+        let obj = result.find(
+          (o) =>
+            o.year === year &&
+            o.month === month &&
+            o.week === week &&
+            o.day === day
+        )
+
+        if (obj) {
+          obj.value += value
+        } else {
+          result.push({
+            year,
+            month,
+            week,
+            day,
+            value: value + portfolio.balance,
+          })
+        }
+      }
+    }
+
+    return result
+  }
+
+  // using mongodb aggregate
+  async getPortfolioValueAlt(user: string, season: string) {
+    const portfolio = await this.portfolioModel.aggregate([
+      {
+        $match: {
+          user: new Types.ObjectId(user),
+          season,
+        },
+      },
+      {
+        $lookup: {
+          from: 'players',
+          localField: 'players.player',
+          foreignField: '_id',
+          as: 'detailedPlayers',
+        },
+      },
+      {
+        $set: {
+          playerValues: {
+            $map: {
+              input: '$detailedPlayers',
+              as: 'player',
+              in: {
+                $let: {
+                  vars: {
+                    asset: {
+                      $filter: {
+                        input: '$players',
+                        cond: {
+                          $eq: ['$$player._id', '$$this.player'],
+                        },
+                      },
+                    },
+                  },
+                  in: {
+                    $map: {
+                      input: '$$player.value',
+                      as: 'val',
+                      in: {
+                        year: { $year: '$$val.date' },
+                        month: { $month: '$$val.date' },
+                        week: { $week: '$$val.date' },
+                        day: { $dayOfMonth: '$$val.date' },
+                        price: {
+                          $multiply: [
+                            '$$val.amount',
+                            { $arrayElemAt: ['$$asset.amount', 0] },
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $set: {
+          reducedValues: {
+            $reduce: {
+              input: '$playerValues',
+              initialValue: [],
+              in: { $concatArrays: ['$$value', '$$this'] },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          reducedValues: 1,
+        },
+      },
+    ])
+
+    return portfolio
   }
 }

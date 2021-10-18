@@ -20,4 +20,13 @@ export class PortfoliosController {
 
     return { season, balance, players }
   }
+
+  @Get('/value')
+  @UseGuards(JwtAuthGuard)
+  async getValueHistory(
+    @User('_id') userId: string,
+    @Query('season') season: string
+  ) {
+    return await this.portfoliosService.getPortfolioValue(userId, season)
+  }
 }
