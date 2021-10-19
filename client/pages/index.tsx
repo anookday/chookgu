@@ -1,6 +1,7 @@
 import { ReactElement, useEffect, useState } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import Chart from '@components/Chart'
 import Layout from '@components/Layout'
 import MainLayout from '@components/MainLayout'
 import PlayerCard from '@components/PlayerCard'
@@ -9,6 +10,11 @@ import { GlobalProps, getGlobalProps } from '@context/GlobalContext'
 import styles from '@styles/pages/Home.module.scss'
 import api from '@util/api'
 import { Player } from '@util/Player'
+import { PortfolioValue } from '@util/Portfolio'
+import {
+  getPortfolioValueChartData,
+  getValueLineChartOptions,
+} from '@util/chart'
 
 const Home = (props: GlobalProps) => {
   // redirect if user is not authenticated
@@ -17,6 +23,7 @@ const Home = (props: GlobalProps) => {
     router.push('/')
   }
 
+  const [portfolioValue, setPortfolioValue] = useState<PortfolioValue[]>([])
   const [topMargins, setTopMargins] = useState<Player[]>([])
   const [bottomMargins, setBottomMargins] = useState<Player[]>([])
 
@@ -28,8 +35,16 @@ const Home = (props: GlobalProps) => {
   }
 
   useEffect(() => {
+    getPortfolioValue()
     getDashboardStatistics()
   }, [])
+
+  const getPortfolioValue = async () => {
+    const res = await api.get<PortfolioValue[]>(
+      '/portfolio/value?season=standard'
+    )
+    setPortfolioValue(res.data)
+  }
 
   const renderPlayers = (players: Player[]) => {
     return players.map((player, index) => (
@@ -44,8 +59,12 @@ const Home = (props: GlobalProps) => {
     <Layout>
       <GridContainer>
         <div className={`${styles.widget} ${styles.portfolio}`}>
-          <div className={styles.widget__header}>
-            More cool statistics coming soon
+          <div className={styles.widget__header}>Portfolio Value</div>
+          <div className={styles.widget__chart}>
+            <Chart
+              data={getPortfolioValueChartData(portfolioValue)}
+              options={getValueLineChartOptions()}
+            />
           </div>
         </div>
         <div className={`${styles.widget} ${styles.topMargins}`}>

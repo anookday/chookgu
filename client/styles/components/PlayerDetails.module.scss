@@ -1,10 +1,5 @@
 .widget {
   @include widget-outer;
-
-  &__chart {
-    flex: 1;
-    width: 100%;
-  }
 }
 
 .player {

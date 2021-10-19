@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import {
+  isPlayerPopulated,
   Transaction,
   TransactionDocument,
   TransactionType,
@@ -69,7 +70,7 @@ export class TransactionsService {
     const transaction = await this.transactionModel.create({
       user: Types.ObjectId(userId),
       player: playerId,
-      mode: season,
+      season,
       type: TransactionType.Buy,
       price: player.currentValue,
       amount,
@@ -115,7 +116,7 @@ export class TransactionsService {
     const transaction = await this.transactionModel.create({
       user: Types.ObjectId(userId),
       player: player._id,
-      mode: season,
+      season,
       type: TransactionType.Sell,
       price: player.currentValue,
       amount,
@@ -126,5 +127,16 @@ export class TransactionsService {
     }
 
     return portfolio.populate('players.player')
+  }
+
+  async getOverallGainLoss(userId: string, season: string) {
+    const transactions = await this.transactionModel
+      .find({ user: userId, season })
+      .sort({ date: 1 })
+      .populate('player')
+
+    let margin = 0
+
+    let result: { date: string; margin: number }[] = []
   }
 }

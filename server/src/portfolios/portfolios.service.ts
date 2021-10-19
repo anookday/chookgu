@@ -1,5 +1,5 @@
 import { Model, Types } from 'mongoose'
-import { getYear, getMonth, getWeekOfMonth, getDay, getDate } from 'date-fns'
+import { parseISO, format } from 'date-fns'
 import { InjectModel } from '@nestjs/mongoose'
 import {
   Injectable,
@@ -142,115 +142,19 @@ export class PortfoliosService {
       if (!isPlayerDocument(asset.player)) continue
 
       for (let playerValue of asset.player.value) {
-        const year = getYear(playerValue.date)
-        const month = getMonth(playerValue.date)
-        const week = getWeekOfMonth(playerValue.date)
-        const day = getDate(playerValue.date)
+        const date = format(playerValue.date, 'yyyy-MM-dd')
         const value = playerValue.amount * asset.amount
 
-        let obj = result.find(
-          (o) =>
-            o.year === year &&
-            o.month === month &&
-            o.week === week &&
-            o.day === day
-        )
+        let obj = result.find((o) => o.date === date)
 
         if (obj) {
           obj.value += value
         } else {
-          result.push({
-            year,
-            month,
-            week,
-            day,
-            value: value + portfolio.balance,
-          })
+          result.push({ date, value: value + portfolio.balance })
         }
       }
     }
 
     return result
-  }
-
-  // using mongodb aggregate
-  async getPortfolioValueAlt(user: string, season: string) {
-    const portfolio = await this.portfolioModel.aggregate([
-      {
-        $match: {
-          user: new Types.ObjectId(user),
-          season,
-        },
-      },
-      {
-        $lookup: {
-          from: 'players',
-          localField: 'players.player',
-          foreignField: '_id',
-          as: 'detailedPlayers',
-        },
-      },
-      {
-        $set: {
-          playerValues: {
-            $map: {
-              input: '$detailedPlayers',
-              as: 'player',
-              in: {
-                $let: {
-                  vars: {
-                    asset: {
-                      $filter: {
-                        input: '$players',
-                        cond: {
-                          $eq: ['$$player._id', '$$this.player'],
-                        },
-                      },
-                    },
-                  },
-                  in: {
-                    $map: {
-                      input: '$$player.value',
-                      as: 'val',
-                      in: {
-                        year: { $year: '$$val.date' },
-                        month: { $month: '$$val.date' },
-                        week: { $week: '$$val.date' },
-                        day: { $dayOfMonth: '$$val.date' },
-                        price: {
-                          $multiply: [
-                            '$$val.amount',
-                            { $arrayElemAt: ['$$asset.amount', 0] },
-                          ],
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      {
-        $set: {
-          reducedValues: {
-            $reduce: {
-              input: '$playerValues',
-              initialValue: [],
-              in: { $concatArrays: ['$$value', '$$this'] },
-            },
-          },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          reducedValues: 1,
-        },
-      },
-    ])
-
-    return portfolio
   }
 }

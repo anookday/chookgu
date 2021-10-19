@@ -19,7 +19,7 @@ export class Transaction {
   player: number | PlayerDocument
 
   @Prop()
-  mode: string
+  season: string
 
   @Prop({ type: String, enum: TransactionType })
   type: string
@@ -35,7 +35,7 @@ export class Transaction {
 }
 
 export const TransactionSchema = SchemaFactory.createForClass(Transaction)
-TransactionSchema.index({ user: 1, date: -1 })
+TransactionSchema.index({ user: 1, season: 1, date: 1 })
 
 /**
  * Return true if referenced transaction is a TransactionDocument.
@@ -44,4 +44,14 @@ export function isTransactionDocument(
   obj: Types.ObjectId | TransactionDocument
 ): obj is TransactionDocument {
   return !(obj instanceof Types.ObjectId)
+}
+
+interface PlayerIsPopulated {
+  player: PlayerDocument
+}
+
+export function isPlayerPopulated(
+  obj: TransactionDocument
+): obj is TransactionDocument & PlayerIsPopulated {
+  return obj.populated('player') !== undefined
 }

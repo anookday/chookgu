@@ -2,14 +2,8 @@ import { ChartData } from 'chart.js'
 import Chart from '@components/Chart'
 import Button from '@components/Button'
 import { formatMargin, formatValue, formatMarginPercent } from '@util/numbers'
-import {
-  Player,
-  PlayerAsset,
-  isPlayerAsset,
-  getPlayerValueChartData,
-  getPlayerValueChartOptions,
-  getPlayerAge,
-} from '@util/Player'
+import { Player, PlayerAsset, isPlayerAsset, getPlayerAge } from '@util/Player'
+import { getPlayerValueChartData, getValueLineChartOptions } from '@util/chart'
 import styles from '@styles/components/PlayerDetails.module.scss'
 
 interface PlayerDetailsProps {
@@ -144,7 +138,7 @@ const PlayerDetails = ({
         </div>
       </div>
       <div className={styles.widget__chart}>
-        <Chart data={chartData} options={getPlayerValueChartOptions()} />
+        <Chart data={chartData} options={getValueLineChartOptions()} />
       </div>
       {renderInfo()}
     </div>

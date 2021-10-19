@@ -6,11 +6,16 @@ import {
   Portfolio,
   PortfolioSchema,
 } from '@portfolios/schemas/portfolio.schema'
+import {
+  Transaction,
+  TransactionSchema,
+} from '@transactions/schemas/transaction.schema'
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Portfolio.name, schema: PortfolioSchema },
+      { name: Transaction.name, schema: TransactionSchema },
     ]),
   ],
   providers: [PortfoliosService],
