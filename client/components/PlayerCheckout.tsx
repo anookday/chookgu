@@ -54,18 +54,6 @@ const renderContent = (
     props.onCancel && props.onCancel()
   }
 
-  // user does not have enough funds to buy the selected player
-  if (userHasInsufficientFunds(props)) {
-    return (
-      <>
-        <div>Insufficient funds.</div>
-        <div className={styles.widget__footer}>
-          <Button text="Go Back" onClick={onCancel} />
-        </div>
-      </>
-    )
-  }
-
   switch (status) {
     // transaction is processing
     case TransactionStatus.Processing:
@@ -117,6 +105,18 @@ const renderTransactionReadyContent = (
   setStatus: Dispatch<SetStateAction<TransactionStatus>>,
   onCancel: (e: MouseEvent<HTMLButtonElement>) => void
 ) => {
+  // user does not have enough funds to buy the selected player
+  if (userHasInsufficientFunds(props)) {
+    return (
+      <>
+        <div>Insufficient funds.</div>
+        <div className={styles.widget__footer}>
+          <Button text="Go Back" onClick={onCancel} />
+        </div>
+      </>
+    )
+  }
+
   const minAmount = 1
 
   // variables that depend on whether the user is buying or selling players

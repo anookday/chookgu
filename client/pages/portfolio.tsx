@@ -11,7 +11,6 @@ import { GlobalProps, getGlobalProps } from '@context/GlobalContext'
 import { usePortfolio } from '@context/PortfolioContext'
 import styles from '@styles/pages/Portfolio.module.scss'
 import { Player, PlayerAsset } from '@util/Player'
-import { Portfolio } from '@util/Portfolio'
 import { formatMargin, formatMarginPercent } from '@util/numbers'
 
 const PortfolioPage = (props: GlobalProps) => {
@@ -119,8 +118,11 @@ PortfolioPage.getLayout = (page: ReactElement) => {
   return (
     <div>
       <Head>
-        <title>Chookgu</title>
-        <meta name="description" content="Description of chookgu" />
+        <title>Chookgu - My Portfolio</title>
+        <meta
+          name="description"
+          content="View, analyze and sell football players in your portfolio."
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <MainLayout selected="Portfolio" {...props}>

@@ -1,9 +1,13 @@
 import 'chartjs-adapter-date-fns'
-import { ChartData, ChartOptions } from 'chart.js'
+import { Chart, ChartData, ChartOptions, Plugin } from 'chart.js'
 import colors from '@styles/global/colors.module.scss'
-import { PortfolioValue } from '@util/Portfolio'
 import { PlayerValue } from '@util/Player'
 import { formatValue } from '@util/numbers'
+
+export interface ChartValue {
+  date: string
+  value: number
+}
 
 export function getPlayerValueChartData(
   values: PlayerValue[],
@@ -40,9 +44,22 @@ export function getPlayerValueChartData(
   return result
 }
 
-export function getPortfolioValueChartData(
-  values: PortfolioValue[]
-): ChartData {
+export function getChartData(values: ChartValue[]): ChartData {
+  return {
+    labels: values.map((value) => value.date),
+    datasets: [
+      {
+        label: 'Value',
+        fill: true,
+        pointHoverBorderWidth: 5,
+        pointHitRadius: 20,
+        data: values.map((value) => value.value),
+      },
+    ],
+  }
+}
+
+export function getStyledChartData(values: ChartValue[]): ChartData {
   return {
     labels: values.map((value) => value.date),
     datasets: [
@@ -102,5 +119,44 @@ export function getValueLineChartOptions(): ChartOptions<'line'> {
     },
     responsive: true,
     maintainAspectRatio: false,
+  }
+}
+
+// line chart plugin that colors negative values differently
+export function getNegativeLineChartPlugin(): Plugin<'line'> {
+  return {
+    id: 'negativeLineChart',
+    beforeRender: (chart: Chart<'line'>) => {
+      const dataset = chart.data.datasets[0]
+      const yPos = chart.scales.y.getPixelForValue(0)
+      const gradient = chart.ctx.createLinearGradient(0, 0, 0, chart.height)
+      const translucentGradient = chart.ctx.createLinearGradient(
+        0,
+        0,
+        0,
+        chart.height
+      )
+
+      const translucentAccent = `${colors.accent}66`
+      const translucentComplement = `${colors.complement}66`
+
+      gradient.addColorStop(0, colors.accent)
+      gradient.addColorStop(yPos / chart.height, colors.accent)
+      gradient.addColorStop(yPos / chart.height, colors.complement)
+      gradient.addColorStop(1, colors.complement)
+
+      translucentGradient.addColorStop(0, translucentAccent)
+      translucentGradient.addColorStop(yPos / chart.height, translucentAccent)
+      translucentGradient.addColorStop(
+        yPos / chart.height,
+        translucentComplement
+      )
+      translucentGradient.addColorStop(1, translucentComplement)
+
+      dataset.borderColor = gradient
+      dataset.pointBackgroundColor = gradient
+      dataset.pointHoverBackgroundColor = gradient
+      dataset.backgroundColor = translucentGradient
+    },
   }
 }

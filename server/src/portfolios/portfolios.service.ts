@@ -1,4 +1,4 @@
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { format } from 'date-fns'
 import { InjectModel } from '@nestjs/mongoose'
 import {
@@ -14,7 +14,11 @@ import {
 } from '@portfolios/schemas/portfolio.schema'
 import { PortfolioValueDto } from '@portfolios/dto/portfolio-value.dto'
 import { TransactionsService } from '@transactions/transactions.service'
-import { TransactionType } from '@transactions/schemas/transaction.schema'
+import {
+  Transaction,
+  TransactionType,
+  TransactionDocument,
+} from '@transactions/schemas/transaction.schema'
 import { UsersService } from '@users/users.service'
 
 @Injectable()
@@ -22,6 +26,8 @@ export class PortfoliosService {
   constructor(
     @InjectModel(Portfolio.name)
     private portfolioModel: Model<PortfolioDocument>,
+    @InjectModel(Transaction.name)
+    private transactionModel: Model<TransactionDocument>,
     private usersService: UsersService,
     private playersService: PlayersService,
     private transactionsService: TransactionsService
@@ -184,8 +190,8 @@ export class PortfoliosService {
     return await this.portfolioModel.remove({ user, season })
   }
 
-  async getPortfolioValue(user: string, season: string) {
-    const portfolio = await this.get(user, season)
+  async getPortfolioValue(userId: string, season: string) {
+    const portfolio = await this.get(userId, season)
 
     let result: PortfolioValueDto[] = []
 
@@ -209,6 +215,104 @@ export class PortfoliosService {
     return result
   }
 
-  // TODO
-  async getGainLoss(userId: string, season: string) {}
+  // TODO: current formula calculates every transaction as if it is a buy
+  // transaction. make sure to calculate sell transactions accordingly
+  async getGainLoss(userId: string, season: string) {
+    type GainLossValue = {
+      _id: {
+        year: number
+        month: number
+        day: number
+      }
+      gains: number
+    }
+
+    const query = await this.transactionModel.aggregate<GainLossValue>([
+      {
+        $match: {
+          user: Types.ObjectId(userId),
+          season,
+        },
+      },
+      {
+        $lookup: {
+          from: 'players',
+          localField: 'player',
+          foreignField: '_id',
+          as: 'player',
+        },
+      },
+      {
+        $unwind: '$player',
+      },
+      {
+        $addFields: {
+          gains: {
+            $map: {
+              input: {
+                $filter: {
+                  input: '$player.value',
+                  as: 'v',
+                  cond: {
+                    $gte: ['$$v.date', '$date'],
+                  },
+                },
+              },
+              as: 'playerValue',
+              in: {
+                year: {
+                  $year: '$$playerValue.date',
+                },
+                month: {
+                  $month: '$$playerValue.date',
+                },
+                day: {
+                  $dayOfMonth: '$$playerValue.date',
+                },
+                amount: {
+                  $multiply: [
+                    '$amount',
+                    { $subtract: ['$$playerValue.amount', '$price'] },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $unwind: '$gains',
+      },
+      {
+        $group: {
+          _id: {
+            year: '$gains.year',
+            month: '$gains.month',
+            day: '$gains.day',
+          },
+          gains: { $sum: '$gains.amount' },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          gains: 1,
+        },
+      },
+      {
+        $sort: {
+          '_id.year': 1,
+          '_id.month': 1,
+          '_id.day': 1,
+        },
+      },
+    ])
+
+    return query.map((v) => {
+      return {
+        date: new Date(v._id.year, v._id.month - 1, v._id.day),
+        value: v.gains,
+      }
+    })
+  }
 }

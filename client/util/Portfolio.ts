@@ -11,8 +11,3 @@ export const defaultPortfolio: Portfolio = {
   balance: 0,
   players: [],
 }
-
-export interface PortfolioValue {
-  date: string
-  value: number
-}

@@ -17,7 +17,14 @@
 .portfolio {
   grid: {
     column: 1;
-    row: 1 / -1;
+    row: 1;
+  }
+}
+
+.gainLoss {
+  grid: {
+    column: 1;
+    row: 2;
   }
 }
 

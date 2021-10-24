@@ -10,10 +10,12 @@ import { GlobalProps, getGlobalProps } from '@context/GlobalContext'
 import styles from '@styles/pages/Home.module.scss'
 import api from '@util/api'
 import { Player } from '@util/Player'
-import { PortfolioValue } from '@util/Portfolio'
 import {
-  getPortfolioValueChartData,
+  ChartValue,
+  getChartData,
+  getStyledChartData,
   getValueLineChartOptions,
+  getNegativeLineChartPlugin,
 } from '@util/chart'
 
 const Home = (props: GlobalProps) => {
@@ -23,7 +25,8 @@ const Home = (props: GlobalProps) => {
     router.push('/')
   }
 
-  const [portfolioValue, setPortfolioValue] = useState<PortfolioValue[]>([])
+  const [portfolioValue, setPortfolioValue] = useState<ChartValue[]>([])
+  const [gainLossValue, setGainLossValue] = useState<ChartValue[]>([])
   const [topMargins, setTopMargins] = useState<Player[]>([])
   const [bottomMargins, setBottomMargins] = useState<Player[]>([])
 
@@ -36,14 +39,20 @@ const Home = (props: GlobalProps) => {
 
   useEffect(() => {
     getPortfolioValue()
+    getGainLossValue()
     getDashboardStatistics()
   }, [])
 
   const getPortfolioValue = async () => {
-    const res = await api.get<PortfolioValue[]>(
-      '/portfolio/value?season=standard'
-    )
+    const res = await api.get<ChartValue[]>('/portfolio/value?season=standard')
     setPortfolioValue(res.data)
+  }
+
+  const getGainLossValue = async () => {
+    const res = await api.get<ChartValue[]>(
+      '/portfolio/gain-loss?season=standard'
+    )
+    setGainLossValue(res.data)
   }
 
   const renderPlayers = (players: Player[]) => {
@@ -62,8 +71,18 @@ const Home = (props: GlobalProps) => {
           <div className={styles.widget__header}>Portfolio Value</div>
           <div className={styles.widget__chart}>
             <Chart
-              data={getPortfolioValueChartData(portfolioValue)}
+              data={getStyledChartData(portfolioValue)}
               options={getValueLineChartOptions()}
+            />
+          </div>
+        </div>
+        <div className={`${styles.widget} ${styles.gainLoss}`}>
+          <div className={styles.widget__header}>My Gain/Loss</div>
+          <div className={styles.widget__chart}>
+            <Chart
+              data={getChartData(gainLossValue)}
+              options={getValueLineChartOptions()}
+              plugins={[getNegativeLineChartPlugin()]}
             />
           </div>
         </div>
