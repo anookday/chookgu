@@ -11,6 +11,7 @@ import { GlobalProps, getGlobalProps } from '@context/GlobalContext'
 import { usePortfolio } from '@context/PortfolioContext'
 import styles from '@styles/pages/Portfolio.module.scss'
 import { Player, PlayerAsset } from '@util/Player'
+import { Portfolio } from '@util/Portfolio'
 import { formatMargin, formatMarginPercent } from '@util/numbers'
 
 const PortfolioPage = (props: GlobalProps) => {
@@ -20,7 +21,7 @@ const PortfolioPage = (props: GlobalProps) => {
     router.push('/')
   }
 
-  const [portfolio] = usePortfolio()
+  const [portfolio, setPortfolio] = usePortfolio()
   const [selected, setSelected] = useState<PlayerAsset | undefined>(undefined)
   const [checkout, setCheckout] = useState(false)
 
@@ -32,17 +33,6 @@ const PortfolioPage = (props: GlobalProps) => {
       )
     } else {
       setSelected(undefined)
-    }
-  }
-
-  const onCheckoutBack = () => {
-    setCheckout(false)
-    if (selected) {
-      setSelected(
-        portfolio.players.find(
-          (asset) => asset.player._id === selected.player._id
-        )
-      )
     }
   }
 
@@ -85,7 +75,18 @@ const PortfolioPage = (props: GlobalProps) => {
         <PlayerCheckout
           className={styles.details}
           player={selected}
-          onBack={onCheckoutBack}
+          portfolio={portfolio}
+          onComplete={(p) => setPortfolio(p)}
+          onCancel={() => {
+            setCheckout(false)
+            if (selected) {
+              setSelected(
+                portfolio.players.find(
+                  (asset) => asset.player._id === selected.player._id
+                )
+              )
+            }
+          }}
         />
       )
     }

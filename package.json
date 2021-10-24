@@ -6,7 +6,8 @@
   "scripts": {
     "dev:server": "npm --prefix server run start:dev",
     "dev:client": "npm --prefix client run dev",
-    "dev": "concurrently npm:dev:*"
+    "dev": "concurrently npm:dev:*",
+    "test": "npm --prefix server run test"
   },
   "author": "",
   "license": "ISC",

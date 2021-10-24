@@ -1,23 +1,30 @@
-import { Model, Types } from 'mongoose'
-import { parseISO, format } from 'date-fns'
+import { Model } from 'mongoose'
+import { format } from 'date-fns'
 import { InjectModel } from '@nestjs/mongoose'
 import {
   Injectable,
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common'
-import { Player, isPlayerDocument } from '@players/schemas/player.schema'
+import { PlayersService } from '@players/players.service'
+import { isPlayerDocument } from '@players/schemas/player.schema'
 import {
   Portfolio,
   PortfolioDocument,
 } from '@portfolios/schemas/portfolio.schema'
 import { PortfolioValueDto } from '@portfolios/dto/portfolio-value.dto'
+import { TransactionsService } from '@transactions/transactions.service'
+import { TransactionType } from '@transactions/schemas/transaction.schema'
+import { UsersService } from '@users/users.service'
 
 @Injectable()
 export class PortfoliosService {
   constructor(
     @InjectModel(Portfolio.name)
-    private portfolioModel: Model<PortfolioDocument>
+    private portfolioModel: Model<PortfolioDocument>,
+    private usersService: UsersService,
+    private playersService: PlayersService,
+    private transactionsService: TransactionsService
   ) {}
 
   async get(user: string, season: string) {
@@ -41,14 +48,23 @@ export class PortfoliosService {
     return await this.portfolioModel.create({ user, season, balance })
   }
 
-  async addPlayer(
-    user: string,
+  async buyPlayer(
     season: string,
-    player: Player,
+    userId: string,
+    playerId: number,
     amount: number
   ) {
+    let user = await this.usersService.findById(userId)
+    const player = await this.playersService.findById(playerId)
+
+    if (!user) {
+      throw new BadRequestException('Invalid user')
+    }
+    if (!player) {
+      throw new BadRequestException('Invalid player')
+    }
     if (amount < 1) {
-      throw new BadRequestException('Amount must be a positive integer')
+      throw new BadRequestException('Invalid amount')
     }
 
     // portfolio does not exist
@@ -82,17 +98,38 @@ export class PortfoliosService {
       })
     }
 
+    // update portfolio
     portfolio.balance -= updateValue
+    portfolio = await portfolio.save()
 
-    return await portfolio.save()
+    // add new transaction record
+    await this.transactionsService.add(
+      user._id,
+      player._id,
+      season,
+      TransactionType.Buy,
+      amount,
+      player.currentValue
+    )
+
+    return portfolio
   }
 
-  async removePlayer(
-    user: string,
+  async sellPlayer(
     season: string,
-    player: Player,
+    userId: string,
+    playerId: number,
     amount: number
   ) {
+    let user = await this.usersService.findById(userId)
+    const player = await this.playersService.findById(playerId)
+
+    if (!user) {
+      throw new BadRequestException('Invalid user')
+    }
+    if (!player) {
+      throw new BadRequestException('Invalid player')
+    }
     if (amount < 1) {
       throw new BadRequestException('Amount must be a positive integer')
     }
@@ -108,11 +145,13 @@ export class PortfoliosService {
     if (!asset) {
       throw new BadRequestException('Player asset not found')
     }
+
     const updatedAmount = asset.amount - amount
     // does not own given amount of players
     if (updatedAmount < 0) {
       throw new BadRequestException('Insufficient player assets')
     }
+
     // if update results in 0 assets, remove the asset object from document
     if (updatedAmount === 0) {
       portfolio.players = portfolio.players.filter(
@@ -124,9 +163,21 @@ export class PortfoliosService {
       asset.amount = updatedAmount
     }
 
+    // update portfolio
     portfolio.balance += player.currentValue * amount
+    portfolio = await portfolio.save()
 
-    return await portfolio.save()
+    // add new transaction record
+    await this.transactionsService.add(
+      user._id,
+      player._id,
+      season,
+      TransactionType.Sell,
+      amount,
+      player.currentValue
+    )
+
+    return portfolio.populate('players.player')
   }
 
   async delete(user: string, season: string) {
@@ -157,4 +208,7 @@ export class PortfoliosService {
 
     return result
   }
+
+  // TODO
+  async getGainLoss(userId: string, season: string) {}
 }

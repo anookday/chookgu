@@ -1,6 +1,16 @@
-import { Controller, Get, UseGuards, Query } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Post,
+  UsePipes,
+  UseGuards,
+  Query,
+  Body,
+  ValidationPipe,
+} from '@nestjs/common'
 import { JwtAuthGuard } from '@auth/jwt-auth.guard'
 import { PortfoliosService } from '@portfolios/portfolios.service'
+import { TransactionDto } from '@transactions/dto/transaction.dto'
 import { User } from '@users/user.decorator'
 
 @Controller('portfolio')
@@ -21,6 +31,40 @@ export class PortfoliosController {
     return { season, balance, players }
   }
 
+  @UseGuards(JwtAuthGuard)
+  @UsePipes(new ValidationPipe({ transform: true }))
+  @Post('/buy')
+  async buy(
+    @User('_id') userId: string,
+    @Body() { season, playerId, amount }: TransactionDto
+  ) {
+    const portfolio = await this.portfoliosService.buyPlayer(
+      season,
+      userId,
+      playerId,
+      amount
+    )
+
+    return await portfolio.populate('players.player').execPopulate()
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @UsePipes(new ValidationPipe({ transform: true }))
+  @Post('/sell')
+  async sell(
+    @User('_id') userId: string,
+    @Body() { season, playerId, amount }: TransactionDto
+  ) {
+    const portfolio = await this.portfoliosService.sellPlayer(
+      season,
+      userId,
+      playerId,
+      amount
+    )
+
+    return await portfolio.populate('players.player').execPopulate()
+  }
+
   @Get('/value')
   @UseGuards(JwtAuthGuard)
   async getValueHistory(
@@ -28,5 +72,14 @@ export class PortfoliosController {
     @Query('season') season: string
   ) {
     return await this.portfoliosService.getPortfolioValue(userId, season)
+  }
+
+  @Get('/gain-loss')
+  @UseGuards(JwtAuthGuard)
+  async getGainLossHistory(
+    @User('_id') userId: string,
+    @Query('season') season: string
+  ) {
+    return await this.portfoliosService.getGainLoss(userId, season)
   }
 }

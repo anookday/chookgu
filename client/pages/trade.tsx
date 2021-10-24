@@ -14,6 +14,7 @@ import styles from '@styles/pages/Trade.module.scss'
 import Search from '@components/Search'
 import SortDropdown, { SortBy, SortOrder } from '@components/SortDropdown'
 import PlayerCheckout from '@components/PlayerCheckout'
+import { usePortfolio } from '@context/PortfolioContext'
 
 interface SearchOptions {
   index: number
@@ -29,6 +30,7 @@ const Trade = (props: GlobalProps) => {
     router.push('/')
   }
 
+  const [portfolio, setPortfolio] = usePortfolio()
   const [searchOptions, setSearchOptions] = useState<SearchOptions>({
     index: 0,
     term: '',
@@ -108,9 +110,11 @@ const Trade = (props: GlobalProps) => {
     if (selected && checkout) {
       return (
         <PlayerCheckout
-          className={styles.details}
           player={selected}
-          onBack={() => setCheckout(false)}
+          portfolio={portfolio}
+          className={styles.details}
+          onComplete={(p) => setPortfolio(p)}
+          onCancel={() => setCheckout(false)}
         />
       )
     }
