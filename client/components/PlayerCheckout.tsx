@@ -186,15 +186,15 @@ const renderTransactionReadyContent = (
         </div>
       </div>
       <div className={styles.widget__text}>
-        <span>Current balance:</span>
+        Current balance:
         <span>{formatValue(props.portfolio.balance)}</span>
       </div>
       <div className={styles.widget__text}>
-        <span>Price:</span>
+        Price:
         <span>{formatValue(currentPlayer.currentValue * amount)}</span>
       </div>
       <div className={styles.widget__text}>
-        <span>Balance after transaction:</span>
+        Balance after transaction:
         <span>{formatValue(newBalance)}</span>
       </div>
       <div className={styles.widget__footer}>

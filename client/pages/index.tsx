@@ -1,7 +1,7 @@
 import { ReactElement, useEffect, useState } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import Chart from '@components/Chart'
+import LineChart, { ChartValue } from '@components/LineChart'
 import Layout from '@components/Layout'
 import MainLayout from '@components/MainLayout'
 import PlayerCard from '@components/PlayerCard'
@@ -10,13 +10,6 @@ import { GlobalProps, getGlobalProps } from '@context/GlobalContext'
 import styles from '@styles/pages/Home.module.scss'
 import api from '@util/api'
 import { Player } from '@util/Player'
-import {
-  ChartValue,
-  getChartData,
-  getStyledChartData,
-  getValueLineChartOptions,
-  getNegativeLineChartPlugin,
-} from '@util/chart'
 
 const Home = (props: GlobalProps) => {
   // redirect if user is not authenticated
@@ -70,20 +63,13 @@ const Home = (props: GlobalProps) => {
         <div className={`${styles.widget} ${styles.portfolio}`}>
           <div className={styles.widget__header}>Portfolio Value</div>
           <div className={styles.widget__chart}>
-            <Chart
-              data={getStyledChartData(portfolioValue)}
-              options={getValueLineChartOptions()}
-            />
+            <LineChart data={portfolioValue} />
           </div>
         </div>
         <div className={`${styles.widget} ${styles.gainLoss}`}>
           <div className={styles.widget__header}>My Gain/Loss</div>
           <div className={styles.widget__chart}>
-            <Chart
-              data={getChartData(gainLossValue)}
-              options={getValueLineChartOptions()}
-              plugins={[getNegativeLineChartPlugin()]}
-            />
+            <LineChart data={gainLossValue} type="pos-neg" />
           </div>
         </div>
         <div className={`${styles.widget} ${styles.topMargins}`}>

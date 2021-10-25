@@ -1,9 +1,7 @@
-import { ChartData } from 'chart.js'
-import Chart from '@components/Chart'
+import Chart, { toChartValues } from '@components/LineChart'
 import Button from '@components/Button'
 import { formatMargin, formatValue, formatMarginPercent } from '@util/numbers'
 import { Player, PlayerAsset, isPlayerAsset, getPlayerAge } from '@util/Player'
-import { getPlayerValueChartData, getValueLineChartOptions } from '@util/chart'
 import styles from '@styles/components/PlayerDetails.module.scss'
 
 interface PlayerDetailsProps {
@@ -31,41 +29,35 @@ const PlayerDetails = ({
     )
   }
 
-  let _player: Player
-  let transBtnStr: string
-  let chartData: ChartData
+  let playerInfo: Player
+  let transactionTitle: string
+  let threshold: number | undefined
 
   if (isPlayerAsset(player)) {
-    _player = player.player
-    transBtnStr = 'Sell'
-    chartData = getPlayerValueChartData(
-      player.player.value,
-      player.averageValue
-    )
+    playerInfo = player.player
+    transactionTitle = 'Sell'
+    threshold = player.averageValue
   } else {
-    _player = player
-    transBtnStr = 'Buy'
-    chartData = getPlayerValueChartData(player.value)
+    playerInfo = player
+    transactionTitle = 'Buy'
   }
+
+  const data = toChartValues(playerInfo.value)
 
   const renderInfo = () => {
     if (isPlayerAsset(player)) {
-      // player on the marketplace.
-      // different from player, which is a user-owned player asset
-      const mPlayer = player.player
-
       const averageMargin = formatMargin(
         player.averageValue,
-        mPlayer.currentValue
+        playerInfo.currentValue
       )
       const totalMargin = formatMargin(
         player.averageValue,
-        mPlayer.currentValue,
+        playerInfo.currentValue,
         player.amount
       )
       const marginPercent = formatMarginPercent(
         player.averageValue,
-        mPlayer.currentValue
+        playerInfo.currentValue
       )
 
       return (
@@ -76,7 +68,7 @@ const PlayerDetails = ({
           </div>
           <div>
             <span className={styles.infoLabel}>Market value: </span>
-            {formatValue(player.player.currentValue)}
+            {formatValue(playerInfo.currentValue)}
           </div>
           <div>
             <span className={styles.infoLabel}>Total value: </span>
@@ -106,22 +98,22 @@ const PlayerDetails = ({
       <div className={styles.player}>
         <div className={styles.player__nationality}>
           <span className={styles.infoLabel}>Nationality: </span>
-          {_player.nationality.join(', ')}
+          {playerInfo.nationality.join(', ')}
         </div>
         <div className={styles.player__position}>
           <span className={styles.infoLabel}>Position: </span>
-          {_player.position}
+          {playerInfo.position}
         </div>
         <div className={styles.player__age}>
           <span className={styles.infoLabel}>Age: </span>
-          {getPlayerAge(_player.dateOfBirth)}
+          {getPlayerAge(playerInfo.dateOfBirth)}
         </div>
         <div className={styles.player__team}>
           <span className={styles.infoLabel}>Team: </span>
-          {_player.team}
+          {playerInfo.team}
         </div>
         <div className={styles.player__value}>
-          {formatValue(_player.currentValue)}
+          {formatValue(playerInfo.currentValue)}
         </div>
       </div>
     )
@@ -130,15 +122,18 @@ const PlayerDetails = ({
   return (
     <div className={style}>
       <div className={styles.widget__header}>
-        <div className={styles.widget__header__title}>{_player.name}</div>
+        <div className={styles.widget__header__title}>{playerInfo.name}</div>
         <div className={styles.widget__header__buttons}>
           <Button text="Compare" color="light" />
-          <Button text={transBtnStr} onClick={() => onTransactionClick()} />
+          <Button
+            text={transactionTitle}
+            onClick={() => onTransactionClick()}
+          />
           <Button text="X" color="warning" onClick={() => onCloseClick()} />
         </div>
       </div>
       <div className={styles.widget__chart}>
-        <Chart data={chartData} options={getValueLineChartOptions()} />
+        <Chart data={data} threshold={threshold} />
       </div>
       {renderInfo()}
     </div>
