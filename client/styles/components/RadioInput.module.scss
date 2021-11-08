@@ -2,3 +2,31 @@
   display: flex;
   justify-content: space-between;
 }
+
+.radioField {
+  &__input {
+    appearance: none;
+    background-color: #fff;
+    margin: 0;
+
+    &:checked + span {
+      background-color: $color-accent;
+    }
+
+    &:focus + span {
+      outline: 0.3rem solid $color-complement;
+    }
+  }
+
+  &__title {
+    background-color: $color-primary-light;
+    border-radius: 1.5rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      padding: 0.8rem 1.2rem;
+    }
+  }
+}
