@@ -34,6 +34,7 @@ export class PlayersController {
   // TODO: make this a cron job
   @Post('/scrape')
   async gatherPlayers() {
+    console.log('scraping time')
     await this.playersService.scrapePlayersAndSave()
 
     return 'Success'

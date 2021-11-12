@@ -20,16 +20,16 @@ function getPlayerInfo(
   const _id = parseInt(
     $(playerElement)
       .find(
-        'td:nth-child(2) > table > tbody > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) a:first'
+        'td:nth-child(2) > table > tbody > tr:nth-child(1) > td:nth-child(2) > tm-tooltip'
       )
-      .attr('id') || ''
+      .attr('data-identifier') || ''
   )
   if (!_id) {
     throw new Error('attribute "id" not found in playerElement')
   }
   const name = $(playerElement)
     .find(
-      'td:nth-child(2) > table > tbody > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) a:first'
+      'td:nth-child(2) > table > tbody > tr:nth-child(1) > td:nth-child(2) > tm-tooltip a:first'
     )
     .text()
     .trim()
@@ -142,11 +142,11 @@ export async function scrape(): Promise<Player[]> {
     for (let i = 0; i < teamElements.length; i++) {
       let teamElement = teamElements[i]
       let teamName = $(teamElement)
-        .find('td:nth-child(2) > a:nth-child(1)')
+        .find('td:nth-child(2) > tm-tooltip:nth-child(1) > a:nth-child(1)')
         .text()
         .trim()
       let teamUrl = $(teamElement)
-        .find('td:nth-child(2) > a:nth-child(1)')
+        .find('td:nth-child(2) > tm-tooltip:nth-child(1) > a:nth-child(1)')
         .attr('href')
       console.log(`gathering players from ${teamName}...`)
       let teamResponse = await axios.get(teamUrl)

@@ -190,6 +190,9 @@ export class PortfoliosService {
     return await this.portfolioModel.remove({ user, season })
   }
 
+  /**
+   * Get date/value pairs that represent a user's historical portfolio value.
+   */
   async getPortfolioValue(userId: string, season: string) {
     const portfolio = await this.get(userId, season)
 
@@ -215,8 +218,10 @@ export class PortfoliosService {
     return result
   }
 
-  // TODO: current formula calculates every transaction as if it is a buy
-  // transaction. make sure to calculate sell transactions accordingly
+  /**
+   * Get date/value pairs that represent a user's overall gain/loss values
+   * over their investing lifetime.
+   */
   async getGainLoss(userId: string, season: string) {
     type GainLossValue = {
       _id: {
@@ -224,7 +229,7 @@ export class PortfoliosService {
         month: number
         day: number
       }
-      gains: number
+      value: number
     }
 
     const query = await this.transactionModel.aggregate<GainLossValue>([
@@ -260,6 +265,7 @@ export class PortfoliosService {
               },
               as: 'playerValue',
               in: {
+                player: '$player._id',
                 year: {
                   $year: '$$playerValue.date',
                 },
@@ -270,10 +276,29 @@ export class PortfoliosService {
                   $dayOfMonth: '$$playerValue.date',
                 },
                 amount: {
-                  $multiply: [
-                    '$amount',
-                    { $subtract: ['$$playerValue.amount', '$price'] },
-                  ],
+                  $cond: {
+                    if: { $eq: ['$type', 'buy'] },
+                    then: '$amount',
+                    else: { $subtract: [0, '$amount'] },
+                  },
+                },
+                assetValue: {
+                  $cond: {
+                    if: { $eq: ['$type', 'buy'] },
+                    then: '$$playerValue.amount',
+                    else: 0,
+                  },
+                },
+                balance: {
+                  $cond: {
+                    if: { $eq: ['$type', 'buy'] },
+                    then: {
+                      $multiply: ['$price', { $subtract: [0, '$amount'] }],
+                    },
+                    else: {
+                      $multiply: ['$price', '$amount'],
+                    },
+                  },
                 },
               },
             },
@@ -286,17 +311,48 @@ export class PortfoliosService {
       {
         $group: {
           _id: {
+            player: '$gains.player',
             year: '$gains.year',
             month: '$gains.month',
             day: '$gains.day',
           },
-          gains: { $sum: '$gains.amount' },
+          amount: {
+            $sum: '$gains.amount',
+          },
+          gain: {
+            $sum: '$gains.assetValue',
+          },
+          balance: {
+            $sum: '$gains.balance',
+          },
         },
       },
       {
         $project: {
           _id: 1,
-          gains: 1,
+          amount: 1,
+          gain: 1,
+          balance: 1,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: '$_id.year',
+            month: '$_id.month',
+            day: '$_id.day',
+          },
+          value: {
+            $sum: {
+              $add: [{ $multiply: ['$amount', '$gain'] }, '$balance'],
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          value: 1,
         },
       },
       {
@@ -311,7 +367,7 @@ export class PortfoliosService {
     return query.map((v) => {
       return {
         date: new Date(v._id.year, v._id.month - 1, v._id.day),
-        value: v.gains,
+        value: v.value,
       }
     })
   }
