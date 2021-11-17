@@ -90,6 +90,7 @@
       "^@portfolios/(.*)$": "<rootDir>/portfolios/$1",
       "^@mail/(.*)$": "<rootDir>/mail/$1",
       "^@test/(.*)$": "<rootDir>/test/$1",
+      "^@token/(.*)$": "<rootDir>/token/$1",
       "^@transactions/(.*)$": "<rootDir>/transactions/$1",
       "^@users/(.*)$": "<rootDir>/users/$1",
       "^@util/(.*)$": "<rootDir>/util/$1"

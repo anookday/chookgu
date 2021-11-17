@@ -1,11 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document, Types, Schema as MongooseSchema } from 'mongoose'
 import { UserDocument } from '@users/schemas/user.schema'
-import { VERIFICATION_MAX_AGE } from '@util/constants'
+import { TOKEN_MAX_AGE } from '@util/constants'
 
 export type TokenDocument = Token & Document
 
-export type TokenType = 'confirm' | 'pw-reset'
+export type TokenType = 'confirm' | 'pw-reset' | 'refresh'
 
 @Schema()
 export class Token {
@@ -18,7 +18,7 @@ export class Token {
   @Prop({ type: String, required: true })
   type: TokenType
 
-  @Prop({ type: Date, default: Date.now, expires: VERIFICATION_MAX_AGE })
+  @Prop({ type: Date, default: Date.now, expires: TOKEN_MAX_AGE })
   expires: Date
 }
 

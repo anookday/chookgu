@@ -6,11 +6,11 @@ import { UnauthorizedException, NotFoundException } from '@nestjs/common'
 import { JwtModule } from '@nestjs/jwt'
 
 import { AuthService } from '@auth/auth.service'
-import { Token, TokenSchema, TokenDocument } from '@auth/schemas/token.schema'
+import { Token, TokenSchema, TokenDocument } from '@token/schemas/token.schema'
 import { MailService } from '@mail/mail.service'
 import { PortfoliosModule } from '@portfolios/portfolios.module'
+import { TokenModule } from '@token/token.module'
 import { UsersModule } from '@users/users.module'
-import { UsersService } from '@users/users.service'
 import { User, UserSchema, UserDocument } from '@users/schemas/user.schema'
 import { users, ids, emails, passwords, validFields } from '@test/data'
 import { closeInMongodConnection, rootMongooseTestModule } from '@test/database'
@@ -18,7 +18,6 @@ import { closeInMongodConnection, rootMongooseTestModule } from '@test/database'
 describe('AuthService', () => {
   let module: TestingModule
   let service: AuthService
-  let usersService: UsersService
   // models for direct access to database documents
   let userModel: Model<UserDocument>
   let tokenModel: Model<TokenDocument>
@@ -29,10 +28,7 @@ describe('AuthService', () => {
       imports: [
         UsersModule,
         PortfoliosModule,
-        JwtModule.register({
-          secret: 'JwtTestKey',
-          signOptions: { expiresIn: '5s' },
-        }),
+        TokenModule,
         rootMongooseTestModule({
           useNewUrlParser: true,
           useUnifiedTopology: true,
@@ -47,7 +43,6 @@ describe('AuthService', () => {
 
     // initialize service
     service = module.get<AuthService>(AuthService)
-    usersService = module.get<UsersService>(UsersService)
 
     // initialize models
     userModel = module.get<Model<UserDocument>>('UserModel')
@@ -62,10 +57,6 @@ describe('AuthService', () => {
 
   it('is defined', async () => {
     expect(service).toBeDefined()
-  })
-
-  it('can login', async () => {
-    expect(service.login(ids.john.toString())).toBeDefined()
   })
 
   it('validates existing users', async () => {

@@ -10,33 +10,41 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { LocalAuthGuard } from '@auth/local-auth.guard'
-import { JwtAuthGuard } from '@auth/jwt-auth.guard'
 import { AuthService } from '@auth/auth.service'
+import { TokenService } from '@token/token.service'
+import { JwtAuthGuard } from '@token/jwt-auth.guard'
 import { User } from '@users/user.decorator'
-import { COOKIE_MAX_AGE } from '@util/constants'
 import { ChangePasswordDto } from './dto/change-password.dto'
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private tokenService: TokenService
+  ) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  login(@User('_id') userId: string, @Res() res: Response) {
-    const jwt = this.authService.login(userId)
+  async login(@User('_id') userId: string, @Res() res: Response) {
+    const refreshToken = await this.tokenService.createRefreshToken(userId)
+    const accessToken = this.tokenService.createAccessToken(userId)
     res
-      .cookie('access_token', jwt, {
+      .cookie('refresh_token', refreshToken._id, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        maxAge: COOKIE_MAX_AGE,
       })
-      .send('Logged in successfully')
+      .cookie('access_token', accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+      })
+      .sendStatus(200)
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('/logout')
-  logout(@Res() res: Response) {
-    res.clearCookie('access_token').sendStatus(200)
+  async logout(@Req() req: Request, @Res() res: Response) {
+    await this.tokenService.deleteToken(req.cookies['refresh_token'])
+    res.clearCookie('access_token').clearCookie('refresh_token').sendStatus(200)
   }
 
   @UseGuards(JwtAuthGuard)
@@ -53,7 +61,7 @@ export class AuthController {
 
   @Get('/pw-token-status')
   async getPasswordTokenStatus(@Query('token') id: string) {
-    const token = await this.authService.getToken(id, 'pw-reset')
+    const token = await this.tokenService.getPassResetToken(id)
     return {
       active: token !== null,
     }

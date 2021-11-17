@@ -7,7 +7,7 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common'
-import { JwtAuthGuard } from '@auth/jwt-auth.guard'
+import { JwtAuthGuard } from '@token/jwt-auth.guard'
 import { User } from '@users/user.decorator'
 import { UsersService } from '@users/users.service'
 import { CreateUserProfileDto } from '@users/dto/create-userProfile.dto'

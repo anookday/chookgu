@@ -8,8 +8,8 @@ import {
   Body,
   ValidationPipe,
 } from '@nestjs/common'
-import { JwtAuthGuard } from '@auth/jwt-auth.guard'
 import { PortfoliosService } from '@portfolios/portfolios.service'
+import { JwtAuthGuard } from '@token/jwt-auth.guard'
 import { TransactionDto } from '@transactions/dto/transaction.dto'
 import { User } from '@users/user.decorator'
 

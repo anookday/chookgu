@@ -1,5 +1,5 @@
 import { hash } from 'argon2'
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import {
   Injectable,
   NotFoundException,
@@ -7,7 +7,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { User, UserDocument } from '@users/schemas/user.schema'
+import { isUserDocument, User, UserDocument } from '@users/schemas/user.schema'
 import { UpdateUserProfileDto } from '@users/dto/update-userProfile.dto'
 import { isValidUsername, isValidEmail, isValidPassword } from '@util/validate'
 
@@ -76,7 +76,7 @@ export class UsersService {
   }
 
   async updateProfile(
-    _id: string,
+    user: UserDocument | Types.ObjectId | string,
     { username, password }: UpdateUserProfileDto
   ) {
     if (username !== undefined && !isValidUsername(username)) {
@@ -87,23 +87,26 @@ export class UsersService {
       throw new BadRequestException('Invalid password')
     }
 
-    let user = await this.userModel.findById(_id)
+    let _user: UserDocument =
+      typeof user === 'string' || !isUserDocument(user)
+        ? await this.userModel.findById(user)
+        : user
 
-    if (!user) {
+    if (!_user) {
       throw new NotFoundException('User not found')
     }
 
     if (username) {
-      user.username = username
+      _user.username = username
     }
 
     if (password) {
-      user.password = await hash(password)
+      _user.password = await hash(password)
     }
 
-    user.modified = new Date()
+    _user.modified = new Date()
 
-    return await user.save()
+    return await _user.save()
   }
 
   async deleteUser(_id: string) {

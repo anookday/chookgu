@@ -18,6 +18,7 @@
       "@players/*": ["src/players/*"],
       "@portfolios/*": ["src/portfolios/*"],
       "@test/*": ["src/test/*"],
+      "@token/*": ["src/token/*"],
       "@transactions/*": ["src/transactions/*"],
       "@users/*": ["src/users/*"],
       "@util/*": ["src/util/*"]

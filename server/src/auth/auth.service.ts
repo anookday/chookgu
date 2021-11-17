@@ -1,18 +1,13 @@
 import { verify } from 'argon2'
-import { randomBytes } from 'crypto'
-import { Model } from 'mongoose'
 import { Details } from 'express-useragent'
 import {
   Injectable,
   UnauthorizedException,
   NotFoundException,
-  BadRequestException,
 } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
-import { InjectModel } from '@nestjs/mongoose'
-import { Token, TokenDocument, TokenType } from '@auth/schemas/token.schema'
 import { MailService } from '@mail/mail.service'
 import { PortfoliosService } from '@portfolios/portfolios.service'
+import { TokenService } from '@token/token.service'
 import { UserDocument, isUserDocument } from '@users/schemas/user.schema'
 import { UsersService } from '@users/users.service'
 import { USER_STARTING_BALANCE } from '@util/constants'
@@ -23,9 +18,7 @@ export class AuthService {
     private usersService: UsersService,
     private portfoliosService: PortfoliosService,
     private mailService: MailService,
-    private jwtService: JwtService,
-    @InjectModel(Token.name)
-    private tokenModel: Model<TokenDocument>
+    private tokenService: TokenService
   ) {}
 
   /**
@@ -52,21 +45,6 @@ export class AuthService {
   }
 
   /**
-   * Create a JWT indicating that gives a user authorized access to parts of
-   * the app.
-   */
-  login(userId: string) {
-    return this.jwtService.sign({ userId })
-  }
-
-  /**
-   * Return the token document with given id and type.
-   */
-  async getToken(id: string, type: TokenType) {
-    return await this.tokenModel.findOne({ _id: id, type })
-  }
-
-  /**
    * Send an account confirmation email to the user's registered email.
    */
   async sendVerificationEmail(user: string | UserDocument) {
@@ -79,15 +57,10 @@ export class AuthService {
     }
 
     // generate verification token
-    const token = randomBytes(64).toString('hex')
-    await this.tokenModel.create({
-      _id: token,
-      user: recipient._id,
-      type: 'confirm',
-    })
+    const token = await this.tokenService.createConfirmToken(recipient._id)
 
     // send user email with verification token attached
-    await this.mailService.sendConfirmation(recipient.email, token)
+    await this.mailService.sendConfirmation(recipient.email, token._id)
   }
 
   /**
@@ -95,9 +68,9 @@ export class AuthService {
    */
   async verify(token: string) {
     // find verification token on database
-    let verification = await this.tokenModel.findById(token).populate('user')
+    let verification = await this.tokenService.getConfirmToken(token)
     // token does not exist or has expired
-    if (!verification || verification.type !== 'confirm') {
+    if (!verification) {
       throw new NotFoundException(
         'Confirmation token does not exist or has expired'
       )
@@ -133,34 +106,23 @@ export class AuthService {
       throw new NotFoundException('User not found')
     }
 
-    const token = randomBytes(64).toString('hex')
-    await this.tokenModel.create({
-      _id: token,
-      user: user._id,
-      type: 'pw-reset',
-    })
+    const token = await this.tokenService.createPassResetToken(user._id)
 
-    await this.mailService.sendPasswordReset(email, ip, details, token)
+    await this.mailService.sendPasswordReset(email, ip, details, token._id)
   }
 
   async resetPassword(password: string, token: string) {
-    const dbToken = await this.tokenModel.findById(token)
+    const resetToken = await this.tokenService.getPassResetToken(token)
 
-    if (!dbToken) {
+    if (!resetToken) {
       throw new NotFoundException('Token does not exist or has expired')
     }
 
-    if (dbToken.type !== 'pw-reset') {
-      throw new BadRequestException('Token is invalid')
+    if (!isUserDocument(resetToken.user)) {
+      await this.usersService.updateProfile(resetToken.user, {
+        password,
+      })
+      await this.tokenService.deleteToken(resetToken._id)
     }
-
-    const user = await this.usersService.findById(dbToken.user.toString())
-
-    if (!user) {
-      throw new NotFoundException('User associated with token does not exist')
-    }
-
-    await this.usersService.updateProfile(dbToken.user.toString(), { password })
-    await dbToken.delete()
   }
 }
