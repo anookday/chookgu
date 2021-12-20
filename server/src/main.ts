@@ -10,7 +10,8 @@ async function bootstrap() {
   app.use(helmet())
   app.use(cookieParser())
   app.use(userAgent.express())
-  app.enableCors({ origin: 'http://localhost:3000', credentials: true })
+  app.setGlobalPrefix('api')
+  app.enableCors()
   await app.listen(5000)
 }
 bootstrap()

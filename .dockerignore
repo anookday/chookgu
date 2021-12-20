@@ -1,0 +1,26 @@
+# git
+.git/
+.github/
+.gitignore
+
+# docker
+Dockerfile
+Dockerfile.dev
+docker-compose.yml
+docker-compose.dev.yml
+.dockerignore
+
+# nextjs
+.next/
+
+# nginx
+nginx/
+
+# node
+**/node_modules
+
+# documentation
+README.md
+
+# misc
+.DS_Store
