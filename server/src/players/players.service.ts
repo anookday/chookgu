@@ -46,7 +46,7 @@ export class PlayersService {
       .collation({ locale: 'en', strength: 1 })
       .sort({ ...scoreOptions, ...sortOptions })
       .skip(index)
-      .limit(10)
+      .limit(15)
   }
 
   async getRecentValueMargins(amount: number, sortOrder: SortOrder) {
