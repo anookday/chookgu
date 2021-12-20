@@ -1,7 +1,7 @@
 import { Model } from 'mongoose'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { addWeeks, subWeeks } from 'date-fns'
+import { Cron } from '@nestjs/schedule'
 import {
   Player,
   PlayerDocument,
@@ -10,8 +10,8 @@ import {
 import { PlayerValue } from '@players/schemas/playerValue.schema'
 import { QueryPlayerDto, SortBy } from '@players/dto/query-player.dto'
 import { SortOrder } from '@util/constants'
-import { scrape } from '@util/scrape'
 import { generatePrice } from '@util/generate'
+import { scrape } from '@util/scrape'
 
 @Injectable()
 export class PlayersService {
@@ -46,7 +46,7 @@ export class PlayersService {
       .collation({ locale: 'en', strength: 1 })
       .sort({ ...scoreOptions, ...sortOptions })
       .skip(index)
-      .limit(15)
+      .limit(20)
   }
 
   async getRecentValueMargins(amount: number, sortOrder: SortOrder) {
@@ -75,85 +75,64 @@ export class PlayersService {
   }
 
   /**
-   * Gather player data from transfermarkt and save it to database.
+   * Check the database every hour to check whether the players collection is
+   * empty. If so, generate and save player data to the database.
    */
-  async scrapePlayersAndSave() {
-    const players = await scrape()
+  @Cron('0 0 * * * *')
+  async generatePlayers() {
+    let documents = await this.playerModel.countDocuments()
 
-    const updatePlayerOptions = players.map(
-      ({
-        _id,
-        name,
-        position,
-        nationality,
-        dateOfBirth,
-        team,
-        image,
-        currentValue,
-        value,
-      }) => ({
-        updateOne: {
-          filter: { _id },
-          update: {
-            $set: {
-              name,
-              position,
-              nationality,
-              dateOfBirth,
-              team,
-              image,
-              currentValue,
+    if (documents === 0) {
+      const newPlayers = await scrape()
+      const updatePlayerOptions = newPlayers.map(
+        ({
+          _id,
+          name,
+          position,
+          nationality,
+          dateOfBirth,
+          team,
+          image,
+          currentValue,
+          value,
+        }) => ({
+          updateOne: {
+            filter: { _id },
+            update: {
+              $set: {
+                name,
+                position,
+                nationality,
+                dateOfBirth,
+                team,
+                image,
+                currentValue,
+              },
+              $push: { value: { $each: value } },
             },
-            $push: { value: { $each: value } },
+            upsert: true,
           },
-          upsert: true,
-        },
-      })
-    )
+        })
+      )
 
-    await this.playerModel.bulkWrite(updatePlayerOptions)
-  }
-
-  /**
-   * Add fake values before each player's current value in the database.
-   */
-  async prependFakeData() {
-    const players = await this.playerModel.find().select('_id value')
-
-    const updatePlayerOptions = players.map((player) => {
-      const fakeValue: PlayerValue = {
-        date: subWeeks(player.value[0].date, 1),
-        amount: generatePrice(player.value[0].amount),
-      }
-
-      return {
-        updateOne: {
-          filter: { _id: player._id },
-          update: {
-            $set: {
-              value: [fakeValue, ...player.value],
-            },
-          },
-        },
-      }
-    })
-
-    await this.playerModel.bulkWrite(updatePlayerOptions)
+      await this.playerModel.bulkWrite(updatePlayerOptions)
+    }
   }
 
   /**
    * Add fake values after each player's current value in the database.
+   * Run every day at 12am.
    */
-  async appendFakeData() {
+  @Cron('0 0 0 * * *')
+  async generatePlayerValues() {
     const players = await this.playerModel
       .find()
       .select('_id currentValue value')
 
     const updatePlayerOptions = players.map((player) => {
-      const lastIndex = player.value.length - 1
-      const fakeValue: PlayerValue = {
-        date: addWeeks(player.value[lastIndex].date, 1),
-        amount: generatePrice(player.value[lastIndex].amount),
+      const newValue: PlayerValue = {
+        date: new Date(),
+        amount: generatePrice(player.value[player.value.length - 1].amount),
       }
 
       return {
@@ -161,8 +140,8 @@ export class PlayersService {
           filter: { _id: player._id },
           update: {
             $set: {
-              currentValue: fakeValue.amount,
-              value: [...player.value, fakeValue],
+              currentValue: newValue.amount,
+              value: [...player.value, newValue],
             },
           },
         },

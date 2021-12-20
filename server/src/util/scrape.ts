@@ -1,5 +1,5 @@
 import Axios from 'axios'
-import cheerio from 'cheerio'
+import { CheerioAPI, Element, load } from 'cheerio'
 import { parse } from 'date-fns'
 import { Player } from '@players/schemas/player.schema'
 
@@ -13,23 +13,14 @@ import { Player } from '@players/schemas/player.schema'
  * @throws Will throw an error if attribute "id" is not present in playerElement
  */
 function getPlayerInfo(
-  $: cheerio.Root,
-  playerElement: cheerio.Element,
+  $: CheerioAPI,
+  playerElement: Element,
+  id: number,
   team: string
 ): Player {
-  const _id = parseInt(
-    $(playerElement)
-      .find(
-        'td:nth-child(2) > table > tbody > tr:nth-child(1) > td:nth-child(2) > tm-tooltip'
-      )
-      .attr('data-identifier') || ''
-  )
-  if (!_id) {
-    throw new Error('attribute "id" not found in playerElement')
-  }
   const name = $(playerElement)
     .find(
-      'td:nth-child(2) > table > tbody > tr:nth-child(1) > td:nth-child(2) > tm-tooltip a:first'
+      'td:nth-child(2) > table > tbody > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > span > a'
     )
     .text()
     .trim()
@@ -59,11 +50,10 @@ function getPlayerInfo(
     {
       date: new Date(),
       amount: currentValue,
-      currency: 'EUR',
     },
   ]
   return {
-    _id,
+    _id: id,
     name,
     position,
     nationality,
@@ -81,7 +71,7 @@ function getPlayerInfo(
  * @return Numerical representation of value string (eg. 3500000)
  */
 function parsePlayerValue(value: string): number {
-  // default value is 50k
+  // give player a default value of 50k
   let result = 50000
 
   const match = value.match(/€([\d.]*)(.*)/)
@@ -102,19 +92,17 @@ function parsePlayerValue(value: string): number {
 
 /**
  * Print player info to console.
- * @param players Array of player data
+ * @param player player DOM element
  */
-function printPlayerInfo(players: Player[]): void {
-  for (let player of players) {
-    const { name, position, nationality, dateOfBirth, team, value } = player
-    console.log(`Player: ${name}`)
-    console.log(`Position: ${position}`)
-    console.log(`Nationality: ${nationality.join(', ')}`)
-    console.log(`Date of Birth: ${dateOfBirth}`)
-    console.log(`Team: ${team}`)
-    console.log(`Value: €${value[value.length - 1].amount}`)
-    console.log('')
-  }
+function printPlayerInfo(player: Player): void {
+  let { name, position, nationality, dateOfBirth, team, currentValue } = player
+  console.log(`Player: ${name}`)
+  console.log(`Position: ${position}`)
+  console.log(`Nationality: ${nationality.join(', ')}`)
+  console.log(`Date of Birth: ${dateOfBirth}`)
+  console.log(`Team: ${team}`)
+  console.log(`Value: €${currentValue}`)
+  console.log('-------------------')
 }
 
 /**
@@ -135,26 +123,38 @@ export async function scrape(): Promise<Player[]> {
     const response = await axios.get(
       '/premier-league/startseite/wettbewerb/GB1'
     )
-    const $: cheerio.Root = cheerio.load(response.data)
+    const $ = load(response.data)
     const teamElements = $('#yw1 > table > tbody').children()
 
     // obtain each team info by following their respective href links
+    let id = 0
     for (let i = 0; i < teamElements.length; i++) {
       let teamElement = teamElements[i]
+      // team name
       let teamName = $(teamElement)
-        .find('td:nth-child(2) > tm-tooltip:nth-child(1) > a:nth-child(1)')
+        .find('td:nth-child(2) > a:nth-child(1)')
         .text()
         .trim()
+      if (!teamName) throw new Error('Unable to find team name')
+      // team url page
       let teamUrl = $(teamElement)
-        .find('td:nth-child(2) > tm-tooltip:nth-child(1) > a:nth-child(1)')
+        .find('td:nth-child(2) > a:nth-child(1)')
         .attr('href')
+      if (!teamUrl) throw new Error(`Unable to find url for ${teamName}`)
       console.log(`gathering players from ${teamName}...`)
       let teamResponse = await axios.get(teamUrl)
       // gather player info from team page
-      let $t = cheerio.load(teamResponse.data)
+      let $t = load(teamResponse.data)
+      // team players
       let playerElements = $t('#yw1 > table > tbody').children()
+      if (playerElements.length === 0)
+        throw new Error(`Unable to retrieve players from ${teamName}`)
+      // add players to list
       playerElements.each((_, playerElement) => {
-        players.push(getPlayerInfo($t, playerElement, teamName))
+        let player = getPlayerInfo($t, playerElement, id, teamName)
+        printPlayerInfo(player)
+        players.push(player)
+        id++
       })
     }
 

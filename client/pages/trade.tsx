@@ -54,7 +54,7 @@ const Trade = (props: GlobalProps) => {
   const fetchPlayers = async () => {
     const { index, term, sortBy, sortOrder } = searchOptions
     let fetchUrl = `/players?index=${
-      15 * index
+      20 * index
     }&sortBy=${sortBy}&sortOrder=${sortOrder}&search=${term || ''}`
 
     const result = await api.get<Player[]>(fetchUrl)

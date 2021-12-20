@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
   Query,
   UsePipes,
   ValidationPipe,
@@ -29,30 +28,5 @@ export class PlayersController {
   @Get('/bottom-margins')
   async getBottomMargins() {
     return await this.playersService.getRecentValueMargins(3, SortOrder.Asc)
-  }
-
-  // TODO: make this a cron job
-  @Post('/scrape')
-  async gatherPlayers() {
-    console.log('scraping time')
-    await this.playersService.scrapePlayersAndSave()
-
-    return 'Success'
-  }
-
-  // TODO: remove this when this is deployed on production
-  @Post('/generate-before')
-  async generateFakeDataBeforeCurrent() {
-    await this.playersService.prependFakeData()
-
-    return 'Success'
-  }
-
-  // TODO: remove this when this is deployed on production
-  @Post('/generate-after')
-  async generateFakeDataAfterCurrent() {
-    await this.playersService.appendFakeData()
-
-    return 'Success'
   }
 }

@@ -61,99 +61,55 @@ describe('PlayerService', () => {
   })
 
   it('finds players by name A-Z', async () => {
-    const firstTen = await service.find({
+    const players = await service.find({
       index: 0,
       sortBy: SortBy.Name,
       sortOrder: SortOrder.Asc,
       search: '',
     })
 
-    expect(firstTen.length).toEqual(10)
-    expect(firstTen[0].name).toEqual('Bernardo Silva')
-    expect(firstTen[9].name).toEqual('Mason Mount')
-
-    const nextTen = await service.find({
-      index: 10,
-      sortBy: SortBy.Name,
-      sortOrder: SortOrder.Asc,
-      search: '',
-    })
-
-    expect(nextTen.length).toEqual(10)
-    expect(nextTen[0].name).toEqual('Mohamed Salah')
-    expect(nextTen[9].name).toEqual('Trent Alexander-Arnold')
+    expect(players.length).toEqual(20)
+    expect(players[0].name).toEqual('Bernardo Silva')
+    expect(players[19].name).toEqual('Trent Alexander-Arnold')
   })
 
   it('finds players by name Z-A', async () => {
-    const firstTen = await service.find({
+    const players = await service.find({
       index: 0,
       sortBy: SortBy.Name,
       sortOrder: SortOrder.Desc,
       search: '',
     })
 
-    expect(firstTen.length).toEqual(10)
-    expect(firstTen[0].name).toEqual('Trent Alexander-Arnold')
-    expect(firstTen[9].name).toEqual('Mohamed Salah')
-
-    const nextTen = await service.find({
-      index: 10,
-      sortBy: SortBy.Name,
-      sortOrder: SortOrder.Desc,
-      search: '',
-    })
-
-    expect(nextTen.length).toEqual(10)
-    expect(nextTen[0].name).toEqual('Mason Mount')
-    expect(nextTen[9].name).toEqual('Bernardo Silva')
+    expect(players.length).toEqual(20)
+    expect(players[0].name).toEqual('Trent Alexander-Arnold')
+    expect(players[19].name).toEqual('Bernardo Silva')
   })
 
   it('finds players by highest value', async () => {
-    const firstTen = await service.find({
+    const players = await service.find({
       index: 0,
       sortBy: SortBy.Value,
       sortOrder: SortOrder.Desc,
       search: '',
     })
 
-    expect(firstTen.length).toEqual(10)
-    expect(firstTen[0].name).toEqual('Harry Kane')
-    expect(firstTen[9].name).toEqual('Sadio Mané')
-
-    const nextTen = await service.find({
-      index: 10,
-      sortBy: SortBy.Value,
-      sortOrder: SortOrder.Desc,
-      search: '',
-    })
-
-    expect(nextTen.length).toEqual(10)
-    expect(nextTen[0].name).toEqual('Phil Foden')
-    expect(nextTen[9].name).toEqual('Timo Werner')
+    expect(players.length).toEqual(20)
+    expect(players[0].name).toEqual('Harry Kane')
+    expect(players[19].name).toEqual('Timo Werner')
   })
 
   it('finds players by lowest value', async () => {
-    const firstTen = await service.find({
+    const players = await service.find({
       index: 0,
       sortBy: SortBy.Value,
       sortOrder: SortOrder.Asc,
       search: '',
     })
 
-    expect(firstTen.length).toEqual(10)
-    expect(firstTen[0].name).toEqual('Timo Werner')
-    expect(firstTen[9].name).toEqual('Phil Foden')
-
-    const nextTen = await service.find({
-      index: 10,
-      sortBy: SortBy.Value,
-      sortOrder: SortOrder.Asc,
-      search: '',
-    })
-
-    expect(nextTen.length).toEqual(10)
-    expect(nextTen[0].name).toEqual('Heung-min Son')
-    expect(nextTen[9].name).toEqual('Harry Kane')
+    expect(players.length).toEqual(20)
+    expect(players[0].name).toEqual('Timo Werner')
+    expect(players[19].name).toEqual('Harry Kane')
   })
 
   it('finds no players after last existing index', async () => {
