@@ -18,7 +18,6 @@ const RadioInput = ({
   selected,
   onChange,
 }: RadioInputProps) => {
-  const id = `chart_${Date.now()}`
   let style = styles.container
   if (className) style += ' ' + className
 
@@ -30,7 +29,6 @@ const RadioInput = ({
             <input
               className={styles.radioField__input}
               type="radio"
-              name={id}
               value={value.value}
               checked={selected === value.value}
               onChange={(event) => onChange(event.target.value)}

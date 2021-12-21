@@ -1,6 +1,6 @@
 import 'chartjs-adapter-date-fns'
-import { useState, useEffect } from 'react'
-import { parseISO, differenceInMonths } from 'date-fns'
+import { useState } from 'react'
+import { parseISO, differenceInMonths, differenceInWeeks } from 'date-fns'
 import { Chart, ChartData, ChartOptions, Plugin } from 'chart.js'
 import { Line } from 'react-chartjs-2'
 import RadioInput from '@components/RadioInput'
@@ -17,7 +17,7 @@ export interface ChartValue {
 const chartTypes = ['default', 'pos-neg'] as const
 export type ChartType = typeof chartTypes[number]
 
-const chartRanges = ['all', '1y', '6m', '3m', '1m'] as const
+const chartRanges = ['all', '1y', '6m', '3m', '1m', '1w'] as const
 export type ChartRange = typeof chartRanges[number]
 export const isChartRange = (obj: any): obj is ChartRange => {
   return chartRanges.includes(obj)
@@ -30,7 +30,7 @@ export const getChartData = (
   values: ChartValue[],
   type?: ChartType,
   threshold?: number
-): ChartData => {
+): ChartData<'line'> => {
   let result: ChartData<'line'> = {
     labels: values.map((value) => value.date),
     datasets: [
@@ -198,6 +198,10 @@ export const getFilteredData = (data: ChartValue[], range: ChartRange) => {
       return data.filter(
         (v) => differenceInMonths(latestDate, parseISO(v.date)) < 1
       )
+    case '1w':
+      return data.filter(
+        (v) => differenceInWeeks(latestDate, parseISO(v.date)) < 1
+      )
     default:
       return data
   }
@@ -231,6 +235,7 @@ const LineChart = ({ type, data, threshold }: ChartProps) => {
           { name: '6 Months', value: '6m' },
           { name: '3 Months', value: '3m' },
           { name: '1 Month', value: '1m' },
+          { name: '1 Week', value: '1w' },
         ]}
         selected={range}
         onChange={(value) => isChartRange(value) && setRange(value)}

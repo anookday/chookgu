@@ -1,4 +1,3 @@
-import 'dotenv/config'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 import * as helmet from 'helmet'
@@ -11,7 +10,6 @@ async function bootstrap() {
   app.use(cookieParser())
   app.use(userAgent.express())
   app.setGlobalPrefix('api')
-  app.enableCors()
   await app.listen(5000)
 }
 bootstrap()

@@ -23,11 +23,6 @@ export class AuthController {
     private tokenService: TokenService
   ) {}
 
-  @Get('/')
-  async test() {
-    return 'hello there'
-  }
-
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   async login(@User('_id') userId: string, @Res() res: Response) {
