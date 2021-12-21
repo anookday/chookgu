@@ -10,9 +10,10 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
+      - name: unpack environment variables
+        run: echo ${{ secrets.ENV_FILE }} >> .env && echo ${{secrets.PUBLIC_ENV_FILE}} >> ./client/.env
       - name: Generate deployment package
         run: zip -r deploy.zip . -x '*.git*'
- 
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v20
         with:
