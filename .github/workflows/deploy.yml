@@ -11,7 +11,17 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v2
       - name: unpack environment variables
-        run: echo ${{ secrets.ENV_FILE }} >> .env && echo ${{secrets.PUBLIC_ENV_FILE}} >> ./client/.env
+        run: | 
+          touch .env
+          echo MONGO_URI=${{ secrets.MONGO_URI }} >> .env
+          echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
+          echo SENDGRID_KEY=${{ secrets.SENDGRID_KEY }} >> .env
+          echo EMAIL=${{ secrets.EMAIL }} >> .env
+          echo APP_URL=${{ secrets.APP_URL }} >> .env
+          echo API_URL=${{ secrets.API_URL }} >> .env
+          echo NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} >> .env
+          touch ./client/.env
+          echo NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} >> ./client/.env
       - name: Generate deployment package
         run: zip -r deploy.zip . -x '*.git*'
       - name: Deploy to EB
