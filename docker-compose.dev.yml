@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  frontend:
+  app:
     build:
       context: ./client
       dockerfile: Dockerfile.dev
@@ -9,7 +9,7 @@ services:
       - /app/node_modules/
     env_file:
       - .env
-  backend:
+  api:
     build:
       context: ./server
       dockerfile: Dockerfile.dev
@@ -19,12 +19,12 @@ services:
     env_file:
       - .env
   proxy:
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile.dev
+    image: nginx:1.21-alpine
     ports:
       - 80:80
+    volumes:
+      - ./nginx/dev:/etc/nginx/conf.d
     depends_on:
-      - frontend
-      - backend
+      - app
+      - api
 

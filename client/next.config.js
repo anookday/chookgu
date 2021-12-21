@@ -1,7 +1,10 @@
-const path = require('path');
+const path = require('path')
 
 module.exports = {
   reactStrictMode: true,
+  images: {
+    domains: ['img.a.transfermarkt.technology'],
+  },
   sassOptions: {
     includePaths: [
       path.join(__dirname, 'src', 'styles', 'components'),
@@ -13,7 +16,7 @@ module.exports = {
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],
-    });
-    return config;
+    })
+    return config
   },
-};
+}

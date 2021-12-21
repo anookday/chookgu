@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import Dropdown, { DropdownItem } from '@components/Dropdown'
 import picture from '@public/profile.jpg'
@@ -44,11 +45,14 @@ const UserMenu = () => {
           {formatValue(portfolio.balance)}
         </span>
         <span className={styles.user__name}>{user.username}</span>
-        <img
-          src={picture.src}
-          className={styles.user__photo}
-          alt="user photo"
-        />
+        <div className={styles.user__photo}>
+          <Image
+            src={picture.src}
+            className={styles.user__photo}
+            alt="user photo"
+            layout="fill"
+          />
+        </div>
       </div>
     </Dropdown>
   )

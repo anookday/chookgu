@@ -10,12 +10,10 @@
 
   &__image {
     height: 6rem;
+    width: 6rem;
     border-radius: 1rem;
     overflow: hidden;
-
-    img {
-      height: inherit;
-    }
+    position: relative;
   }
 
   &__name {

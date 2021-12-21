@@ -37,7 +37,7 @@ const Field = ({
       ref.current?.focus()
       ref.current?.select()
     }
-  }, [])
+  }, [focused])
 
   /**
    * Returns the input type. Used mainly to toggle password visibility.

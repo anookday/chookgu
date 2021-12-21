@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { Player, getPlayerAge } from '@util/Player'
 import { formatValue, formatPercent } from '@util/numbers'
 import styles from '@styles/components/PlayerCard.module.scss'
@@ -87,7 +88,12 @@ const PlayerCard = ({
   return (
     <div key={player._id} className={getCardStyle()} onClick={onClick}>
       <div className={styles.player__image}>
-        <img src={player.image} alt={`photo of ${player.name}`} />
+        <Image
+          src={player.image}
+          alt={`photo of ${player.name}`}
+          layout="fill"
+          objectFit="contain"
+        />
       </div>
       <div className={styles.player__name}>{player.name}</div>
       <div className={styles.player__info}>

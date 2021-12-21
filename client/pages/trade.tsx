@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement, useState, useEffect, useCallback } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import MainLayout from '@components/MainLayout'
@@ -41,30 +41,28 @@ const Trade = (props: GlobalProps) => {
   const [selected, setSelected] = useState<Player | undefined>(undefined)
   const [checkout, setCheckout] = useState(false)
 
-  // fetch players every time search options change
-  useEffect(() => {
-    fetchPlayers()
-  }, [searchOptions])
-
   /**
    * Get a list of players from the server. Loads 10 at a time, starting from
    * given index. Generates a new list if a new search term is detected.
    * Otherwise, add the newly obtained list to the current list.
    */
-  const fetchPlayers = async () => {
-    const { index, term, sortBy, sortOrder } = searchOptions
-    let fetchUrl = `/players?index=${
-      20 * index
-    }&sortBy=${sortBy}&sortOrder=${sortOrder}&search=${term || ''}`
+  useEffect(() => {
+    const fetchPlayers = async () => {
+      const { index, term, sortBy, sortOrder } = searchOptions
+      let fetchUrl = `/players?index=${
+        20 * index
+      }&sortBy=${sortBy}&sortOrder=${sortOrder}&search=${term || ''}`
 
-    const result = await api.get<Player[]>(fetchUrl)
+      const result = await api.get<Player[]>(fetchUrl)
 
-    if (searchOptions.index === 0) {
-      setPlayers(result.data)
-    } else {
-      setPlayers([...players, ...result.data])
+      if (searchOptions.index === 0) {
+        setPlayers(result.data)
+      } else {
+        setPlayers((p) => [...p, ...result.data])
+      }
     }
-  }
+    fetchPlayers()
+  }, [searchOptions])
 
   /**
    * Player select event handler
@@ -77,16 +75,16 @@ const Trade = (props: GlobalProps) => {
   /**
    * Search term change event handler
    */
-  const onSearchTermChange = (term: string) => {
-    //setSelected(undefined)
-    setSearchOptions({ ...searchOptions, index: 0, term })
-  }
+  const onSearchTermChange = useCallback((term: string) => {
+    setSearchOptions((options) => {
+      return { ...options, index: 0, term }
+    })
+  }, [])
 
   /**
    * Sort options change event handler
    */
   const onSortOptionsChange = (sortBy: SortBy, sortOrder: SortOrder) => {
-    //setSelected(undefined)
     setSearchOptions({ ...searchOptions, index: 0, sortBy, sortOrder })
   }
 

@@ -31,7 +31,7 @@ const Search = ({ hint, onChange }: SearchProps) => {
     }
 
     onChange(debouncedTerm)
-  }, [debouncedTerm])
+  }, [debouncedTerm, onChange])
 
   return (
     <div className={styles.wrapper}>

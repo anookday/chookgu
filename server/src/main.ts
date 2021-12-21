@@ -9,7 +9,6 @@ async function bootstrap() {
   app.use(helmet())
   app.use(cookieParser())
   app.use(userAgent.express())
-  app.setGlobalPrefix('api')
   await app.listen(5000)
 }
 bootstrap()

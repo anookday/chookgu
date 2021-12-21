@@ -32,7 +32,7 @@ const MainLayout = (props: MainLayoutProps) => {
     return () => {
       window.removeEventListener('scroll', handleScroll)
     }
-  }, [])
+  }, [isPageTop])
 
   // user is logged in
   if (props.loggedIn) {

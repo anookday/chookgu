@@ -55,9 +55,10 @@ export class TokenService {
    * Get refresh token by user and token id.
    */
   async getRefreshToken(tokenId: string, userId: string) {
+    console.log(tokenId, userId)
     const token = await this.getToken(tokenId, 'refresh')
-    if (token.user.toString() !== userId) {
-      throw new UnauthorizedException('user id does not match token')
+    if (!token || token.user.toString() !== userId) {
+      return null
     }
     return token
   }

@@ -2,6 +2,7 @@ import { GetServerSideProps } from 'next'
 import axios from 'axios'
 import { Portfolio, defaultPortfolio } from '@util/Portfolio'
 import { User, defaultUser } from '@util/User'
+import api from '@util/api'
 
 export interface GlobalProps {
   loggedIn: boolean
@@ -19,14 +20,14 @@ export const getGlobalProps: GetServerSideProps<GlobalProps> = async ({
   }
 
   try {
-    const userRes = await axios.get<User>(`${process.env.API_URL}/api/user`, {
+    const userRes = await api.get<User>('user', {
       headers: req ? { cookie: req.headers.cookie } : undefined,
     })
     props.user = userRes.data
     props.loggedIn = true
 
-    const portfolioRes = await axios.get<Portfolio>(
-      `${process.env.API_URL}/api/portfolio?season=standard`,
+    const portfolioRes = await api.get<Portfolio>(
+      '/portfolio?season=standard',
       {
         headers: req ? { cookie: req.headers.cookie } : undefined,
       }
