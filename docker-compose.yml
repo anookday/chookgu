@@ -1,19 +1,21 @@
 version: '3.8'
 services:
   app:
-    build: ./client
+    image: "fhsshim/chookgu-app"
+    mem_limit: 256m
     env_file:
       - .env
   api:
-    build: ./server
+    image: "fhsshim/chookgu-api"
+    mem_limit: 512m
     env_file:
       - .env
   proxy:
-    image: nginx:1.21-alpine
+    image: "fhsshim/chookgu-proxy"
+    mem_limit: 256m
     ports:
       - 80:80
-    volumes:
-      - ./nginx/prod:/etc/nginx/conf.d
+      - 443:443
     depends_on:
       - app
       - api

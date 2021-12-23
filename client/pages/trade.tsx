@@ -49,11 +49,12 @@ const Trade = (props: GlobalProps) => {
   useEffect(() => {
     const fetchPlayers = async () => {
       const { index, term, sortBy, sortOrder } = searchOptions
-      let fetchUrl = `/players?index=${
-        20 * index
-      }&sortBy=${sortBy}&sortOrder=${sortOrder}&search=${term || ''}`
 
-      const result = await api.get<Player[]>(fetchUrl)
+      const result = await api.get<Player[]>(
+        `/players?index=${
+          20 * index
+        }&sortBy=${sortBy}&sortOrder=${sortOrder}&search=${term || ''}`
+      )
 
       if (searchOptions.index === 0) {
         setPlayers(result.data)

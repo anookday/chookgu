@@ -18,13 +18,13 @@ const Register = () => {
     e.preventDefault()
     setError('')
     try {
-      await api.post('user', {
+      await api.post('/user', {
         email,
         username,
         password,
       })
       await api.post(`/auth/login?email=${email}&password=${password}`)
-      await api.post('auth/send-confirmation')
+      await api.post('/auth/send-confirmation')
       router.push('/')
     } catch (error) {
       if (error.response && error.response.data) {

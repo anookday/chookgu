@@ -20,7 +20,7 @@ export const getGlobalProps: GetServerSideProps<GlobalProps> = async ({
   }
 
   try {
-    const userRes = await api.get<User>('user', {
+    const userRes = await api.get<User>('/user', {
       headers: req ? { cookie: req.headers.cookie } : undefined,
     })
     props.user = userRes.data

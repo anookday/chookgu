@@ -20,7 +20,7 @@ const Account = (props: GlobalProps) => {
   }
 
   const onUsernameSave = async (username: string) => {
-    const result = await api.patch<User>('user', { username })
+    const result = await api.patch<User>('/user', { username })
     setUser(result.data)
   }
 
@@ -29,7 +29,7 @@ const Account = (props: GlobalProps) => {
   }
 
   const onPasswordSave = async (password: string) => {
-    const result = await api.patch<User>('user', { password })
+    const result = await api.patch<User>('/user', { password })
     setUser(result.data)
   }
 

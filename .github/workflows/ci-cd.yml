@@ -1,4 +1,4 @@
-name: Deploy
+name: CI/CD
 on:
   push:
     branches:
@@ -10,22 +10,23 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
-      - name: unpack environment variables
+      - name: Build docker images
         run: | 
-          cat << EOF > .env
-          MONGO_URI=${{ secrets.MONGO_URI }}
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          SENDGRID_KEY=${{ secrets.SENDGRID_KEY }}
-          EMAIL=${{ secrets.EMAIL }}
-          APP_URL=${{ secrets.APP_URL }}
-          API_URL=${{ secrets.API_URL }}
-          NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
-          EOF
-          cat << EOF > ./client/.env
-          NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
-          EOF
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker build -t fhsshim/chookgu-app ./client
+          docker build -t fhsshim/chookgu-api ./server
+          docker build -t fhsshim/chookgu-proxy ./nginx
+          docker push fhsshim/chookgu-app
+          docker push fhsshim/chookgu-api
+          docker push fhsshim/chookgu-proxy
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
       - name: Generate deployment package
-        run: zip -r deploy.zip . -x '*.git*'
+        run: zip -r deploy.zip docker-compose.yml
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v20
         with:
