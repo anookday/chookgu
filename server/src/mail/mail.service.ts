@@ -23,7 +23,7 @@ export class MailService {
       'utf-8'
     )
 
-    const redirect = `${process.env.APP_URL}/verify?token=${token}`
+    const redirect = `${process.env.APP_PUBLIC_URL}/api/verify?token=${token}`
     html = html.replace(/#CONFIRM_LINK/, redirect)
 
     try {
@@ -62,7 +62,7 @@ export class MailService {
     }
 
     // generate redirect urls
-    const redirect = `${process.env.APP_URL}/account/pw-reset?token=${token}`
+    const redirect = `${process.env.APP_PUBLIC_URL}/api/account/pw-reset?token=${token}`
 
     // replace placeholder values with generated ones in the email HTML
     html = html.replace(/#IP/, ip)
