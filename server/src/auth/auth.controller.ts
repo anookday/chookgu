@@ -68,7 +68,7 @@ export class AuthController {
   }
 
   @Post('/send-password-reset')
-  async sendPasswordReset(@Query('email') email: string, @Req() req: Request) {
+  async sendPasswordReset(@Body('email') email: string, @Req() req: Request) {
     await this.authService.sendResetPasswordEmail(email, req.ip, req.useragent)
   }
 

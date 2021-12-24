@@ -17,7 +17,7 @@ const Login = () => {
     e.preventDefault()
     setError('')
     try {
-      await api.post(`/auth/login?email=${email}&password=${password}`)
+      await api.post('/auth/login', { email, password })
       router.push('/')
     } catch (error) {
       if (error.response && error.response.status === 401) {

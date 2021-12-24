@@ -23,7 +23,7 @@ const Register = () => {
         username,
         password,
       })
-      await api.post(`/auth/login?email=${email}&password=${password}`)
+      await api.post('/auth/login', { email, password })
       await api.post('/auth/send-confirmation')
       router.push('/')
     } catch (error) {

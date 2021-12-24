@@ -53,7 +53,7 @@ const Recover = (props: RecoverProps) => {
   const sendEmail = async () => {
     setStatus(EmailStatus.Processing)
     try {
-      await api.post(`/auth/send-password-reset?email=${email}`)
+      await api.post('/auth/send-password-reset', { email })
       setStatus(EmailStatus.Sent)
     } catch (e) {
       console.error(e)
