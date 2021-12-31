@@ -4,6 +4,7 @@ import {
   SetStateAction,
   MouseEvent,
   ChangeEvent,
+  useRef,
 } from 'react'
 import Button from '@components/Button'
 import styles from '@styles/components/PlayerCheckout.module.scss'
@@ -42,13 +43,10 @@ const userHasInsufficientFunds = (props: PlayerCheckoutProps) => {
 /**
  * Renders widget content based on transaction status.
  */
-const renderContent = (
-  props: PlayerCheckoutProps,
-  amount: number,
-  setAmount: Dispatch<SetStateAction<number>>,
-  status: TransactionStatus,
-  setStatus: Dispatch<SetStateAction<TransactionStatus>>
-) => {
+const Content = (props: PlayerCheckoutProps) => {
+  const [status, setStatus] = useState<TransactionStatus>(
+    TransactionStatus.Ready
+  )
   const onCancel = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     props.onCancel && props.onCancel()
@@ -85,28 +83,34 @@ const renderContent = (
       )
     // transaction is ready to be processed
     default:
-      return renderTransactionReadyContent(
-        props,
-        amount,
-        setAmount,
-        setStatus,
-        onCancel
+      return (
+        <TransactionContent
+          checkout={props}
+          setStatus={setStatus}
+          onCancel={onCancel}
+        />
       )
   }
+}
+
+interface TransactionProps {
+  checkout: PlayerCheckoutProps
+  setStatus: Dispatch<SetStateAction<TransactionStatus>>
+  onCancel: (e: MouseEvent<HTMLButtonElement>) => void
 }
 
 /**
  * Returns widget content while in ready state.
  */
-const renderTransactionReadyContent = (
-  props: PlayerCheckoutProps,
-  amount: number,
-  setAmount: Dispatch<SetStateAction<number>>,
-  setStatus: Dispatch<SetStateAction<TransactionStatus>>,
-  onCancel: (e: MouseEvent<HTMLButtonElement>) => void
-) => {
+const TransactionContent = ({
+  checkout,
+  setStatus,
+  onCancel,
+}: TransactionProps) => {
+  const [amount, setAmount] = useState(1)
+  const input = useRef<HTMLInputElement>(null)
   // user does not have enough funds to buy the selected player
-  if (userHasInsufficientFunds(props)) {
+  if (userHasInsufficientFunds(checkout)) {
     return (
       <>
         <div>Insufficient funds.</div>
@@ -125,18 +129,22 @@ const renderTransactionReadyContent = (
   let apiEndpoint: string
   let inputLabel: string
   let newBalance: number
-  if (isPlayerAsset(props.player)) {
-    currentPlayer = props.player.player
-    maxAmount = props.player.amount
+  if (isPlayerAsset(checkout.player)) {
+    currentPlayer = checkout.player.player
+    maxAmount = checkout.player.amount
     apiEndpoint = '/portfolio/sell'
     inputLabel = 'Amount to sell:'
-    newBalance = props.portfolio.balance + currentPlayer.currentValue * amount
+    newBalance =
+      checkout.portfolio.balance + currentPlayer.currentValue * amount
   } else {
-    currentPlayer = props.player
-    maxAmount = Math.floor(props.portfolio.balance / currentPlayer.currentValue)
+    currentPlayer = checkout.player
+    maxAmount = Math.floor(
+      checkout.portfolio.balance / currentPlayer.currentValue
+    )
     apiEndpoint = '/portfolio/buy'
     inputLabel = 'Amount to buy:'
-    newBalance = props.portfolio.balance - currentPlayer.currentValue * amount
+    newBalance =
+      checkout.portfolio.balance - currentPlayer.currentValue * amount
   }
 
   // input value change event handler
@@ -158,12 +166,12 @@ const renderTransactionReadyContent = (
     setStatus(TransactionStatus.Processing)
     try {
       const result = await api.post<Portfolio>(apiEndpoint, {
-        season: props.portfolio.season,
+        season: checkout.portfolio.season,
         playerId: currentPlayer._id,
         amount,
       })
       setStatus(TransactionStatus.Success)
-      props.onComplete && props.onComplete(result.data)
+      checkout.onComplete && checkout.onComplete(result.data)
     } catch (err) {
       console.error(err.response)
       setStatus(TransactionStatus.Failed)
@@ -175,7 +183,9 @@ const renderTransactionReadyContent = (
       <div className={styles.amount}>
         <label className={styles.amount__label}>{inputLabel}</label>
         <div className={styles.amount__input}>
+          <button onClick={() => input.current?.stepDown()}>{`<`}</button>
           <input
+            ref={input}
             type="number"
             value={amount}
             min={minAmount}
@@ -183,11 +193,12 @@ const renderTransactionReadyContent = (
             onChange={onAmountChange}
             onFocus={(event) => event.target.select()}
           />
+          <button onClick={() => input.current?.stepUp()}>{`>`}</button>
         </div>
       </div>
       <div className={styles.widget__text}>
         Current balance:
-        <span>{formatValue(props.portfolio.balance)}</span>
+        <span>{formatValue(checkout.portfolio.balance)}</span>
       </div>
       <div className={styles.widget__text}>
         Price:
@@ -209,10 +220,6 @@ const renderTransactionReadyContent = (
  * Player checkout component
  */
 const PlayerCheckout = (props: PlayerCheckoutProps) => {
-  const [amount, setAmount] = useState(1)
-  const [status, setStatus] = useState<TransactionStatus>(
-    TransactionStatus.Ready
-  )
   const style = props.className
     ? `${styles.widget} ${props.className}`
     : styles.widget
@@ -224,7 +231,7 @@ const PlayerCheckout = (props: PlayerCheckoutProps) => {
   return (
     <div className={style}>
       <div className={styles.widget__header}>{playerName}</div>
-      {renderContent(props, amount, setAmount, status, setStatus)}
+      <Content {...props} />
     </div>
   )
 }
