@@ -81,6 +81,10 @@ export const getChartOptions = (): ChartOptions<'line'> => {
         type: 'time',
         time: {
           tooltipFormat: 'MMMM d, yyyy',
+          unit: 'day',
+          displayFormats: {
+            day: 'MM/d',
+          },
         },
         ticks: {
           source: 'data',
