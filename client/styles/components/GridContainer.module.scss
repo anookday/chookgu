@@ -3,9 +3,9 @@
   display: grid;
   grid: {
     template: {
-      columns: 1fr 1fr;
-      rows: 1fr 1fr;
+      columns: repeat(auto-fit, minmax(28.125em, 1fr));
     }
+    auto-rows: 100%;
     gap: 3rem;
   }
 }
