@@ -1,4 +1,5 @@
 import { Model } from 'mongoose'
+import { addDays } from 'date-fns'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Cron } from '@nestjs/schedule'
@@ -132,6 +133,37 @@ export class PlayersService {
     const updatePlayerOptions = players.map((player) => {
       const newValue: PlayerValue = {
         date: new Date(),
+        amount: generatePrice(player.value[player.value.length - 1].amount),
+      }
+
+      return {
+        updateOne: {
+          filter: { _id: player._id },
+          update: {
+            $set: {
+              currentValue: newValue.amount,
+              value: [...player.value, newValue],
+            },
+          },
+        },
+      }
+    })
+
+    await this.playerModel.bulkWrite(updatePlayerOptions)
+  }
+
+  /**
+   * NOT FOR USE IN PRODUCTION.
+   * Generate player prices one day after each player's latest price.
+   */
+  async generatePlayerValuesDev() {
+    const players = await this.playerModel
+      .find()
+      .select('_id currentValue value')
+
+    const updatePlayerOptions = players.map((player) => {
+      const newValue: PlayerValue = {
+        date: addDays(player.value[player.value.length - 1].date, 1),
         amount: generatePrice(player.value[player.value.length - 1].amount),
       }
 

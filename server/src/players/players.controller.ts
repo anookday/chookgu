@@ -1,9 +1,12 @@
+import { Response } from 'express'
 import {
   Controller,
   Get,
+  Res,
   Query,
   UsePipes,
   ValidationPipe,
+  NotFoundException,
 } from '@nestjs/common'
 import { PlayersService } from '@players/players.service'
 import { PlayerDocument } from '@players/schemas/player.schema'
@@ -28,5 +31,15 @@ export class PlayersController {
   @Get('/bottom-margins')
   async getBottomMargins() {
     return await this.playersService.getRecentValueMargins(3, SortOrder.Asc)
+  }
+
+  @Get('/generate-price')
+  async generatePrice(@Res() res: Response) {
+    if (process.env.NODE_ENV != 'production') {
+      await this.playersService.generatePlayerValuesDev()
+      res.status(200).send('player prices randomly generated')
+    } else {
+      throw new NotFoundException()
+    }
   }
 }

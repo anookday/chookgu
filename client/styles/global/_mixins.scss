@@ -29,8 +29,6 @@
 @mixin layout {
   width: 100%;
   height: calc(100vh - #{$header-height});
-  background-color: $color-primary-dark;
-  color: $color-secondary;
 
   display: flex;
   flex-direction: column;
@@ -63,14 +61,16 @@
 
   &__header {
     width: 100%;
-    height: $widget-header-height;
+    min-height: $widget-header-height;
     font-size: 3.6rem;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
 
     &__title {
-      margin-right: auto;
+      flex: 1;
+      text-align: center;
     }
 
     &__buttons {
@@ -124,6 +124,7 @@
   &__chart {
     flex: 1;
     width: 100%;
+    overflow: hidden;
   }
 
   &__footer {
@@ -144,7 +145,7 @@
   font-size: inherit;
   border: none;
   border-radius: 1rem;
-  padding: 1rem 3rem;
+  padding: 1rem 2rem;
   transition: all 0.2s;
 
   &:enabled {

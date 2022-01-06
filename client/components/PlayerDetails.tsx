@@ -96,21 +96,23 @@ const PlayerDetails = ({
 
     return (
       <div className={styles.player}>
-        <div className={styles.player__nationality}>
-          <span className={styles.infoLabel}>Nationality: </span>
-          {playerInfo.nationality.join(', ')}
-        </div>
-        <div className={styles.player__position}>
-          <span className={styles.infoLabel}>Position: </span>
-          {playerInfo.position}
-        </div>
-        <div className={styles.player__age}>
-          <span className={styles.infoLabel}>Age: </span>
-          {getPlayerAge(playerInfo.dateOfBirth)}
-        </div>
-        <div className={styles.player__team}>
-          <span className={styles.infoLabel}>Team: </span>
-          {playerInfo.team}
+        <div className={styles.player__info}>
+          <div>
+            <span className={styles.infoLabel}>Nationality: </span>
+            {playerInfo.nationality.join(', ')}
+          </div>
+          <div>
+            <span className={styles.infoLabel}>Position: </span>
+            {playerInfo.position}
+          </div>
+          <div>
+            <span className={styles.infoLabel}>Age: </span>
+            {getPlayerAge(playerInfo.dateOfBirth)}
+          </div>
+          <div>
+            <span className={styles.infoLabel}>Team: </span>
+            {playerInfo.team}
+          </div>
         </div>
         <div className={styles.player__value}>
           {formatValue(playerInfo.currentValue)}
