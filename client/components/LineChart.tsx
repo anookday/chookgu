@@ -235,11 +235,11 @@ const LineChart = ({ type, data, threshold }: ChartProps) => {
         className={styles.range}
         values={[
           { name: 'All', value: 'all' },
-          { name: '1 Year', value: '1y' },
-          { name: '6 Months', value: '6m' },
-          { name: '3 Months', value: '3m' },
-          { name: '1 Month', value: '1m' },
-          { name: '1 Week', value: '1w' },
+          { name: '1Y', value: '1y' },
+          { name: '6M', value: '6m' },
+          { name: '3M', value: '3m' },
+          { name: '1M', value: '1m' },
+          { name: '1W', value: '1w' },
         ]}
         selected={range}
         onChange={(value) => isChartRange(value) && setRange(value)}

@@ -32,10 +32,10 @@
       border-color: transparent;
       color: $color-accent;
       font-size: 2.4rem;
-    }
 
-    button:hover {
-      color: $color-complement;
+      &:hover {
+        color: $color-complement;
+      }
     }
 
     input {
