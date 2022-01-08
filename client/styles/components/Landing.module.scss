@@ -1,19 +1,182 @@
+$one-fourth: 18.75em;
+$half: 37.5em;
+$three-fourth: 56.25em;
+
 .section {
-  @include landing-section;
+  width: 100%;
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  & > :not(:last-child) {
+    margin-right: 3rem;
+  }
+
+  em {
+    font-style: normal;
+  }
+
+  h1 {
+    font-size: 3.8rem;
+  }
+
+  h2 {
+    font-size: 2.8rem;
+  }
+
+  h3 {
+    font-size: 2.4rem;
+  }
+
+  h4 {
+    font-size: 2rem;
+  }
 }
 
-.overview {
-  background-color: $color-primary-dark;
+.text {
+  &--accent {
+    color: $color-accent;
+  }
+
+  &--complement {
+    color: $color-complement;
+  }
 }
 
-.tournaments {
+.main {
   background-color: $color-primary;
+  flex-direction: column;
+
+  &__content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+  }
+
+  &__image {
+    width: $half;
+  }
+
+  &__description {
+    position: relative;
+    width: $half;
+    height: 100%;
+
+    &__text {
+      position: absolute;
+      top: 12rem;
+      left: 0;
+      z-index: 1;
+      background-color: rgba($color-primary-dark, 0.3);
+      border-radius: 1rem;
+      padding: 3rem;
+    }
+  }
+
+  &__link {
+    padding-bottom: 10rem;
+  }
 }
 
-.prizes {
+.trade {
   background-color: $color-primary-light;
+  margin: 0 auto;
+
+  &__description {
+    width: $one-fourth;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 1rem;
+  }
+
+  &__image {
+    width: $three-fourth;
+  }
+}
+
+.compete {
+  background-color: $color-primary-dark;
+  margin: 0 auto;
+
+  &__description {
+    width: $half;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 1rem;
+  }
+
+  &__image {
+    width: $half;
+  }
 }
 
 .contact {
-  background-color: $color-accent;
+  background-color: $color-primary;
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-width: $half;
+  }
+}
+
+.image {
+  position: relative;
+  height: 100%;
+
+  & > * {
+    position: absolute;
+    border-radius: 3rem;
+    transition: 0.3s all;
+    box-shadow: $shadow-light;
+
+    &:hover {
+      z-index: 4;
+      transform: scale(1.1);
+      box-shadow: $shadow-dark;
+    }
+  }
+
+  &__dashboard {
+    width: 50em;
+    height: 28.125em;
+    top: 15.625em;
+    right: 0;
+  }
+
+  &__trade {
+    width: 40em;
+    height: 22.5em;
+    top: 40rem;
+    right: 12.5rem;
+    z-index: 3;
+  }
+
+  &__portfolio {
+    width: 40em;
+    height: 22.5em;
+    top: 25rem;
+    right: 0;
+    z-index: 2;
+  }
+
+  &__transaction {
+    width: 40em;
+    height: 22.5em;
+    top: 15rem;
+    right: 25rem;
+    z-index: 1;
+  }
+
+  &__img {
+    border-radius: 1rem;
+  }
 }

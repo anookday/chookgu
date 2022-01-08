@@ -32,7 +32,9 @@ const Header = ({ navigation, children, className }: HeaderProps) => {
   return (
     <header className={`${styles.header}${className ? ` ${className}` : ''}`}>
       <div className={styles.header__left}>
-        <Icon className={styles.header__logo} />
+        <Link href="/#" passHref>
+          <Icon className={styles.header__logo} />
+        </Link>
       </div>
       <nav className={styles.header__middle}>{renderNavigationItems()}</nav>
       <div className={styles.header__right}>{children}</div>
