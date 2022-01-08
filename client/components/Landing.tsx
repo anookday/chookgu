@@ -30,6 +30,8 @@ const Landing = () => {
                 alt="Photo of user dashboard in app"
                 className={styles.image__img}
                 layout="fill"
+                quality="50"
+                priority={true}
               />
             </div>
           </div>
@@ -54,6 +56,8 @@ const Landing = () => {
               alt="Photo of trading players in app"
               className={styles.image__img}
               layout="fill"
+              quality="50"
+              priority={true}
             />
           </div>
           <div className={styles.image__portfolio}>
@@ -62,6 +66,8 @@ const Landing = () => {
               alt="Photo of user portfolio in app"
               className={styles.image__img}
               layout="fill"
+              quality="50"
+              priority={true}
             />
           </div>
           <div className={styles.image__transaction}>
@@ -70,6 +76,8 @@ const Landing = () => {
               alt="Photo of player transaction in app"
               className={styles.image__img}
               layout="fill"
+              quality="50"
+              priority={true}
             />
           </div>
         </div>
@@ -82,6 +90,7 @@ const Landing = () => {
             className={styles.image__img}
             width="621"
             height="640"
+            priority={true}
           />
         </div>
         <div className={styles.compete__description}>
