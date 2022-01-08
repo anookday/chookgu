@@ -84,23 +84,22 @@ const MainLayout = (props: MainLayoutProps) => {
   return (
     <>
       <Header
-        className={`${styles.landingHeader}\
-          ${isPageTop ? '' : ` ${styles['landingHeader--scrolledDown']}`}`}
+        className={`${styles.header}\
+          ${isPageTop ? '' : ` ${styles['header--scrolledDown']}`}`}
         navigation={[
-          { text: 'Overview', link: '#overview' },
-          { text: 'Tournaments', link: '#tournaments' },
-          { text: 'Prizes', link: '#prizes' },
+          { text: 'Trade', link: '#trade' },
+          { text: 'Compete', link: '#compete' },
           { text: 'Contact', link: '#contact' },
         ]}
       >
-        <>
-          <Link href="/account/login">
-            <a className={styles.link}>Sign in</a>
+        <div className={styles.header__links}>
+          <Link href="/account/login" passHref>
+            <Button text="Sign In" color="light" />
           </Link>
           <Link href="/account/register" passHref>
-            <Button text="Get started" />
+            <Button text="Register" />
           </Link>
-        </>
+        </div>
       </Header>
       <main>
         <Landing />

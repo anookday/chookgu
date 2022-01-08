@@ -16,16 +16,6 @@
   }
 }
 
-@mixin landing-section {
-  width: 100%;
-  height: 100vh;
-  color: $color-secondary;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 @mixin layout {
   width: 100%;
   height: calc(100vh - #{$header-height});

@@ -1,7 +1,15 @@
-.landingHeader {
+.header {
   position: fixed;
   top: 0;
   width: 100%;
+
+  &__links {
+    display: flex;
+
+    & > :not(:last-child) {
+      margin-right: 1.5rem;
+    }
+  }
 
   &--scrolledDown {
     box-shadow: $shadow-dark;

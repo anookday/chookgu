@@ -8,6 +8,12 @@
     height: 100%;
   }
 
+  &--large {
+    padding: 2rem 5rem;
+    font-size: 2.6rem;
+    border-radius: 5rem;
+  }
+
   &--light {
     color: $color-secondary;
     background-color: $color-primary-light;

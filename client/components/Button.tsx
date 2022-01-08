@@ -1,7 +1,7 @@
 import React from 'react'
 import styles from '@styles/components/Button.module.scss'
 
-type ButtonSize = 'default' | 'small'
+type ButtonSize = 'default' | 'small' | 'large'
 
 type ButtonColor = 'default' | 'light' | 'dark' | 'warning'
 
@@ -21,6 +21,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       case 'small':
         style += ' ' + styles['button--small']
         break
+      case 'large':
+        style += ' ' + styles['button--large']
       default:
     }
 
