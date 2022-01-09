@@ -1,3 +1,30 @@
+@mixin respond($breakpoint) {
+  // 600px
+  @if $breakpoint == phone {
+    @media only screen and (max-width: 37.5em) {
+      @content;
+    }
+  }
+  // 900px
+  @if $breakpoint == tab-port {
+    @media only screen and (max-width: 56.25em) {
+      @content;
+    }
+  }
+  // 1200px
+  @if $breakpoint == tab-land {
+    @media only screen and (max-width: 75em) {
+      @content;
+    }
+  }
+  // 1800px
+  @if $breakpoint == big-desktop {
+    @media only screen and (min-width: 112.5em) {
+      @content;
+    }
+  }
+}
+
 @mixin text-link {
   color: $color-secondary;
   padding: 1rem 0;
@@ -129,28 +156,6 @@
 @mixin widget-inner {
   @include widget;
   background-color: $color-primary-light;
-}
-
-@mixin button {
-  font-size: inherit;
-  border: none;
-  border-radius: 1rem;
-  padding: 1rem 2rem;
-  transition: all 0.2s;
-
-  &:enabled {
-    cursor: pointer;
-
-    &:hover {
-      transform: translateY(-0.2rem);
-      box-shadow: $shadow-light;
-    }
-
-    &:active {
-      transform: translateY(0);
-      box-shadow: none;
-    }
-  }
 }
 
 @mixin input {

@@ -9,6 +9,9 @@ import Medals from '@public/medals.png'
 import styles from '@styles/components/Landing.module.scss'
 
 const Landing = () => {
+  const tradeImgWidth = '640'
+  const tradeImgHeight = '360'
+
   return (
     <>
       <section id="main" className={`${styles.section} ${styles.main}`}>
@@ -24,12 +27,14 @@ const Landing = () => {
             </h1>
           </div>
           <div className={`${styles.main__image} ${styles.image}`}>
-            <div className={styles.image__dashboard}>
+            <div className={styles.main__image__dashboard}>
               <Image
                 src={Dashboard.src}
                 alt="Photo of user dashboard in app"
                 className={styles.image__img}
-                layout="fill"
+                layout="responsive"
+                width="800"
+                height="450"
                 quality="50"
                 priority={true}
               />
@@ -50,32 +55,38 @@ const Landing = () => {
           </h2>
         </div>
         <div className={`${styles.trade__image} ${styles.image}`}>
-          <div className={styles.image__trade}>
+          <div className={styles.trade__image__trade}>
             <Image
               src={Trade.src}
               alt="Photo of trading players in app"
               className={styles.image__img}
-              layout="fill"
+              layout="responsive"
+              width={tradeImgWidth}
+              height={tradeImgHeight}
               quality="50"
               priority={true}
             />
           </div>
-          <div className={styles.image__portfolio}>
+          <div className={styles.trade__image__portfolio}>
             <Image
               src={Portfolio.src}
               alt="Photo of user portfolio in app"
               className={styles.image__img}
-              layout="fill"
+              layout="responsive"
+              width={tradeImgWidth}
+              height={tradeImgHeight}
               quality="50"
               priority={true}
             />
           </div>
-          <div className={styles.image__transaction}>
+          <div className={styles.trade__image__transaction}>
             <Image
               src={Transaction.src}
               alt="Photo of player transaction in app"
               className={styles.image__img}
-              layout="fill"
+              layout="responsive"
+              width={tradeImgWidth}
+              height={tradeImgHeight}
               quality="50"
               priority={true}
             />
@@ -106,10 +117,10 @@ const Landing = () => {
             Questions? Something on your mind? Feel free to let the developer
             know.
           </h2>
-          <h3>
+          <h3 className={styles.contact__text}>
             Developer: <em className={styles['text--accent']}>Freddy Shim</em>
           </h3>
-          <h3>
+          <h3 className={styles.contact__text}>
             Email:{' '}
             <em className={styles['text--accent']}>shimfreddy@gmail.com</em>
           </h3>

@@ -1,7 +1,27 @@
 .button {
-  @include button;
+  font-size: inherit;
+  border: none;
+  transition: all 0.2s;
+
+  &:enabled {
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-0.2rem);
+      box-shadow: $shadow-light;
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+  }
+
+  // default
   color: $color-secondary;
   background-color: $color-accent;
+  border-radius: 1rem;
+  padding: 1rem 2rem;
 
   &--small {
     padding: 0.2rem 1rem;

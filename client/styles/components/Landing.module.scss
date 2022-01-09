@@ -12,6 +12,14 @@ $three-fourth: 56.25em;
 
   & > :not(:last-child) {
     margin-right: 3rem;
+
+    @include respond(tab-port) {
+      margin: 0;
+    }
+  }
+
+  @include respond(tab-port) {
+    flex-direction: column;
   }
 
   em {
@@ -56,16 +64,44 @@ $three-fourth: 56.25em;
     justify-content: center;
     align-items: center;
     margin: 0 auto;
+
+    @include respond(tab-port) {
+      flex-direction: column;
+    }
   }
 
   &__image {
     width: $half;
+    height: auto;
+
+    @include respond(tab-port) {
+      position: static !important;
+      height: auto !important;
+      display: flex;
+      justify-content: center;
+    }
+
+    &__dashboard {
+      width: 50em;
+      max-width: 67vw;
+      top: -5.5em;
+      right: 0;
+
+      @include respond(tab-port) {
+        position: static !important;
+      }
+    }
   }
 
   &__description {
     position: relative;
     width: $half;
     height: 0;
+
+    @include respond(tab-port) {
+      width: 100%;
+      height: auto;
+    }
 
     &__text {
       position: absolute;
@@ -75,6 +111,12 @@ $three-fourth: 56.25em;
       background-color: rgba($color-primary-dark, 0.3);
       border-radius: 1rem;
       padding: 3rem;
+
+      @include respond(tab-port) {
+        position: static;
+        background-color: transparent;
+        border-radius: 0;
+      }
     }
   }
 
@@ -87,16 +129,86 @@ $three-fourth: 56.25em;
   background-color: $color-primary-light;
   margin: 0 auto;
 
+  @include respond(tab-port) {
+    justify-content: space-around;
+  }
+
   &__description {
     width: $one-fourth;
     display: flex;
     justify-content: flex-end;
     align-items: center;
     padding: 0 1rem;
+
+    @include respond(tab-port) {
+      width: 80%;
+      margin: 0;
+    }
   }
 
   &__image {
     width: $three-fourth;
+
+    & > * {
+      width: 40em;
+      max-width: 40vw;
+
+      @include respond(tab-port) {
+        max-width: 35vw;
+      }
+    }
+
+    @include respond(tab-port) {
+      width: 80%;
+    }
+
+    &__trade {
+      top: 0;
+      right: 12.5rem;
+      z-index: 3;
+
+      @include respond(tab-land) {
+        top: -5rem;
+        right: 10rem;
+      }
+
+      @include respond(tab-port) {
+        top: -20rem;
+        left: 0;
+        right: 0;
+        margin: auto;
+      }
+    }
+
+    &__portfolio {
+      top: -15rem;
+      right: 0;
+      z-index: 2;
+
+      @include respond(tab-land) {
+        top: -18rem;
+      }
+
+      @include respond(tab-port) {
+        top: -18rem;
+        left: 0;
+      }
+    }
+
+    &__transaction {
+      top: -25rem;
+      right: 25rem;
+      z-index: 1;
+
+      @include respond(tab-land) {
+        right: 20rem;
+      }
+
+      @include respond(tab-port) {
+        top: -18rem;
+        right: 0;
+      }
+    }
   }
 }
 
@@ -104,16 +216,25 @@ $three-fourth: 56.25em;
   background-color: $color-primary-dark;
   margin: 0 auto;
 
+  @include respond(tab-port) {
+    flex-direction: column-reverse;
+  }
+
   &__description {
     width: $half;
     display: flex;
     justify-content: flex-end;
     align-items: center;
     padding: 0 1rem;
+
+    @include respond(tab-port) {
+      margin-bottom: 3rem;
+    }
   }
 
   &__image {
     width: $half;
+    padding: 3rem;
   }
 }
 
@@ -126,6 +247,10 @@ $three-fourth: 56.25em;
     justify-content: center;
     align-items: center;
     min-width: $half;
+  }
+
+  &__text {
+    text-align: center;
   }
 }
 
@@ -144,37 +269,6 @@ $three-fourth: 56.25em;
       transform: scale(1.1);
       box-shadow: $shadow-dark;
     }
-  }
-
-  &__dashboard {
-    width: 50em;
-    height: 28.125em;
-    top: -5.5em;
-    right: 0;
-  }
-
-  &__trade {
-    width: 40em;
-    height: 22.5em;
-    top: 0;
-    right: 12.5rem;
-    z-index: 3;
-  }
-
-  &__portfolio {
-    width: 40em;
-    height: 22.5em;
-    top: -15rem;
-    right: 0;
-    z-index: 2;
-  }
-
-  &__transaction {
-    width: 40em;
-    height: 22.5em;
-    top: -25rem;
-    right: 25rem;
-    z-index: 1;
   }
 
   &__img {
