@@ -54,6 +54,7 @@ $three-fourth: 56.25em;
     height: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
     margin: 0 auto;
   }
 
@@ -64,11 +65,11 @@ $three-fourth: 56.25em;
   &__description {
     position: relative;
     width: $half;
-    height: 100%;
+    height: 0;
 
     &__text {
       position: absolute;
-      top: 12rem;
+      top: -21.625rem;
       left: 0;
       z-index: 1;
       background-color: rgba($color-primary-dark, 0.3);
@@ -78,7 +79,7 @@ $three-fourth: 56.25em;
   }
 
   &__link {
-    padding-bottom: 10rem;
+    margin-bottom: 5rem;
   }
 }
 
@@ -130,7 +131,7 @@ $three-fourth: 56.25em;
 
 .image {
   position: relative;
-  height: 100%;
+  height: 0;
 
   & > * {
     position: absolute;
@@ -148,14 +149,14 @@ $three-fourth: 56.25em;
   &__dashboard {
     width: 50em;
     height: 28.125em;
-    top: 15.625em;
+    top: -5.5em;
     right: 0;
   }
 
   &__trade {
     width: 40em;
     height: 22.5em;
-    top: 40rem;
+    top: 0;
     right: 12.5rem;
     z-index: 3;
   }
@@ -163,7 +164,7 @@ $three-fourth: 56.25em;
   &__portfolio {
     width: 40em;
     height: 22.5em;
-    top: 25rem;
+    top: -15rem;
     right: 0;
     z-index: 2;
   }
@@ -171,7 +172,7 @@ $three-fourth: 56.25em;
   &__transaction {
     width: 40em;
     height: 22.5em;
-    top: 15rem;
+    top: -25rem;
     right: 25rem;
     z-index: 1;
   }
