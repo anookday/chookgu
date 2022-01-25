@@ -1,20 +1,20 @@
-import { Request, Response } from 'express'
+import { AuthService } from '@auth/auth.service'
+import { ChangePasswordDto } from '@auth/dto/change-password.dto'
+import { LocalAuthGuard } from '@auth/local-auth.guard'
 import {
-  Controller,
   Body,
+  Controller,
+  Get,
+  Post,
   Query,
   Req,
   Res,
-  Get,
-  Post,
   UseGuards,
 } from '@nestjs/common'
-import { LocalAuthGuard } from '@auth/local-auth.guard'
-import { AuthService } from '@auth/auth.service'
-import { TokenService } from '@token/token.service'
 import { JwtAuthGuard } from '@token/jwt-auth.guard'
+import { TokenService } from '@token/token.service'
 import { User } from '@users/user.decorator'
-import { ChangePasswordDto } from './dto/change-password.dto'
+import { Request, Response } from 'express'
 
 @Controller('auth')
 export class AuthController {
