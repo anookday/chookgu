@@ -4,7 +4,6 @@ import Button from '@components/Button'
 import Dashboard from '@public/demo-1.png'
 import Portfolio from '@public/demo-2.png'
 import Trade from '@public/demo-3.png'
-import Transaction from '@public/demo-4.png'
 import Medals from '@public/medals.png'
 import styles from '@styles/components/Landing.module.scss'
 
@@ -81,7 +80,7 @@ const Landing = () => {
           </div>
           <div className={styles.trade__image__transaction}>
             <Image
-              src={Transaction.src}
+              src={Dashboard.src}
               alt="Photo of player transaction in app"
               className={styles.image__img}
               layout="responsive"

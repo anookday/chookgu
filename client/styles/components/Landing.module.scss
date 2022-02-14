@@ -92,7 +92,6 @@ $three-fourth: 56.25em;
 }
 
 .main {
-  background-color: $color-primary;
   flex-direction: column;
 
   &__content {
@@ -166,7 +165,7 @@ $three-fourth: 56.25em;
 }
 
 .trade {
-  background-color: $color-primary-light;
+  background-color: $color-primary;
   margin: 0 auto;
 
   @include respond(tab-port) {

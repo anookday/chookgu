@@ -3,8 +3,13 @@
 }
 
 .grid {
-  grid-auto-rows: 50%;
-  margin-bottom: 3rem;
+  &__value {
+    grid-column: span 2;
+  }
+
+  &__gain {
+    grid-column: span 2;
+  }
 }
 
 .numberedItem {

@@ -60,21 +60,21 @@ const Home = (props: GlobalProps) => {
   return (
     <Layout>
       <GridContainer className={styles.grid}>
-        <div className={styles.widget}>
+        <div className={`${styles.widget} ${styles.grid__value}`}>
           <div className={styles.widget__header}>Portfolio Value</div>
           <div className={styles.widget__chart}>
             <LineChart data={portfolioValue} />
           </div>
         </div>
         <div className={styles.widget}>
+          <div className={styles.widget__header}>Top Gains</div>
+          <div className={styles.widget__list}>{renderPlayers(topMargins)}</div>
+        </div>
+        <div className={`${styles.widget} ${styles.grid__gain}`}>
           <div className={styles.widget__header}>My Gain/Loss</div>
           <div className={styles.widget__chart}>
             <LineChart data={gainLossValue} type="pos-neg" />
           </div>
-        </div>
-        <div className={styles.widget}>
-          <div className={styles.widget__header}>Top Gains</div>
-          <div className={styles.widget__list}>{renderPlayers(topMargins)}</div>
         </div>
         <div className={styles.widget}>
           <div className={styles.widget__header}>Top Losses</div>

@@ -1,11 +1,21 @@
 .container {
   @include container;
   display: grid;
+
   grid: {
     template: {
-      columns: repeat(auto-fit, minmax(37.5em, 1fr));
+      columns: repeat(3, 1fr);
+      rows: repeat(2, 1fr);
     }
-    auto-rows: 100%;
     gap: 3rem;
+  }
+
+  @include respond(tab-port) {
+    grid: {
+      template: {
+        columns: repeat(auto-fit, minmax(37.5em, 1fr));
+      }
+      auto-rows: 100%;
+    }
   }
 }
