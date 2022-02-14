@@ -37,18 +37,6 @@ const PlayerCard = ({
 
   const renderValue = () => {
     switch (format) {
-      case 'margin':
-        const margin = formatValue(player.margin || 0, true, true)
-        const ratio = formatPercent(player.marginRatio || 0)
-        let style = styles.player__value
-        if (player.margin && player.margin < 0) {
-          style += ' ' + styles['player__value--negative']
-        } else if (player.margin && player.margin == 0) {
-          style += ' ' + styles['player__value--neutral']
-        }
-
-        return <div className={style}>{`${margin} (${ratio})`}</div>
-
       case 'custom':
         if (customFormatOptions) {
           let style = styles.player__value
@@ -92,7 +80,7 @@ const PlayerCard = ({
           src={player.image}
           alt={`photo of ${player.name}`}
           layout="fill"
-          objectFit="contain"
+          objectFit="cover"
         />
       </div>
       <div className={styles.player__name}>{player.name}</div>

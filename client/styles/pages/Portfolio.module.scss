@@ -1,3 +1,20 @@
+.grid {
+  grid: {
+    template: {
+      columns: repeat(3, 1fr);
+      rows: repeat(2, 1fr);
+    }
+  }
+
+  &__players {
+    grid-row: span 2;
+  }
+
+  &__chart {
+    grid-column: span 2;
+  }
+}
+
 .widget {
   @include widget-outer;
 }

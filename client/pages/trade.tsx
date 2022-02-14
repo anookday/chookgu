@@ -15,6 +15,7 @@ import Search from '@components/Search'
 import SortDropdown, { SortBy, SortOrder } from '@components/SortDropdown'
 import PlayerCheckout from '@components/PlayerCheckout'
 import { usePortfolio } from '@context/PortfolioContext'
+import PlayerChart from '@components/PlayerChart'
 
 interface SearchOptions {
   index: number
@@ -39,7 +40,6 @@ const Trade = (props: GlobalProps) => {
   })
   const [players, setPlayers] = useState<Player[]>([])
   const [selected, setSelected] = useState<Player | undefined>(undefined)
-  const [checkout, setCheckout] = useState(false)
 
   /**
    * Get a list of players from the server. Loads 10 at a time, starting from
@@ -69,8 +69,14 @@ const Trade = (props: GlobalProps) => {
    * Player select event handler
    */
   const onPlayerSelected = (player?: Player) => {
-    setCheckout(false)
     setSelected(player)
+  }
+
+  /**
+   * Player deselect event handler
+   */
+  const onPlayerDeselected = () => {
+    setSelected(undefined)
   }
 
   /**
@@ -105,35 +111,13 @@ const Trade = (props: GlobalProps) => {
     ))
   }
 
-  const renderDetails = () => {
-    if (selected && checkout) {
-      return (
-        <PlayerCheckout
-          player={selected}
-          portfolio={portfolio}
-          className={styles.details}
-          onComplete={(p) => setPortfolio(p)}
-          onCancel={() => setCheckout(false)}
-        />
-      )
-    }
-    return (
-      <PlayerDetails
-        className={styles.details}
-        player={selected}
-        onTransactionClick={() => setCheckout(true)}
-        onCloseClick={() => setSelected(undefined)}
-      />
-    )
-  }
-
   /**
    * Page content
    */
   return (
     <Layout>
-      <GridContainer>
-        <div className={`${styles.widget} ${styles.players}`}>
+      <GridContainer className={styles.grid}>
+        <div className={`${styles.widget} ${styles.grid__search}`}>
           <div className={styles.widget__header}>Player Market</div>
           <div className={styles.widget__search}>
             <Search
@@ -161,7 +145,14 @@ const Trade = (props: GlobalProps) => {
             </Scroll>
           </div>
         </div>
-        {renderDetails()}
+        <PlayerDetails className={styles.details} player={selected} />
+        <PlayerCheckout
+          player={selected}
+          portfolio={portfolio}
+          className={styles.details}
+          onComplete={(p) => setPortfolio(p)}
+        />
+        <PlayerChart className={styles.grid__chart} player={selected} />
       </GridContainer>
     </Layout>
   )

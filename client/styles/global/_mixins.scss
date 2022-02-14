@@ -17,6 +17,12 @@
       @content;
     }
   }
+  // 1400px
+  @if $breakpoint == small-desktop {
+    @media only screen and (max-width: 87.5em) {
+      @content;
+    }
+  }
   // 1800px
   @if $breakpoint == big-desktop {
     @media only screen and (min-width: 112.5em) {
@@ -60,7 +66,7 @@
 }
 
 @mixin widget {
-  border-radius: 3rem;
+  border-radius: 1rem;
   padding: 2rem 3rem;
   overflow: hidden;
   width: 100%;
@@ -87,7 +93,7 @@
 
     &__title {
       flex: 1;
-      text-align: center;
+      text-align: left;
     }
 
     &__buttons {
@@ -105,8 +111,8 @@
   &__text {
     font-size: inherit;
 
-    & span {
-      color: $color-accent;
+    &--light {
+      color: $color-primary-light;
     }
 
     &--success {
@@ -155,7 +161,11 @@
 
 @mixin widget-inner {
   @include widget;
-  background-color: $color-primary-light;
+  background-color: $color-primary;
+
+  &:hover {
+    background-color: $color-primary-light;
+  }
 }
 
 @mixin input {

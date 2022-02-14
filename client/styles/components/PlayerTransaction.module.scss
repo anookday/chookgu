@@ -2,12 +2,16 @@
   @include widget-outer;
 
   &__text {
-    font-size: 2.6rem;
+    font-size: 2rem;
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 5rem;
+
+    @include respond(small-desktop) {
+      padding: 0;
+    }
   }
 }
 

@@ -16,8 +16,6 @@ export interface Player {
   dateOfBirth: string
   currentValue: number
   value: PlayerValue[]
-  margin?: number
-  marginRatio?: number
 }
 
 export interface PlayerAsset {

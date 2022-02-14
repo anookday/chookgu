@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import MainLayout from '@components/MainLayout'
@@ -12,6 +12,8 @@ import { usePortfolio } from '@context/PortfolioContext'
 import styles from '@styles/pages/Portfolio.module.scss'
 import { Player, PlayerAsset } from '@util/Player'
 import { formatMargin, formatMarginPercent } from '@util/numbers'
+import PlayerChart from '@components/PlayerChart'
+import { Portfolio } from '@util/Portfolio'
 
 const PortfolioPage = (props: GlobalProps) => {
   // redirect if user is not authenticated
@@ -22,10 +24,17 @@ const PortfolioPage = (props: GlobalProps) => {
 
   const [portfolio, setPortfolio] = usePortfolio()
   const [selected, setSelected] = useState<PlayerAsset | undefined>(undefined)
-  const [checkout, setCheckout] = useState(false)
+
+  const onTransactionComplete = (portfolio: Portfolio) => {
+    setPortfolio(portfolio)
+    if (selected) {
+      setSelected(
+        portfolio.players.find((p) => p.player._id === selected.player._id)
+      )
+    }
+  }
 
   const onPlayerSelected = (player?: Player) => {
-    setCheckout(false)
     if (player) {
       setSelected(
         portfolio.players.find((asset) => asset.player._id === player._id)
@@ -57,10 +66,7 @@ const PortfolioPage = (props: GlobalProps) => {
           size="small"
           format="custom"
           customFormatOptions={{
-            value: `${asset.amount} × ${formatMargin(
-              assetValue,
-              marketValue
-            )} (${formatMarginPercent(assetValue, marketValue)})`,
+            value: formatMargin(assetValue, marketValue, asset.amount, true),
             style,
           }}
         />
@@ -68,45 +74,21 @@ const PortfolioPage = (props: GlobalProps) => {
     })
   }
 
-  const renderDetails = () => {
-    if (selected && checkout) {
-      return (
+  return (
+    <Layout>
+      <GridContainer className={styles.grid}>
+        <div className={`${styles.widget} ${styles.grid__players}`}>
+          <div className={styles.widget__header}>My Players</div>
+          <div className={styles.widget__list}>{renderPlayerAssets()}</div>
+        </div>
+        <PlayerDetails className={styles.details} player={selected} />
         <PlayerCheckout
           className={styles.details}
           player={selected}
           portfolio={portfolio}
-          onComplete={(p) => setPortfolio(p)}
-          onCancel={() => {
-            setCheckout(false)
-            if (selected) {
-              setSelected(
-                portfolio.players.find(
-                  (asset) => asset.player._id === selected.player._id
-                )
-              )
-            }
-          }}
+          onComplete={onTransactionComplete}
         />
-      )
-    }
-    return (
-      <PlayerDetails
-        className={styles.details}
-        player={selected}
-        onTransactionClick={() => setCheckout(true)}
-        onCloseClick={() => setSelected(undefined)}
-      />
-    )
-  }
-
-  return (
-    <Layout>
-      <GridContainer>
-        <div className={`${styles.widget} ${styles.portfolio}`}>
-          <div className={styles.widget__header}>My Players</div>
-          <div className={styles.widget__list}>{renderPlayerAssets()}</div>
-        </div>
-        {renderDetails()}
+        <PlayerChart className={styles.grid__chart} player={selected} />
       </GridContainer>
     </Layout>
   )

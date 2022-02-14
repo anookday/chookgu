@@ -1,5 +1,4 @@
-import Chart, { toChartValues } from '@components/LineChart'
-import Button from '@components/Button'
+import Image from 'next/image'
 import { formatMargin, formatValue, formatMarginPercent } from '@util/numbers'
 import { Player, PlayerAsset, isPlayerAsset, getPlayerAge } from '@util/Player'
 import styles from '@styles/components/PlayerDetails.module.scss'
@@ -7,16 +6,9 @@ import styles from '@styles/components/PlayerDetails.module.scss'
 interface PlayerDetailsProps {
   className?: string
   player?: Player | PlayerAsset
-  onTransactionClick: () => void
-  onCloseClick: () => void
 }
 
-const PlayerDetails = ({
-  className,
-  player,
-  onTransactionClick,
-  onCloseClick,
-}: PlayerDetailsProps) => {
+const PlayerDetails = ({ className, player }: PlayerDetailsProps) => {
   const style = className ? `${styles.widget} ${className}` : styles.widget
 
   if (!player) {
@@ -29,20 +21,7 @@ const PlayerDetails = ({
     )
   }
 
-  let playerInfo: Player
-  let transactionTitle: string
-  let threshold: number | undefined
-
-  if (isPlayerAsset(player)) {
-    playerInfo = player.player
-    transactionTitle = 'Sell'
-    threshold = player.averageValue
-  } else {
-    playerInfo = player
-    transactionTitle = 'Buy'
-  }
-
-  const data = toChartValues(playerInfo.value)
+  const playerInfo = isPlayerAsset(player) ? player.player : player
 
   const renderInfo = () => {
     if (isPlayerAsset(player)) {
@@ -61,34 +40,47 @@ const PlayerDetails = ({
       )
 
       return (
-        <div className={styles.asset}>
-          <div>
-            <span className={styles.infoLabel}>Stock value: </span>
-            {formatValue(player.averageValue)}
-          </div>
-          <div>
-            <span className={styles.infoLabel}>Market value: </span>
-            {formatValue(playerInfo.currentValue)}
-          </div>
-          <div>
-            <span className={styles.infoLabel}>Total value: </span>
-            {formatValue(player.averageValue * player.amount)}
-          </div>
-          <div>
-            <span className={styles.infoLabel}>Average Margin: </span>
-            {averageMargin}
-          </div>
-          <div>
-            <span className={styles.infoLabel}>Total Margin: </span>
-            {totalMargin}
-          </div>
-          <div>
-            <span className={styles.infoLabel}>Percent Margin: </span>
-            {marginPercent}
-          </div>
-          <div>
-            <span className={styles.infoLabel}>Stocks: </span>
-            {player.amount}
+        <div className={styles.player}>
+          <div className={styles.player__info}>
+            <div className={styles.player__details}>
+              <div>
+                <span className={styles.infoLabel}>Stock value: </span>
+                {formatValue(player.averageValue)}
+              </div>
+              <div>
+                <span className={styles.infoLabel}>Market value: </span>
+                {formatValue(playerInfo.currentValue)}
+              </div>
+              <div>
+                <span className={styles.infoLabel}>Owned: </span>
+                {player.amount}
+              </div>
+              <div>
+                <span className={styles.infoLabel}>Total value: </span>
+                {formatValue(player.averageValue * player.amount)}
+              </div>
+              <div>
+                <span className={styles.infoLabel}>Average Margin: </span>
+                {averageMargin}
+              </div>
+              <div>
+                <span className={styles.infoLabel}>Total Margin: </span>
+                {totalMargin}
+              </div>
+              <div>
+                <span className={styles.infoLabel}>Percent Margin: </span>
+                {marginPercent}
+              </div>
+            </div>
+
+            <div className={styles.player__photo}>
+              <Image
+                src={playerInfo.image}
+                alt={`Photo of ${playerInfo.name}`}
+                layout="fill"
+                objectFit="contain"
+              />
+            </div>
           </div>
         </div>
       )
@@ -97,21 +89,30 @@ const PlayerDetails = ({
     return (
       <div className={styles.player}>
         <div className={styles.player__info}>
-          <div>
-            <span className={styles.infoLabel}>Nationality: </span>
+          <div className={styles.player__defails}>
+            <span className={styles.infoLabel}>Nationality</span>
+            <br />
             {playerInfo.nationality.join(', ')}
-          </div>
-          <div>
-            <span className={styles.infoLabel}>Position: </span>
+            <br />
+            <span className={styles.infoLabel}>Position</span>
+            <br />
             {playerInfo.position}
-          </div>
-          <div>
-            <span className={styles.infoLabel}>Age: </span>
+            <br />
+            <span className={styles.infoLabel}>Age</span>
+            <br />
             {getPlayerAge(playerInfo.dateOfBirth)}
-          </div>
-          <div>
-            <span className={styles.infoLabel}>Team: </span>
+            <br />
+            <span className={styles.infoLabel}>Team</span>
+            <br />
             {playerInfo.team}
+          </div>
+          <div className={styles.player__photo}>
+            <Image
+              src={playerInfo.image}
+              alt={`Photo of ${playerInfo.name}`}
+              layout="fill"
+              objectFit="contain"
+            />
           </div>
         </div>
         <div className={styles.player__value}>
@@ -125,17 +126,6 @@ const PlayerDetails = ({
     <div className={style}>
       <div className={styles.widget__header}>
         <div className={styles.widget__header__title}>{playerInfo.name}</div>
-        <div className={styles.widget__header__buttons}>
-          <Button text="Compare" color="light" />
-          <Button
-            text={transactionTitle}
-            onClick={() => onTransactionClick()}
-          />
-          <Button text="X" color="warning" onClick={() => onCloseClick()} />
-        </div>
-      </div>
-      <div className={styles.widget__chart}>
-        <Chart data={data} threshold={threshold} />
       </div>
       {renderInfo()}
     </div>
